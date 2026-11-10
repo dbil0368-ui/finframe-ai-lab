@@ -22,10 +22,13 @@
  --border:#34334f;
 }
 *{box-sizing:border-box}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
 body{
  margin:0;background:var(--bg);color:var(--text);
  font-family:Arial,sans-serif;
 }
+.app{width:100%;max-width:100%;overflow-x:clip}
+.main-area{min-width:0;max-width:100%;}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
 .app{min-height:100vh}
@@ -70,7 +73,7 @@ button{cursor:pointer}
 }
 .top-title{font-weight:bold;font-size:15px}
 .menu-toggle{display:none}
-@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.sidebar{display:flex;left:0;width:250px;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}.sidebar.mobile-open{transform:translateX(0)}.main-area{margin-left:0}}
+@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.sidebar{display:flex;position:fixed;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}.sidebar.mobile-open{transform:translateX(0)}.main-area{margin-left:0}}
 .top-actions{display:flex;gap:9px;align-items:center}
 .icon-btn{
  background:var(--panel2);border:1px solid var(--border);
