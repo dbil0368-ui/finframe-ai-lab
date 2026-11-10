@@ -265,6 +265,22 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
 .builder-note{font-size:12px;color:var(--muted);line-height:1.5}
 .builder-status{font-size:13px;color:#cdbaff;margin-top:9px;min-height:20px}
 @media(max-width:760px){.builder-workspace{grid-template-columns:1fr}.builder-panel textarea{min-height:260px}.builder-frame{height:340px}}
+body[data-theme="light"]{--bg:#f4f5fb;--panel:#fff;--panel2:#e9eaf4;--text:#202033;--muted:#62647a;--border:#d7d9e7;background:var(--bg);color:var(--text)}
+body[data-theme="light"] .sidebar{background:#fff}
+body[data-theme="light"] .topbar{background:rgba(255,255,255,.92)}
+body[data-theme="light"] .side-btn,body[data-theme="light"] .icon-btn,body[data-theme="light"] .secondary-btn{color:#292940}
+body[data-theme="light"] input,body[data-theme="light"] textarea,body[data-theme="light"] select{background:#fff;color:#202033;border-color:#d7d9e7}
+body[data-theme="light"] .prompt-box{background:#fff}
+body[data-theme="light"] .prompt-box textarea{color:#202033}
+body[data-theme="light"] .tool-card{color:#202033;background:#fff}
+body[data-theme="light"] .tool-card:hover{background:#f0edff}
+body[data-theme="light"] .tool{color:#202033}
+body[data-theme="light"] .recent-item{background:#fff}
+body[data-theme="light"] .preview,body[data-theme="light"] .builder-panel{background:#fff;color:#202033}
+body[data-theme="light"] .mobile-nav{background:#fff}
+body[data-theme="light"] .mobile-nav button{color:#55566b}
+body[data-theme="light"] label{color:#34344b}
+body[data-theme="light"] .search{background:#fff;color:#202033}
 </style>
 </head>
 <body>
@@ -286,6 +302,7 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  <button class="side-btn" data-page="brandkit" onclick="show('brandkit')">🎨 &nbsp; Brand Kit</button>
  <button class="side-btn" data-page="prompts" onclick="show('prompts')">✨ &nbsp; Prompt Library</button>
  <button class="side-btn" data-page="templates" onclick="show('templates')">🧩 &nbsp; Template Gallery</button>
+ <button class="side-btn" data-page="settings" onclick="show('settings')">⚙️ &nbsp; Settings & Backup</button>
  <div class="sidebar-bottom">
   <div class="sidebar-note">
    <strong>✨ FinFrame Workspace</strong><br>
@@ -634,6 +651,12 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
    <button class="tool-card" onclick="useTemplate('Creative Agency','A creative agency landing page with a hero banner, services, portfolio and contact section.')"><div class="tool-icon">🎨</div><strong>Creative Agency</strong><span>Showcase a design studio.</span></button>
   </div>
  </section>
+ <section id="settings">
+  <div class="page-title"><h2>⚙️ Settings & Backup</h2><p>Personalize FinFrame and keep a copy of your workspace data.</p></div>
+  <div class="card"><h3>🎨 Appearance</h3><p>Switch between dark and light mode. Your choice is saved on this device.</p><div class="actions"><button onclick="setTheme('dark')">🌙 Dark Mode</button><button class="secondary-btn" onclick="setTheme('light')">☀️ Light Mode</button></div><p id="themeStatus" class="small" role="status">Choose the look you prefer.</p></div>
+  <div class="card"><h3>📦 Workspace Backup</h3><p>Export your saved Brand Kit, recent activity and appearance setting into one JSON backup file.</p><div class="actions"><button onclick="exportWorkspaceBackup()">⬇️ Download Backup</button></div><label for="workspaceBackupFile">Restore a backup file</label><input id="workspaceBackupFile" type="file" accept=".json,application/json"><div class="actions"><button class="secondary-btn" onclick="importWorkspaceBackup()">↩️ Restore Backup</button></div><p id="backupStatus" class="small" role="status">Your backup stays on your device unless you choose to share it.</p></div>
+  <div class="card"><h3>ℹ️ About this prototype</h3><p>FinFrame AI Lab is a free browser-based prototype. Your saved data is stored locally in this browser; clearing browser site data may remove it.</p></div>
+ </section>
  </main>
  <footer>FinFrame AI Lab • Free Browser Prototype • Made with ❤️</footer>
 </div>
@@ -665,7 +688,8 @@ const pageNames={
  privacy:'🔐 Privacy & Security',
  brandkit:'🎨 Brand Kit',
  prompts:'✨ Prompt Library',
- templates:'🧩 Template Gallery'
+ templates:'🧩 Template Gallery',
+ settings:'⚙️ Settings & Backup'
 };
 
 window.toggleMobileMenu=function(){
@@ -780,6 +804,7 @@ function saveRecent(id){
   list=list.slice(0,5);
   localStorage.setItem('finframeRecent',JSON.stringify(list));
   renderRecent();
+loadTheme();
  }catch(e){}
 }
 function clearRecentHistory(){
@@ -1246,6 +1271,35 @@ function resetGame(){
 }
 
 renderRecent();
+function setTheme(theme){
+ if(theme!=='dark'&&theme!=='light')return;
+ document.body.dataset.theme=theme;
+ try{localStorage.setItem('finframeTheme',theme)}catch(e){}
+ const status=$('themeStatus');
+ if(status)status.textContent=theme==='light'?'Light mode is active.':'Dark mode is active.';
+}
+function loadTheme(){
+ let theme='dark';try{theme=localStorage.getItem('finframeTheme')||'dark'}catch(e){}
+ setTheme(theme);
+}
+function exportWorkspaceBackup(){
+ let brand=null,recent=[];try{brand=JSON.parse(localStorage.getItem('finframeBrandKit')||'null');recent=JSON.parse(localStorage.getItem('finframeRecent')||'[]')}catch(e){}
+ const backup={app:'FinFrame AI Lab',version:1,exportedAt:new Date().toISOString(),theme:document.body.dataset.theme||'dark',brandKit:brand,recentActivity:recent};
+ const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='finframe-workspace-backup.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ $('backupStatus').textContent='Workspace backup downloaded.';
+}
+function importWorkspaceBackup(){
+ const file=$('workspaceBackupFile').files[0];if(!file){$('backupStatus').textContent='Please choose a backup JSON file first.';return}
+ const reader=new FileReader();reader.onload=function(){
+  try{
+   const backup=JSON.parse(reader.result);if(!backup||backup.app!=='FinFrame AI Lab'||backup.version!==1)throw new Error('Invalid backup');
+   if(backup.brandKit&&typeof backup.brandKit==='object')localStorage.setItem('finframeBrandKit',JSON.stringify(backup.brandKit));
+   if(Array.isArray(backup.recentActivity))localStorage.setItem('finframeRecent',JSON.stringify(backup.recentActivity.slice(0,5)));
+   if(backup.theme==='light'||backup.theme==='dark')setTheme(backup.theme);renderRecent();loadBrandKit();$('backupStatus').textContent='Backup restored successfully on this device.';
+  }catch(e){$('backupStatus').textContent='This backup file is invalid or could not be restored.'}
+ };reader.onerror=function(){$("backupStatus").textContent="Could not read that file."};reader.readAsText(file);
+}
 </script>
 </body>
 </html>
