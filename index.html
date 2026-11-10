@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinFrame AI Lab</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090d18;color:#fff;font-family:Arial,sans-serif}
+header{padding:22px;background:#111a2c;border-bottom:1px solid #29334a}
+h1{margin:0;color:#9b8cff}
+header p{color:#aab3c8}
+main{max-width:850px;margin:auto;padding:20px}
+.card{background:#141d30;border:1px solid #293653;border-radius:16px;padding:18px;margin:15px 0}
+button{background:#7764ed;color:white;border:0;padding:12px 17px;border-radius:9px;margin:5px;cursor:pointer}
+textarea{width:100%;height:120px;background:#080e1b;color:white;border:1px solid #485475;border-radius:10px;padding:12px}
+input{max-width:100%;color:white}
+.tag{color:#a99aff}
+#preview{background:white;color:#222;padding:18px;border-radius:10px;min-height:100px}
+</style>
+</head>
+<body>
+<header>
+<h1>✨ FinFrame AI Lab</h1>
+<p>Your creative app, website and game studio</p>
+</header>
+<main>
+<div class="card">
+<h2>Welcome to FinFrame AI Lab</h2>
+<p class="tag">Build • Create • Preview</p>
+<p>This is your first free prototype.</p>
+</div>
+<div class="card">
+<h2>🚀 Project Builder</h2>
+<button onclick="setMode('Website')">Website</button>
+<button onclick="setMode('Android App')">Android App</button>
+<button onclick="setMode('Game')">Game</button>
+<h3 id="mode">Selected: Website</h3>
+<textarea id="prompt" placeholder="Describe what you want to create..."></textarea>
+<button onclick="createPreview()">Create Preview</button>
+</div>
+<div class="card">
+<h2>👁️ Live Preview</h2>
+<div id="preview">Your project preview will appear here.</div>
+</div>
+<div class="card">
+<h2>🧰 Studio Tools</h2>
+<p>Code Editor • Project Gallery • AI Image Tools • Video Studio</p>
+<p class="tag">More features will be added step by step.</p>
+</div>
+</main>
+<script>
+let selected="Website";
+function setMode(mode){
+selected=mode;
+document.getElementById("mode").textContent="Selected: "+mode;
+}
+function createPreview(){
+const value=document.getElementById("prompt").value.trim();
+if(!value){alert("Please describe your project first.");return;}
+document.getElementById("preview").textContent=
+"Project type: "+selected+" | Your idea: "+value+
+" | This is a basic preview, not an AI-generated app yet.";
+}
+</script>
+</body>
+  </html>
