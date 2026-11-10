@@ -59,6 +59,7 @@ footer{text-align:center;padding:20px;color:#a6aec5}
 </head>
 
 <body>
+
 <header>
 <h1>✨ FinFrame AI Lab</h1>
 <p>Build • Create • Design • Imagine</p>
@@ -66,23 +67,28 @@ footer{text-align:center;padding:20px;color:#a6aec5}
 
 <main>
 
+<!-- PROJECT BUILDER -->
 <section class="card">
 <h2>🚀 AI Project Builder</h2>
 <p>Choose your project type</p>
+
 <div class="grid">
 <button onclick="setMode('Website')">🌐 Website</button>
 <button onclick="setMode('Android App')">📱 Android App</button>
 <button onclick="setMode('Game')">🎮 Game Studio</button>
 </div>
+
 <h3 id="mode">Selected: Website</h3>
 <textarea id="prompt" placeholder="Describe your project idea..."></textarea>
 <button onclick="createPreview()">Create Preview</button>
 <div id="preview">Your preview will appear here.</div>
 </section>
 
+<!-- PHOTO ENHANCER -->
 <section class="card">
 <h2>📸 Photo Enhancer</h2>
 <p>Upload a photo and adjust its appearance.</p>
+
 <input type="file" id="upload" accept="image/*">
 <img id="photo" hidden alt="Photo preview">
 
@@ -97,10 +103,12 @@ footer{text-align:center;padding:20px;color:#a6aec5}
 
 <button onclick="resetPhoto()">Reset</button>
 <button onclick="downloadPhoto()">Download Photo</button>
+
 <canvas id="canvas" hidden></canvas>
 <p id="photoStatus">Upload a photo to begin.</p>
 </section>
 
+<!-- PRODUCT VISUALS -->
 <section class="card">
 <h2>💎 4K Product Visuals Studio</h2>
 <p>Create beautiful product designs with custom text and shadow.</p>
@@ -130,8 +138,37 @@ footer{text-align:center;padding:20px;color:#a6aec5}
 <p id="productStatus">Upload a product photo to begin.</p>
 </section>
 
+<!-- POSTER MAKER -->
+<section class="card">
+<h2>🖼️ Poster Maker Studio</h2>
+<p>Create your own custom poster.</p>
+
+<label>Upload Poster Image</label>
+<input type="file" id="posterUpload" accept="image/*">
+
+<label>Poster Title</label>
+<input type="text" id="posterTitle" placeholder="Enter poster title">
+
+<label>Subtitle</label>
+<input type="text" id="posterSubtitle" placeholder="Enter subtitle">
+
+<label>Background Color</label>
+<input type="color" id="posterBg" value="#eee8ff">
+
+<label>Text Color</label>
+<input type="color" id="posterText" value="#202033">
+
+<button onclick="createPoster()">✨ Create Poster</button>
+<button onclick="downloadPoster()">⬇️ Download Poster</button>
+
+<canvas id="posterCanvas" style="width:100%;margin-top:15px;border-radius:12px;"></canvas>
+<p id="posterStatus">Upload an image to begin.</p>
+</section>
+
+<!-- CREATIVE STUDIO -->
 <section class="card">
 <h2>🧰 Creative Studio</h2>
+
 <div class="grid">
 <div class="tool" onclick="showTool('Virtual Try-On')">👗 Virtual Try-On</div>
 <div class="tool" onclick="showTool('4K Visuals')">💎 4K Visuals</div>
@@ -141,10 +178,12 @@ footer{text-align:center;padding:20px;color:#a6aec5}
 <div class="tool" onclick="showTool('Voiceover')">🎙️ Voiceover</div>
 <div class="tool" onclick="showTool('Game Studio')">🎮 Game Studio</div>
 </div>
+
 <p id="toolInfo">Choose a tool.</p>
 </section>
 
 <footer>FinFrame AI Lab • Free Prototype • ❤️</footer>
+
 </main>
 
 <script>
@@ -152,6 +191,7 @@ let selected="Website";
 let original=null;
 let imageReady=false;
 let productImage=null;
+let posterImage=null;
 
 /* PROJECT BUILDER */
 function setMode(mode){
@@ -160,11 +200,13 @@ function setMode(mode){
 }
 
 function createPreview(){
-  let value=document.getElementById("prompt").value.trim();
+  const value=document.getElementById("prompt").value.trim();
+
   if(!value){
     alert("Describe your project first.");
     return;
   }
+
   document.getElementById("preview").textContent=
     "PROJECT: "+selected+"\n\nIDEA:\n"+value+
     "\n\nBasic concept preview created.";
@@ -188,6 +230,7 @@ const saturate=document.getElementById("saturate");
 upload.addEventListener("change",function(){
   const file=this.files[0];
   if(!file)return;
+
   if(!file.type.startsWith("image/")){
     alert("Please select an image.");
     return;
@@ -210,8 +253,10 @@ upload.addEventListener("change",function(){
 
 function drawPhoto(){
   if(!imageReady)return;
+
   const w=original.naturalWidth;
   const h=original.naturalHeight;
+
   canvas.width=w;
   canvas.height=h;
 
@@ -222,6 +267,7 @@ function drawPhoto(){
 
   ctx.drawImage(original,0,0,w,h);
   ctx.filter="none";
+
   photo.src=canvas.toDataURL("image/png");
 
   document.getElementById("bv").textContent=bright.value;
@@ -245,13 +291,14 @@ function downloadPhoto(){
     alert("Please upload a photo first.");
     return;
   }
+
   const link=document.createElement("a");
   link.download="finframe-enhanced.png";
   link.href=canvas.toDataURL("image/png");
   link.click();
 }
 
-/* PRODUCT VISUALS STUDIO */
+/* PRODUCT VISUALS */
 document.getElementById("productUpload").addEventListener("change",function(){
   const file=this.files[0];
   if(!file)return;
@@ -306,7 +353,6 @@ function drawProduct(){
   const px=(1000-w)/2;
   const py=100+(650-h)/2;
 
-  // Product shadow
   x.save();
   x.shadowColor="rgba(0,0,0,0.35)";
   x.shadowBlur=shadow;
@@ -314,8 +360,8 @@ function drawProduct(){
   x.drawImage(productImage,px,py,w,h);
   x.restore();
 
-  // Product name
   const name=document.getElementById("productName").value.trim();
+
   if(name){
     x.fillStyle=textColor;
     x.font="bold 52px Arial";
@@ -323,8 +369,8 @@ function drawProduct(){
     x.fillText(name,500,850,900);
   }
 
-  // Tagline
   const tagline=document.getElementById("productTagline").value.trim();
+
   if(tagline){
     x.fillStyle=textColor;
     x.font="28px Arial";
@@ -341,16 +387,96 @@ document.getElementById("shadowAmount").addEventListener("input",function(){
 });
 
 function downloadProduct(){
-  const c=document.getElementById("productCanvas");
   if(!productImage){
     alert("Please upload a product photo first.");
     return;
   }
-  if(!c.width){
-    drawProduct();
-  }
+
+  const c=document.getElementById("productCanvas");
+  if(!c.width)drawProduct();
+
   const link=document.createElement("a");
   link.download="finframe-product-design.png";
+  link.href=c.toDataURL("image/png");
+  link.click();
+}
+
+/* POSTER MAKER */
+document.getElementById("posterUpload").addEventListener("change",function(){
+  const file=this.files[0];
+  if(!file)return;
+
+  if(!file.type.startsWith("image/")){
+    alert("Please select an image.");
+    return;
+  }
+
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=new Image();
+    img.onload=function(){
+      posterImage=img;
+      createPoster();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+function createPoster(){
+  if(!posterImage){
+    document.getElementById("posterStatus").textContent=
+      "Please upload an image first.";
+    return;
+  }
+
+  const c=document.getElementById("posterCanvas");
+  const x=c.getContext("2d");
+
+  c.width=1000;
+  c.height=1200;
+
+  x.fillStyle=document.getElementById("posterBg").value;
+  x.fillRect(0,0,1000,1200);
+
+  const scale=Math.min(850/posterImage.width,760/posterImage.height);
+  const w=posterImage.width*scale;
+  const h=posterImage.height*scale;
+
+  x.drawImage(posterImage,(1000-w)/2,70,w,h);
+
+  const title=document.getElementById("posterTitle").value.trim();
+  const subtitle=document.getElementById("posterSubtitle").value.trim();
+  const textColor=document.getElementById("posterText").value;
+
+  x.fillStyle=textColor;
+  x.textAlign="center";
+
+  if(title){
+    x.font="bold 58px Arial";
+    x.fillText(title,500,970,920);
+  }
+
+  if(subtitle){
+    x.font="32px Arial";
+    x.fillText(subtitle,500,1050,920);
+  }
+
+  document.getElementById("posterStatus").textContent=
+    "✨ Poster created! Ready to download.";
+}
+
+function downloadPoster(){
+  if(!posterImage){
+    alert("Please upload an image first.");
+    return;
+  }
+
+  const c=document.getElementById("posterCanvas");
+  if(!c.width)createPoster();
+
+  const link=document.createElement("a");
+  link.download="finframe-poster.png";
   link.href=c.toDataURL("image/png");
   link.click();
 }
