@@ -240,6 +240,15 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  .mobile-nav button span{display:block;font-size:19px;margin-bottom:3px}
  .card{padding:14px}
 }
+
+/* Project Builder workspace */
+.builder-workspace{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.builder-panel{background:#101020;border:1px solid var(--border);border-radius:13px;padding:13px;min-width:0}
+.builder-panel textarea{min-height:330px;font-family:ui-monospace,monospace;font-size:12px;line-height:1.5;white-space:pre;tab-size:2}
+.builder-frame{width:100%;height:390px;border:1px solid var(--border);border-radius:10px;background:white}
+.builder-note{font-size:12px;color:var(--muted);line-height:1.5}
+.builder-status{font-size:13px;color:#cdbaff;margin-top:9px;min-height:20px}
+@media(max-width:760px){.builder-workspace{grid-template-columns:1fr}.builder-panel textarea{min-height:260px}.builder-frame{height:340px}}
 </style>
 </head>
 <body>
@@ -362,20 +371,34 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  </section>
 
  <section id="builder">
-  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Create a simple project plan and preview.</p></div>
+  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Describe a website, generate starter code, edit it and preview it live.</p></div>
   <div class="card">
    <label>Choose project type</label>
-   <select id="projectType"><option>Website</option><option>Android App</option><option>Game</option></select>
+   <select id="projectType"><option>Website</option><option>Android App (HTML prototype)</option><option>Game (HTML prototype)</option></select>
    <label>Project name</label>
    <input id="projectName" placeholder="My Creative Project">
    <label>Describe your project idea</label>
-   <textarea id="projectIdea" placeholder="Describe what you want to build..."></textarea>
+   <textarea id="projectIdea" placeholder="Example: Make a beautiful shopping website with product cards, search and an add-to-cart button..."></textarea>
    <div class="actions">
-    <button onclick="buildProject()">✨ Create Preview</button>
+    <button onclick="buildProject()">✨ Generate Starter Code</button>
     <button class="secondary-btn" onclick="clearProject()">Clear</button>
    </div>
-   <h3>Project Preview</h3>
-   <div class="preview" id="projectOutput">Your project preview will appear here.</div>
+   <p class="builder-note">This first version creates editable browser-based starter code from your description. It is not connected to a cloud AI model yet, so it cannot understand arbitrary prompts or rewrite code conversationally. Never put private API keys in this public website.</p>
+   <div class="builder-workspace">
+    <div class="builder-panel">
+     <h3>🧩 Source Code</h3>
+     <textarea id="projectCode" spellcheck="false" placeholder="Generated HTML code will appear here..."></textarea>
+     <div class="actions">
+      <button onclick="refreshProjectPreview()">▶ Update Preview</button>
+      <button class="secondary-btn" onclick="downloadProjectCode()">⬇ Download HTML</button>
+     </div>
+    </div>
+    <div class="builder-panel">
+     <h3>🌐 Live Preview</h3>
+     <iframe class="builder-frame" id="projectFrame" title="Generated website preview" sandbox="allow-scripts"></iframe>
+     <div class="builder-status" id="projectStatus">Describe a project and tap Generate Starter Code.</div>
+    </div>
+   </div>
   </div>
  </section>
 
@@ -623,21 +646,52 @@ function renderRecent(){
  });
 }
 
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function makeStarterWebsite(name,idea,type){
+ const safeName=escapeHTML(name);
+ const safeIdea=escapeHTML(idea||'A fresh project made with FinFrame AI Lab.');
+ const isGame=type.toLowerCase().includes('game');
+ const isApp=type.toLowerCase().includes('app');
+ const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
+ const action=isGame?'Start playing':(isApp?'Get started':'Explore products');
+ const cards=isGame
+ ? '<article class="card"><h2>🎯 Quick Challenge</h2><p>Tap the button and see your score grow.</p><button id="play">Tap to score: <b id="score">0</b></button></article>'
+ : '<article class="card"><div class="emoji">✨</div><h2>Beautifully simple</h2><p>Make your idea easy to explore.</p></article><article class="card"><div class="emoji">🚀</div><h2>Made for your goals</h2><p>Customize this starter to fit your project.</p></article><article class="card"><div class="emoji">💜</div><h2>Ready to grow</h2><p>Add your own content, pages and features.</p></article>';
+ return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeName+'</title><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#211b35}.nav{display:flex;justify-content:space-between;align-items:center;padding:18px max(5%,calc((100% - 1050px)/2));background:#fff}.nav b{font-size:20px}.nav a{color:#6841c6;text-decoration:none}.hero{padding:75px 20px;text-align:center;background:linear-gradient(135deg,#6d49ce,#e66ac1);color:white}.hero h1{font-size:clamp(32px,6vw,58px);margin:0 0 15px}.hero p{max-width:650px;margin:0 auto 25px;line-height:1.6}.btn,button{display:inline-block;background:#fff;color:#5732b0;border:0;border-radius:12px;padding:13px 20px;font-weight:bold;text-decoration:none;cursor:pointer}.wrap{max-width:1050px;margin:35px auto;padding:0 18px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;padding:24px;border-radius:18px;box-shadow:0 8px 30px #35205c12}.emoji{font-size:30px}footer{text-align:center;padding:30px;color:#746b88}</style></head><body><nav class="nav"><b>'+safeName+'</b><a href="#about">About</a></nav><header class="hero"><h1>'+title+'</h1><p>'+safeIdea+'</p><a class="btn" href="#features">'+action+'</a></header><main class="wrap" id="features"><div class="cards">'+cards+'</div><section class="card" id="about" style="margin-top:18px"><h2>About this project</h2><p>Built with an editable FinFrame AI Lab starter template.</p></section></main><footer>Made with care · '+safeName+'</footer><script>const b=document.getElementById("play");if(b)b.onclick=()=>{const n=document.getElementById("score");n.textContent=Number(n.textContent)+1};<\/script></body></html>';
+}
 function buildProject(){
  const type=$('projectType').value;
  const name=$('projectName').value.trim()||'My Project';
  const idea=$('projectIdea').value.trim();
- $('projectOutput').textContent=
- 'PROJECT PREVIEW\n\nName: '+name+
- '\nType: '+type+
- '\n\nProject idea:\n'+(idea||'No description added yet.')+
- '\n\nSuggested next steps:\n1. Plan the design.\n2. Create the main features.\n3. Test the project.\n\nNote: This is a text preview, not an automatically generated app.';
+ $('projectCode').value=makeStarterWebsite(name,idea,type);
+ refreshProjectPreview();
+ $('projectStatus').textContent='Starter code generated. Edit the code and tap Update Preview.';
  saveRecent('builder');
+}
+function refreshProjectPreview(){
+ const code=$('projectCode').value;
+ if(!code.trim()){$('projectStatus').textContent='Generate or paste HTML code first.';return}
+ $('projectFrame').srcdoc=code;
+ $('projectStatus').textContent='Preview updated from the current source code.';
+}
+function downloadProjectCode(){
+ const code=$('projectCode').value;
+ if(!code.trim()){$('projectStatus').textContent='Generate code before downloading.';return}
+ const blob=new Blob([code],{type:'text/html;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;a.download=(($('projectName').value.trim()||'finframe-project').replace(/[^a-z0-9-_]+/gi,'-'))+'.html';
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ $('projectStatus').textContent='HTML file download started.';
 }
 function clearProject(){
  $('projectName').value='';
  $('projectIdea').value='';
- $('projectOutput').textContent='Your project preview will appear here.';
+ $('projectCode').value='';
+ $('projectFrame').srcdoc='';
+ $('projectStatus').textContent='Describe a project and tap Generate Starter Code.';
 }
 
 function loadImage(file,callback){
