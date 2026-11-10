@@ -69,6 +69,8 @@ button{cursor:pointer}
  backdrop-filter:blur(12px);
 }
 .top-title{font-weight:bold;font-size:15px}
+.menu-toggle{display:none}
+@media(max-width:650px){.menu-toggle{display:inline-block;margin-right:9px}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}}
 .top-actions{display:flex;gap:9px;align-items:center}
 .icon-btn{
  background:var(--panel2);border:1px solid var(--border);
@@ -227,7 +229,8 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:650px){
- .sidebar{display:none}
+ .sidebar{display:flex;left:-270px;width:250px;transition:left .25s;box-shadow:12px 0 35px #0008}
+ .sidebar.mobile-open{left:0}
  .main-area{margin-left:0}
  .topbar{padding:0 13px;height:58px}
  .content{padding:17px 13px 100px}
@@ -291,6 +294,7 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
 
 <div class="main-area">
  <div class="topbar">
+  <button class="icon-btn menu-toggle" aria-label="Open menu" onclick="toggleMobileMenu()">☰</button>
   <div class="top-title" id="topTitle">✨ FinFrame AI Lab</div>
   <div class="top-actions">
    <button class="icon-btn" onclick="show('home')">⌂ Home</button>
@@ -627,7 +631,14 @@ const pageNames={
  privacy:'🔐 Privacy & Security'
 };
 
+function toggleMobileMenu(){
+ const side=document.querySelector('.sidebar');
+ if(side)side.classList.toggle('mobile-open');
+}
+
 function show(id){
+ const side=document.querySelector('.sidebar');
+ if(side)side.classList.remove('mobile-open');
  document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
  const target=$(id);
  if(!target)return;
