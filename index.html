@@ -188,6 +188,15 @@ canvas{
  border-radius:12px;padding:14px;min-height:65px;
  white-space:pre-wrap;overflow-wrap:anywhere;
 }
+.tryon-upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.tryon-upload-preview{background:#0d0d19;border:1px solid var(--border);border-radius:12px;padding:10px;min-width:0}
+.tryon-upload-preview img{display:block;width:100%;height:180px;object-fit:contain;border-radius:8px;background:#080811}
+.tryon-upload-preview small{display:block;color:var(--muted);margin-top:7px;overflow-wrap:anywhere}
+.tryon-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}
+.tryon-controls label{font-size:13px}
+#tryCanvas{width:100%;max-width:520px}
+@media(max-width:520px){.tryon-upload-grid,.tryon-controls{grid-template-columns:1fr}.tryon-upload-preview img{height:145px}}
+
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .tool{
  background:var(--panel2);padding:15px;
@@ -541,15 +550,28 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  <section id="tryon">
   <div class="card">
    <h2>👗 Virtual Try-On Preview</h2>
-   <p>This is a basic image composition tool, not AI clothing fitting.</p>
-   <label>Upload portrait image</label><input type="file" id="personFile" accept="image/*">
-   <label>Upload clothing image</label><input type="file" id="clothFile" accept="image/*">
+   <p>Make a manual outfit mock-up by placing a clothing image over a portrait. This tool does not automatically fit clothes or remove image backgrounds.</p>
+   <label>1. Upload portrait image</label><input type="file" id="personFile" accept="image/*">
+   <label>2. Upload clothing image (a transparent PNG works best)</label><input type="file" id="clothFile" accept="image/*">
+   <div class="tryon-upload-grid">
+    <div class="tryon-upload-preview"><img id="personPreview" alt="Portrait preview"><small>Portrait preview</small></div>
+    <div class="tryon-upload-preview"><img id="clothPreview" alt="Clothing preview"><small>Clothing preview</small></div>
+   </div>
+   <h3>3. Adjust clothing position</h3>
+   <div class="tryon-controls">
+    <div><label>Horizontal position: <span id="tryXVal">50</span>%</label><input type="range" id="tryX" min="0" max="100" value="50"></div>
+    <div><label>Vertical position: <span id="tryYVal">55</span>%</label><input type="range" id="tryY" min="0" max="100" value="55"></div>
+    <div><label>Clothing width: <span id="tryWVal">55</span>%</label><input type="range" id="tryW" min="10" max="100" value="55"></div>
+    <div><label>Clothing height: <span id="tryHVal">55</span>%</label><input type="range" id="tryH" min="10" max="100" value="55"></div>
+    <div><label>Opacity: <span id="tryOpacityVal">85</span>%</label><input type="range" id="tryOpacity" min="10" max="100" value="85"></div>
+   </div>
    <canvas id="tryCanvas" width="800" height="900"></canvas>
    <div class="actions">
-    <button onclick="createTryon()">✨ Create Composition</button>
-    <button class="secondary-btn" onclick="downloadCanvas('tryCanvas','finframe-tryon.png')">⬇ Download</button>
+    <button onclick="createTryon()">✨ Update Preview</button>
+    <button class="secondary-btn" onclick="resetTryon()">↩ Reset Position</button>
+    <button class="secondary-btn" onclick="downloadTryon()">⬇ Download PNG</button>
    </div>
-   <p id="tryStatus">Upload both images to begin.</p>
+   <p id="tryStatus" role="status" aria-live="polite">Upload both images to start. Adjust the sliders, then update the preview.</p>
   </div>
  </section>
 
@@ -1019,29 +1041,65 @@ async function makeVideo(){
  saveRecent('video');
 }
 
-let personImg=null,clothImg=null;
+let personImg=null,clothImg=null,personPreviewUrl=null,clothPreviewUrl=null;
+function updateTryonPreview(file,img,type){
+ const preview=$(type==='person'?'personPreview':'clothPreview');
+ const oldUrl=type==='person'?personPreviewUrl:clothPreviewUrl;
+ if(oldUrl)URL.revokeObjectURL(oldUrl);
+ const url=URL.createObjectURL(file);
+ if(type==='person')personPreviewUrl=url;else clothPreviewUrl=url;
+ preview.src=url;
+}
 $('personFile').addEventListener('change',e=>{
- loadImage(e.target.files[0],img=>{
-  personImg=img;$('tryStatus').textContent='Portrait loaded.';
+ const file=e.target.files[0];
+ loadImage(file,img=>{
+  personImg=img;updateTryonPreview(file,img,'person');
+  $('tryStatus').textContent='Portrait loaded. Now upload a clothing image.';
+  createTryon();
  });
 });
 $('clothFile').addEventListener('change',e=>{
- loadImage(e.target.files[0],img=>{
-  clothImg=img;$('tryStatus').textContent='Clothing image loaded.';
+ const file=e.target.files[0];
+ loadImage(file,img=>{
+  clothImg=img;updateTryonPreview(file,img,'cloth');
+  $('tryStatus').textContent='Clothing image loaded. Adjust its position and size.';
+  createTryon();
+ });
+});
+['tryX','tryY','tryW','tryH','tryOpacity'].forEach(id=>{
+ $(id).addEventListener('input',()=>{
+  $(id+'Val').textContent=$(id).value;
+  if(personImg&&clothImg)createTryon();
  });
 });
 function createTryon(){
  if(!personImg||!clothImg){
-  $('tryStatus').textContent='Please upload both images.';return;
+  $('tryStatus').textContent='Please upload both a portrait and a clothing image.';return;
  }
  const c=$('tryCanvas'),ctx=c.getContext('2d');
- ctx.fillStyle='#18152d';ctx.fillRect(0,0,c.width,c.height);
- fitImage(ctx,personImg,0,0,800,900);
- ctx.save();ctx.globalAlpha=.85;
- fitImage(ctx,clothImg,210,220,380,450);
+ ctx.clearRect(0,0,c.width,c.height);
+ ctx.fillStyle='#111020';ctx.fillRect(0,0,c.width,c.height);
+ fitImage(ctx,personImg,0,0,c.width,c.height);
+ const w=c.width*Number($('tryW').value)/100;
+ const h=c.height*Number($('tryH').value)/100;
+ const centerX=c.width*Number($('tryX').value)/100;
+ const centerY=c.height*Number($('tryY').value)/100;
+ ctx.save();
+ ctx.globalAlpha=Number($('tryOpacity').value)/100;
+ fitImage(ctx,clothImg,centerX-w/2,centerY-h/2,w,h);
  ctx.restore();
- $('tryStatus').textContent='Composition created. This is not automatic AI fitting.';
+ $('tryStatus').textContent='Preview updated. This is a manual overlay, not automatic AI clothing fitting. Transparent clothing PNGs usually look cleaner.';
  saveRecent('tryon');
+}
+function resetTryon(){
+ $('tryX').value=50;$('tryY').value=55;$('tryW').value=55;$('tryH').value=55;$('tryOpacity').value=85;
+ ['tryX','tryY','tryW','tryH','tryOpacity'].forEach(id=>$(id+'Val').textContent=$(id).value);
+ if(personImg&&clothImg)createTryon();
+ else $('tryStatus').textContent='Position reset. Upload both images to continue.';
+}
+function downloadTryon(){
+ if(!personImg||!clothImg){$('tryStatus').textContent='Upload both images before downloading.';return}
+ downloadCanvas('tryCanvas','finframe-tryon-preview.png');
 }
 
 let score=0;
