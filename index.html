@@ -5,37 +5,108 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FinFrame AI Lab</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080c18;color:#f4f2ff;font-family:Arial,sans-serif}
-header{padding:20px;background:#11182a;border-bottom:1px solid #34304f}
+body{
+  margin:0;
+  background:#080c18;
+  color:#f4f2ff;
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:20px;
+  background:#11182a;
+  border-bottom:1px solid #34304f;
+}
 h1{color:#a998ff;margin:0}
 main{max-width:900px;margin:auto;padding:16px}
-.card{background:#141c30;border:1px solid #303b59;border-radius:16px;padding:18px;margin:14px 0}
+.card{
+  background:#141c30;
+  border:1px solid #303b59;
+  border-radius:16px;
+  padding:18px;
+  margin:14px 0;
+}
 p{color:#a6aec5}
-button{background:#7763ed;color:white;border:0;padding:12px 15px;border-radius:10px;margin:5px;cursor:pointer}
-input,textarea{width:100%;padding:12px;margin:8px 0;background:#080f20;color:white;border:1px solid #465171;border-radius:9px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
-.tool{background:#0e172a;border:1px solid #35415e;padding:15px;border-radius:12px;cursor:pointer}
-#preview{background:#f6f5ff;color:#202033;padding:15px;border-radius:10px;white-space:pre-wrap}
-#photo{display:block;max-width:100%;max-height:400px;margin:15px auto;border-radius:10px}
+button{
+  background:#7763ed;
+  color:white;
+  border:0;
+  padding:12px 15px;
+  border-radius:10px;
+  margin:5px;
+  cursor:pointer;
+}
+input,textarea{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  background:#080f20;
+  color:white;
+  border:1px solid #465171;
+  border-radius:9px;
+}
+input[type="color"]{height:48px}
+input[type="range"]{padding:0}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:10px;
+}
+.tool{
+  background:#0e172a;
+  border:1px solid #35415e;
+  padding:15px;
+  border-radius:12px;
+  cursor:pointer;
+}
+#preview{
+  background:#f6f5ff;
+  color:#202033;
+  padding:15px;
+  border-radius:10px;
+  white-space:pre-wrap;
+  min-height:50px;
+}
+#photo{
+  display:block;
+  max-width:100%;
+  max-height:400px;
+  margin:15px auto;
+  border-radius:10px;
+}
+canvas{
+  max-width:100%;
+}
 label{display:block;margin-top:12px}
+footer{
+  text-align:center;
+  padding:20px;
+  color:#a6aec5;
+}
 </style>
 </head>
+
 <body>
+
 <header>
 <h1>✨ FinFrame AI Lab</h1>
 <p>Build • Create • Design • Imagine</p>
 </header>
+
 <main>
+
 <section class="card">
 <h2>🚀 AI Project Builder</h2>
 <p>Choose your project type</p>
+
 <div class="grid">
 <button onclick="setMode('Website')">🌐 Website</button>
 <button onclick="setMode('Android App')">📱 Android App</button>
 <button onclick="setMode('Game')">🎮 Game Studio</button>
 </div>
+
 <h3 id="mode">Selected: Website</h3>
 <textarea id="prompt" placeholder="Describe your project idea..."></textarea>
 <button onclick="createPreview()">Create Preview</button>
@@ -45,16 +116,22 @@ label{display:block;margin-top:12px}
 <section class="card">
 <h2>📸 Photo Enhancer</h2>
 <p>Upload a photo and adjust its appearance.</p>
+
 <input type="file" id="upload" accept="image/*">
 <img id="photo" hidden alt="Photo preview">
+
 <label>Brightness: <span id="bv">100</span>%</label>
 <input type="range" id="bright" min="0" max="200" value="100">
+
 <label>Contrast: <span id="cv">100</span>%</label>
 <input type="range" id="contrast" min="0" max="200" value="100">
+
 <label>Saturation: <span id="sv">100</span>%</label>
 <input type="range" id="saturate" min="0" max="200" value="100">
+
 <button onclick="resetPhoto()">Reset</button>
 <button onclick="downloadPhoto()">Download Photo</button>
+
 <canvas id="canvas" hidden></canvas>
 <p id="photoStatus">Upload a photo to begin.</p>
 </section>
@@ -77,7 +154,10 @@ label{display:block;margin-top:12px}
 <canvas id="productCanvas" style="width:100%;margin-top:15px;border-radius:12px;"></canvas>
 <p id="productStatus">Upload a product photo to begin.</p>
 </section>
+
+<section class="card">
 <h2>🧰 Creative Studio</h2>
+
 <div class="grid">
 <div class="tool" onclick="showTool('Virtual Try-On')">👗 Virtual Try-On</div>
 <div class="tool" onclick="showTool('4K Visuals')">💎 4K Visuals</div>
@@ -87,97 +167,215 @@ label{display:block;margin-top:12px}
 <div class="tool" onclick="showTool('Voiceover')">🎙️ Voiceover</div>
 <div class="tool" onclick="showTool('Game Studio')">🎮 Game Studio</div>
 </div>
+
 <p id="toolInfo">Choose a tool.</p>
 </section>
+
 <footer>FinFrame AI Lab • Free Prototype • ❤️</footer>
+
 </main>
+
 <script>
 let selected="Website";
 let original=null;
 let imageReady=false;
+let productImage=null;
+
+/* PROJECT BUILDER */
 
 function setMode(mode){
-selected=mode;
-document.getElementById("mode").textContent="Selected: "+mode;
+  selected=mode;
+  document.getElementById("mode").textContent="Selected: "+mode;
 }
 
 function createPreview(){
-let value=document.getElementById("prompt").value.trim();
-if(!value){alert("Describe your project first.");return;}
-document.getElementById("preview").textContent=
-"PROJECT: "+selected+"\n\nIDEA:\n"+value+
-"\n\nBasic concept preview created.";
+  let value=document.getElementById("prompt").value.trim();
+
+  if(!value){
+    alert("Describe your project first.");
+    return;
+  }
+
+  document.getElementById("preview").textContent=
+    "PROJECT: "+selected+"\n\nIDEA:\n"+value+
+    "\n\nBasic concept preview created.";
 }
 
 function showTool(name){
-document.getElementById("toolInfo").textContent=
-name+" selected. More features coming soon.";
+  document.getElementById("toolInfo").textContent=
+    name+" selected. More features coming soon.";
 }
+
+/* PHOTO ENHANCER */
 
 const upload=document.getElementById("upload");
 const photo=document.getElementById("photo");
 const canvas=document.getElementById("canvas");
 const ctx=canvas.getContext("2d");
 
-upload.addEventListener("change",function(){
-const file=this.files[0];
-if(!file)return;
-if(!file.type.startsWith("image/"))return;
-const reader=new FileReader();
-reader.onload=function(e){
-const img=new Image();
-img.onload=function(){
-original=img;
-imageReady=true;
-photo.hidden=false;
-drawPhoto();
-document.getElementById("photoStatus").textContent="Photo ready to edit!";
-};
-img.src=e.target.result;
-};
-reader.readAsDataURL(file);
-});
-
-function drawPhoto(){
-if(!imageReady)return;
-const w=original.naturalWidth;
-const h=original.naturalHeight;
-canvas.width=w;
-canvas.height=h;
-ctx.filter="brightness("+bright.value+"%) contrast("+contrast.value+"%) saturate("+saturate.value+"%)";
-ctx.drawImage(original,0,0,w,h);
-ctx.filter="none";
-photo.src=canvas.toDataURL("image/png");
-document.getElementById("bv").textContent=bright.value;
-document.getElementById("cv").textContent=contrast.value;
-document.getElementById("sv").textContent=saturate.value;
-}
-
 const bright=document.getElementById("bright");
 const contrast=document.getElementById("contrast");
 const saturate=document.getElementById("saturate");
 
+upload.addEventListener("change",function(){
+  const file=this.files[0];
+  if(!file)return;
+
+  if(!file.type.startsWith("image/")){
+    alert("Please select an image.");
+    return;
+  }
+
+  const reader=new FileReader();
+
+  reader.onload=function(e){
+    const img=new Image();
+
+    img.onload=function(){
+      original=img;
+      imageReady=true;
+      photo.hidden=false;
+      drawPhoto();
+      document.getElementById("photoStatus").textContent="Photo ready to edit!";
+    };
+
+    img.src=e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+function drawPhoto(){
+  if(!imageReady)return;
+
+  const w=original.naturalWidth;
+  const h=original.naturalHeight;
+
+  canvas.width=w;
+  canvas.height=h;
+
+  ctx.filter=
+    "brightness("+bright.value+"%) "+
+    "contrast("+contrast.value+"%) "+
+    "saturate("+saturate.value+"%)";
+
+  ctx.drawImage(original,0,0,w,h);
+  ctx.filter="none";
+
+  photo.src=canvas.toDataURL("image/png");
+
+  document.getElementById("bv").textContent=bright.value;
+  document.getElementById("cv").textContent=contrast.value;
+  document.getElementById("sv").textContent=saturate.value;
+}
+
 [bright,contrast,saturate].forEach(function(control){
-control.addEventListener("input",drawPhoto);
+  control.addEventListener("input",drawPhoto);
 });
 
 function resetPhoto(){
-bright.value=100;
-contrast.value=100;
-saturate.value=100;
-drawPhoto();
+  bright.value=100;
+  contrast.value=100;
+  saturate.value=100;
+  drawPhoto();
 }
 
 function downloadPhoto(){
-if(!imageReady){
-alert("Please upload a photo first.");
-return;
+  if(!imageReady){
+    alert("Please upload a photo first.");
+    return;
+  }
+
+  const link=document.createElement("a");
+  link.download="finframe-enhanced.png";
+  link.href=canvas.toDataURL("image/png");
+  link.click();
 }
-const link=document.createElement("a");
-link.download="finframe-enhanced.png";
-link.href=canvas.toDataURL("image/png");
-link.click();
+
+/* PRODUCT VISUALS STUDIO */
+
+document.getElementById("productUpload").addEventListener("change",function(){
+  const file=this.files[0];
+  if(!file)return;
+
+  if(!file.type.startsWith("image/")){
+    alert("Please select an image.");
+    return;
+  }
+
+  const reader=new FileReader();
+
+  reader.onload=function(e){
+    const img=new Image();
+
+    img.onload=function(){
+      productImage=img;
+      drawProduct();
+    };
+
+    img.src=e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+function drawProduct(){
+  if(!productImage){
+    document.getElementById("productStatus").textContent=
+      "Please upload a product photo first.";
+    return;
+  }
+
+  const c=document.getElementById("productCanvas");
+  const x=c.getContext("2d");
+
+  c.width=1000;
+  c.height=1000;
+
+  x.fillStyle=document.getElementById("bgColor").value;
+  x.fillRect(0,0,1000,1000);
+
+  const scale=Math.min(
+    760/productImage.width,
+    650/productImage.height
+  );
+
+  const w=productImage.width*scale;
+  const h=productImage.height*scale;
+
+  x.drawImage(
+    productImage,
+    (1000-w)/2,
+    (850-h)/2,
+    w,
+    h
+  );
+
+  const name=document.getElementById("productName").value.trim();
+
+  if(name){
+    x.fillStyle="#202033";
+    x.font="bold 48px Arial";
+    x.textAlign="center";
+    x.fillText(name,500,930);
+  }
+
+  document.getElementById("productStatus").textContent=
+    "Design created! Ready to download.";
+}
+
+function downloadProduct(){
+  if(!productImage){
+    alert("Please upload a product photo first.");
+    return;
+  }
+
+  const link=document.createElement("a");
+  link.download="finframe-product-design.png";
+  link.href=document.getElementById("productCanvas").toDataURL("image/png");
+  link.click();
 }
 </script>
+
 </body>
 </html>
