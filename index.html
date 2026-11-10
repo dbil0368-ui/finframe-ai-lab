@@ -73,7 +73,7 @@ button{cursor:pointer}
 }
 .top-title{font-weight:bold;font-size:15px}
 .menu-toggle{display:none}
-@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}body.menu-open{overflow:hidden;overscroll-behavior:none}body.menu-open::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:40}.sidebar.mobile-open{z-index:50;overscroll-behavior:contain;touch-action:pan-y}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.sidebar{display:flex;position:fixed;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}.sidebar.mobile-open{transform:translateX(0)}.main-area{margin-left:0}}
+@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}body.menu-open{position:fixed!important;overflow:hidden!important;overscroll-behavior:none;width:100%;height:100%;touch-action:none}body.menu-open::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:1000;touch-action:pan-y}.sidebar{display:flex;position:fixed!important;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;height:100dvh;overflow-y:auto;overscroll-behavior:contain;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:1001;touch-action:pan-y}.sidebar.mobile-open{transform:translateX(0)}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.main-area{margin-left:0}}
 .top-actions{display:flex;gap:9px;align-items:center}
 .icon-btn{
  background:var(--panel2);border:1px solid var(--border);
@@ -778,22 +778,42 @@ window.vyComment=function(btn){const box=btn.closest('.vy-card').querySelector('
 window.vyUpload=function(){const file=$('vyVideoFile').files[0];const caption=$('vyCaptionInput').value.trim();const status=$('vyUploadStatus');if(!file){status.textContent='Please choose a video from your phone first.';return;}if(!file.type.startsWith('video/')){status.textContent='Please select a video file.';return;}const url=URL.createObjectURL(file);const card=document.createElement('article');card.className='vy-card';const head=document.createElement('div');head.className='vy-head';head.innerHTML='<div class="vy-avatar">Y</div><strong>your_profile · just now</strong>';const video=document.createElement('video');video.controls=true;video.playsInline=true;video.src=url;video.style.cssText='display:block;width:100%;max-height:560px;background:#000';const text=document.createElement('div');text.className='vy-caption';text.textContent=caption||'My first VYBORA Reel ✨';card.append(head,video,text);$('vyUserReels').prepend(card);$('vyPostCount').textContent=String((Number($('vyPostCount').textContent)||0)+1);status.textContent='Your Reel preview has been added below. It is not uploaded to a shared server yet.';};
 window.vyExplore=function(){const el=$('vyTrends');if(el)el.textContent='#VYBORA  #DailyReels  #Travel  #Music  #Creators  #Style';};
 window.vyEditProfile=function(){const name=prompt('Choose your profile name','your_profile');if(name&&name.trim())document.querySelector('#vybora .vy-side .vy-head strong').textContent=name.trim();};
+window.closeMobileMenu=function(){
+ const side=document.querySelector('.sidebar');
+ const menuButton=document.querySelector('.menu-toggle');
+ if(!document.body.classList.contains('menu-open'))return;
+ const savedY=Number(document.body.dataset.menuScrollY||0);
+ if(side)side.classList.remove('mobile-open');
+ document.body.classList.remove('menu-open');
+ document.body.classList.remove('menu-scroll-lock');
+ document.body.style.top='';
+ document.body.style.left='';
+ document.body.style.right='';
+ document.body.style.width='';
+ if(menuButton)menuButton.setAttribute('aria-expanded','false');
+ window.scrollTo(0,savedY);
+};
 window.toggleMobileMenu=function(){
  const side=document.querySelector('.sidebar');
  if(!side)return;
- const opened=side.classList.toggle('mobile-open');
- document.body.classList.toggle('menu-open',opened);
+ if(document.body.classList.contains('menu-open')){window.closeMobileMenu();return;}
+ const y=window.scrollY||window.pageYOffset||0;
+ document.body.dataset.menuScrollY=String(y);
+ document.body.style.top='-'+y+'px';
+ document.body.style.left='0';
+ document.body.style.right='0';
+ document.body.style.width='100%';
+ document.body.classList.add('menu-scroll-lock','menu-open');
+ side.classList.add('mobile-open');
  const menuButton=document.querySelector('.menu-toggle');
- if(menuButton)menuButton.setAttribute('aria-expanded',opened?'true':'false');
+ if(menuButton)menuButton.setAttribute('aria-expanded','true');
 };
 document.addEventListener('click',function(event){
  const side=document.querySelector('.sidebar');
  const menuButton=document.querySelector('.menu-toggle');
  if(!side||!side.classList.contains('mobile-open'))return;
  if(side.contains(event.target)||(menuButton&&menuButton.contains(event.target)))return;
- side.classList.remove('mobile-open');
- document.body.classList.remove('menu-open');
- if(menuButton)menuButton.setAttribute('aria-expanded','false');
+ window.closeMobileMenu();
 });
 
 window.show=function(id){
@@ -806,11 +826,7 @@ window.show=function(id){
  });
  const title=document.getElementById('topTitle');
  if(title)title.textContent=pageNames[id]||'FinFrame AI Lab';
- const side=document.querySelector('.sidebar');
- if(side)side.classList.remove('mobile-open');
- document.body.classList.remove('menu-open');
- const menuButton=document.querySelector('.menu-toggle');
- if(menuButton)menuButton.setAttribute('aria-expanded','false');
+ if(document.body.classList.contains('menu-open'))window.closeMobileMenu();
  window.scrollTo({top:0,behavior:'auto'});
 };
 function openTool(id){
