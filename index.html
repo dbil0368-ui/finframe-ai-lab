@@ -6,49 +6,79 @@
 <title>FinFrame AI Lab</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#090d18;color:#fff;font-family:Arial,sans-serif}
-header{padding:22px;background:#111a2c;border-bottom:1px solid #29334a}
-h1{margin:0;color:#9b8cff}
-header p{color:#aab3c8}
-main{max-width:850px;margin:auto;padding:20px}
-.card{background:#141d30;border:1px solid #293653;border-radius:16px;padding:18px;margin:15px 0}
-button{background:#7764ed;color:white;border:0;padding:12px 17px;border-radius:9px;margin:5px;cursor:pointer}
-textarea{width:100%;height:120px;background:#080e1b;color:white;border:1px solid #485475;border-radius:10px;padding:12px}
-input{max-width:100%;color:white}
-.tag{color:#a99aff}
-#preview{background:white;color:#222;padding:18px;border-radius:10px;min-height:100px}
+body{margin:0;background:#080c18;color:#f4f2ff;font-family:Arial,sans-serif}
+header{padding:20px;background:#11182a;border-bottom:1px solid #34304f}
+header h1{color:#a998ff;margin:0}
+header p,.muted{color:#a6aec5}
+main{max-width:950px;margin:auto;padding:18px}
+.card{background:#141c30;border:1px solid #303b59;border-radius:17px;padding:18px;margin:14px 0}
+.hero{background:linear-gradient(135deg,#252052,#15253d)}
+h2{font-size:21px}
+h3{font-size:17px}
+button{background:#7763ed;color:white;border:0;padding:12px 15px;border-radius:10px;margin:5px 3px;font-weight:bold;cursor:pointer}
+button.secondary{background:#283550}
+button:active{transform:scale(.97)}
+textarea,input,select{width:100%;background:#080f20;color:white;border:1px solid #465171;border-radius:10px;padding:13px;margin:7px 0;font-size:15px}
+textarea{height:110px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tool{background:#0e172a;border:1px solid #35415e;padding:15px;border-radius:13px;cursor:pointer}
+.tool b{display:block;margin-bottom:8px}
+.tag{color:#b3a6ff;font-size:12px}
+#preview{background:#f6f5ff;color:#202033;padding:17px;border-radius:12px;min-height:110px;white-space:pre-wrap}
+footer{text-align:center;padding:25px;color:#909bb3}
 </style>
 </head>
 <body>
 <header>
 <h1>✨ FinFrame AI Lab</h1>
-<p>Your creative app, website and game studio</p>
+<p>Build • Create • Design • Imagine</p>
 </header>
 <main>
-<div class="card">
+<section class="card hero">
+<p class="tag">YOUR CREATIVE WORKSPACE</p>
 <h2>Welcome to FinFrame AI Lab</h2>
-<p class="tag">Build • Create • Preview</p>
-<p>This is your first free prototype.</p>
+<p>Create websites, Android app concepts, games and ecommerce content from one studio.</p>
+<p>🟢 Free Prototype Mode</p>
+</section>
+
+<section class="card">
+<h2>🚀 AI Project Builder</h2>
+<p class="muted">Choose your project type</p>
+<div class="grid">
+<button onclick="setMode('Website')">🌐 Website</button>
+<button onclick="setMode('Android App')">📱 Android App</button>
+<button onclick="setMode('2D / 3D Game')">🎮 Game Studio</button>
 </div>
-<div class="card">
-<h2>🚀 Project Builder</h2>
-<button onclick="setMode('Website')">Website</button>
-<button onclick="setMode('Android App')">Android App</button>
-<button onclick="setMode('Game')">Game</button>
 <h3 id="mode">Selected: Website</h3>
-<textarea id="prompt" placeholder="Describe what you want to create..."></textarea>
-<button onclick="createPreview()">Create Preview</button>
-</div>
-<div class="card">
-<h2>👁️ Live Preview</h2>
+<textarea id="prompt" placeholder="Describe your idea. Example: Build a fashion ecommerce website with product gallery..."></textarea>
+<button onclick="createPreview()">✨ Create Project Preview</button>
 <div id="preview">Your project preview will appear here.</div>
+<p class="muted">Note: This prototype creates a text preview. Real AI code generation is not connected yet.</p>
+</section>
+
+<section class="card">
+<h2>🧰 FinFrame Creative Studio</h2>
+<div class="grid">
+<div class="tool" onclick="openTool('AI Virtual Try-On')"><b>👗 Virtual Try-On</b><span class="tag">Coming Soon</span><p>Fashion model studio</p></div>
+<div class="tool" onclick="openTool('Product Photo Enhancer')"><b>📸 Photo Enhancer</b><span class="tag">Prototype</span><p>Photo adjustments</p></div>
+<div class="tool" onclick="openTool('4K Product Visuals')"><b>💎 4K Visuals</b><span class="tag">Prototype</span><p>Product image studio</p></div>
+<div class="tool" onclick="openTool('Promo Video Maker')"><b>🎬 Promo Videos</b><span class="tag">Coming Soon</span><p>Social media reels</p></div>
+<div class="tool" onclick="openTool('Poster & Thumbnail Maker')"><b>🖼️ Posters</b><span class="tag">Prototype</span><p>Marketing designs</p></div>
+<div class="tool" onclick="openTool('Captions & Hashtags')"><b>✍️ Captions</b><span class="tag">Prototype</span><p>Social media copy</p></div>
+<div class="tool" onclick="openTool('AI Voiceover')"><b>🎙️ Voiceover</b><span class="tag">Coming Soon</span><p>Voice studio</p></div>
+<div class="tool" onclick="openTool('Game Studio')"><b>🎮 Game Studio</b><span class="tag">Prototype</span><p>Game concepts</p></div>
 </div>
-<div class="card">
-<h2>🧰 Studio Tools</h2>
-<p>Code Editor • Project Gallery • AI Image Tools • Video Studio</p>
-<p class="tag">More features will be added step by step.</p>
-</div>
+<div id="toolInfo" class="muted">Select a studio tool to see its status.</div>
+</section>
+
+<section class="card">
+<h2>🗂️ My Workspace</h2>
+<p class="muted">Your project workspace is ready. Project saving and cloud history will be added later.</p>
+<button class="secondary" onclick="alert('Project Gallery is coming soon!')">Project Gallery</button>
+<button class="secondary" onclick="alert('Code Editor is coming soon!')">Code Editor</button>
+</section>
 </main>
+<footer>FinFrame AI Lab • Free Prototype • Made with ❤️</footer>
 <script>
 let selected="Website";
 function setMode(mode){
@@ -56,11 +86,15 @@ selected=mode;
 document.getElementById("mode").textContent="Selected: "+mode;
 }
 function createPreview(){
-const value=document.getElementById("prompt").value.trim();
+let value=document.getElementById("prompt").value.trim();
 if(!value){alert("Please describe your project first.");return;}
 document.getElementById("preview").textContent=
-"Project type: "+selected+" | Your idea: "+value+
-" | This is a basic preview, not an AI-generated app yet.";
+"PROJECT TYPE: "+selected+"\n\nYOUR IDEA:\n"+value+
+"\n\nStatus: Basic concept preview created.\nReal AI generation is not connected yet.";
+}
+function openTool(name){
+document.getElementById("toolInfo").textContent=
+name+" selected. This is the current prototype stage. More working features will be added step by step.";
 }
 </script>
 </body>
