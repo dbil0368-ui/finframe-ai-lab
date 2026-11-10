@@ -283,6 +283,9 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  <button class="side-btn" data-page="creative" onclick="show('creative')">🎨 &nbsp; Creative Studio</button>
  <button class="side-btn" data-page="game" onclick="show('game')">🎮 &nbsp; Game Studio</button>
  <button class="side-btn" data-page="privacy" onclick="show('privacy')">🔐 &nbsp; Privacy & Security</button>
+ <button class="side-btn" data-page="brandkit" onclick="show('brandkit')">🎨 &nbsp; Brand Kit</button>
+ <button class="side-btn" data-page="prompts" onclick="show('prompts')">✨ &nbsp; Prompt Library</button>
+ <button class="side-btn" data-page="templates" onclick="show('templates')">🧩 &nbsp; Template Gallery</button>
  <div class="sidebar-bottom">
   <div class="sidebar-note">
    <strong>✨ FinFrame Workspace</strong><br>
@@ -597,6 +600,40 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
   </div>
  </section>
 
+ 
+ <section id="brandkit">
+  <div class="page-title"><h2>🎨 Brand Kit</h2><p>Save your brand name, tagline and colors on this device.</p></div>
+  <div class="card">
+   <label>Brand name</label><input id="brandName" placeholder="My Brand">
+   <label>Tagline</label><input id="brandTagline" placeholder="A short line that describes your brand">
+   <div class="grid"><div><label>Primary color</label><input id="brandPrimary" type="color" value="#9b70ff"></div><div><label>Accent color</label><input id="brandAccent" type="color" value="#ef6bcb"></div></div>
+   <div class="actions"><button onclick="saveBrandKit()">💾 Save Brand Kit</button><button class="secondary-btn" onclick="loadBrandKit()">Load Saved</button><button class="secondary-btn" onclick="exportBrandKit()">⬇ Export JSON</button></div>
+   <p id="brandStatus" class="small" role="status">Your brand kit is stored only in this browser.</p>
+  </div>
+  <div class="card"><h3>Live preview</h3><div id="brandPreview" class="preview"><strong>Your Brand</strong><br>A short brand tagline</div></div>
+ </section>
+ <section id="prompts">
+  <div class="page-title"><h2>✨ Prompt Library</h2><p>Choose a starter prompt to send it to the home workspace.</p></div>
+  <div class="tool-grid">
+   <button class="tool-card" onclick="usePrompt('Build a modern responsive portfolio website with an about section, project gallery and contact form.')"><div class="tool-icon">🌐</div><strong>Portfolio Website</strong><span>Start a personal portfolio concept.</span></button>
+   <button class="tool-card" onclick="usePrompt('Design a premium product launch poster with a bold headline, product benefits and a clear call to action.')"><div class="tool-icon">🖼️</div><strong>Product Poster</strong><span>Plan a polished product promotion.</span></button>
+   <button class="tool-card" onclick="usePrompt('Create a simple mobile-friendly tapping game with a score counter, start button and reset button.')"><div class="tool-icon">🎮</div><strong>Mini Game</strong><span>Start a small game idea.</span></button>
+   <button class="tool-card" onclick="usePrompt('Create a clean online store layout with product cards, search, prices and a shopping cart preview.')"><div class="tool-icon">🛍️</div><strong>Online Store</strong><span>Sketch an e-commerce experience.</span></button>
+   <button class="tool-card" onclick="usePrompt('Write five engaging social media captions for a new brand launch in a friendly, confident tone.')"><div class="tool-icon">✍️</div><strong>Social Captions</strong><span>Generate caption ideas.</span></button>
+   <button class="tool-card" onclick="usePrompt('Create a landing page for a creative studio with a hero section, services, testimonials and contact details.')"><div class="tool-icon">🚀</div><strong>Studio Landing Page</strong><span>Outline a creative business site.</span></button>
+  </div>
+ </section>
+ <section id="templates">
+  <div class="page-title"><h2>🧩 Template Gallery</h2><p>Load a starter idea into Project Builder, then edit it.</p></div>
+  <div class="tool-grid">
+   <button class="tool-card" onclick="useTemplate('Personal Portfolio','A responsive portfolio with an introduction, skills, project cards and contact section.')"><div class="tool-icon">👤</div><strong>Personal Portfolio</strong><span>Showcase your work and skills.</span></button>
+   <button class="tool-card" onclick="useTemplate('Small Business Website','A business website with services, opening information, customer reviews and contact details.')"><div class="tool-icon">🏪</div><strong>Small Business</strong><span>Introduce a local business.</span></button>
+   <button class="tool-card" onclick="useTemplate('Online Store','A simple online store with product cards, prices, search and a cart demo.')"><div class="tool-icon">🛒</div><strong>Online Store</strong><span>Start a storefront prototype.</span></button>
+   <button class="tool-card" onclick="useTemplate('Restaurant Website','A restaurant website with menu highlights, opening hours, location and reservation contact.')"><div class="tool-icon">🍽️</div><strong>Restaurant</strong><span>Present a restaurant online.</span></button>
+   <button class="tool-card" onclick="useTemplate('Mini Browser Game','A small browser game with a start button, score display, challenge instructions and reset control.')"><div class="tool-icon">🎯</div><strong>Mini Game</strong><span>Build a simple game starter.</span></button>
+   <button class="tool-card" onclick="useTemplate('Creative Agency','A creative agency landing page with a hero banner, services, portfolio and contact section.')"><div class="tool-icon">🎨</div><strong>Creative Agency</strong><span>Showcase a design studio.</span></button>
+  </div>
+ </section>
  </main>
  <footer>FinFrame AI Lab • Free Browser Prototype • Made with ❤️</footer>
 </div>
@@ -625,7 +662,10 @@ const pageNames={
  voice:'🎙️ Voiceover Studio',
  video:'🎬 Promo Video Maker',
  tryon:'👗 Virtual Try-On',
- privacy:'🔐 Privacy & Security'
+ privacy:'🔐 Privacy & Security',
+ brandkit:'🎨 Brand Kit',
+ prompts:'✨ Prompt Library',
+ templates:'🧩 Template Gallery'
 };
 
 window.toggleMobileMenu=function(){
@@ -656,6 +696,43 @@ function openTool(id){
  show(id);
  saveRecent(id);
 }
+
+function usePrompt(prompt){
+ const box=$('homePrompt');if(box)box.value=prompt;
+ show('home');if(box)box.focus();
+}
+function useTemplate(name,idea){
+ $('projectName').value=name;$('projectIdea').value=idea;show('builder');
+}
+function currentBrandKit(){
+ return {name:$('brandName').value.trim(),tagline:$('brandTagline').value.trim(),primary:$('brandPrimary').value,accent:$('brandAccent').value};
+}
+function renderBrandKit(kit){
+ const p=/^#[0-9a-f]{6}$/i.test(kit.primary)?kit.primary:'#9b70ff';
+ const a=/^#[0-9a-f]{6}$/i.test(kit.accent)?kit.accent:'#ef6bcb';
+ $('brandPreview').innerHTML='<strong>'+escapeHTML(kit.name||'Your Brand')+'</strong><br>'+escapeHTML(kit.tagline||'A short brand tagline')+'<div style="display:flex;gap:8px;margin-top:12px"><span style="background:'+p+';width:55px;height:24px;border-radius:6px"></span><span style="background:'+a+';width:55px;height:24px;border-radius:6px"></span></div>';
+}
+function saveBrandKit(){
+ const kit=currentBrandKit();
+ try{localStorage.setItem('finframeBrandKit',JSON.stringify(kit));renderBrandKit(kit);$('brandStatus').textContent='Brand Kit saved on this device.';}
+ catch(e){$('brandStatus').textContent='Could not save. Check browser storage settings.';}
+}
+function loadBrandKit(){
+ try{
+  const kit=JSON.parse(localStorage.getItem('finframeBrandKit')||'null');
+  if(!kit){$('brandStatus').textContent='No saved Brand Kit found yet.';return;}
+  $('brandName').value=kit.name||'';$('brandTagline').value=kit.tagline||'';
+  $('brandPrimary').value=/^#[0-9a-f]{6}$/i.test(kit.primary)?kit.primary:'#9b70ff';
+  $('brandAccent').value=/^#[0-9a-f]{6}$/i.test(kit.accent)?kit.accent:'#ef6bcb';
+  renderBrandKit(kit);$('brandStatus').textContent='Saved Brand Kit loaded.';
+ }catch(e){$('brandStatus').textContent='Could not load saved Brand Kit.';}
+}
+function exportBrandKit(){
+ const kit=currentBrandKit();const blob=new Blob([JSON.stringify(kit,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='finframe-brand-kit.json';
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
 function quickPrompt(text){
  $('homePrompt').value=text;
  $('homePrompt').focus();
