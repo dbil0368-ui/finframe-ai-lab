@@ -60,6 +60,23 @@ label{display:block;margin-top:12px}
 </section>
 
 <section class="card">
+<h2>💎 4K Product Visuals Studio</h2>
+<p>Upload a product photo and create a beautiful design.</p>
+
+<input type="file" id="productUpload" accept="image/*">
+
+<label>Product Name</label>
+<input type="text" id="productName" placeholder="Enter product name">
+
+<label>Background Color</label>
+<input type="color" id="bgColor" value="#eee8ff">
+
+<button onclick="drawProduct()">Create Design</button>
+<button onclick="downloadProduct()">Download Design</button>
+
+<canvas id="productCanvas" style="width:100%;margin-top:15px;border-radius:12px;"></canvas>
+<p id="productStatus">Upload a product photo to begin.</p>
+</section>
 <h2>🧰 Creative Studio</h2>
 <div class="grid">
 <div class="tool" onclick="showTool('Virtual Try-On')">👗 Virtual Try-On</div>
