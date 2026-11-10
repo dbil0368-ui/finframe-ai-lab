@@ -293,6 +293,13 @@ body[data-theme="light"] .tool-icon{background:#eeebfb}
 body[data-theme="light"] .brand{color:#202033}
 body[data-theme="light"] .sidebar-note{background:#f3f2fa;color:#45455c}
 body[data-theme="light"] .preview{border-color:#999}
+body{line-height:var(--ui-line-height,1.5);font-family:var(--ui-font-family,Arial,sans-serif)}
+.card{border-radius:var(--ui-card-radius,17px)}
+body.soft-card-shadows .card,body.soft-card-shadows .tool-card{box-shadow:0 8px 24px #0002}
+body.no-sticky-header .topbar{position:relative}
+body.hide-sidebar-note .sidebar-note{display:none}
+body.hide-tool-descriptions .tool-card span{display:none}
+
 </style>
 </head>
 <body>
@@ -668,7 +675,22 @@ body[data-theme="light"] .preview{border-color:#999}
   <div class="card"><h3>🎨 Appearance</h3><p>Switch between dark and light mode. Your choice is saved on this device.</p><div class="actions"><button onclick="setTheme('dark')">🌙 Dark Mode</button><button class="secondary-btn" onclick="setTheme('light')">☀️ Light Mode</button></div><p id="themeStatus" class="small" role="status">Choose the look you prefer.</p></div>
   <div class="card"><h3>🖌️ Accent Color</h3><p>Choose the highlight color used by buttons and creative tools.</p><div class="grid"><div><label for="accentColor">Custom color</label><input id="accentColor" type="color" value="#9b70ff" onchange="savePreferences()"></div><div><label for="accentPreset">Quick presets</label><select id="accentPreset" onchange="applyAccentPreset(this.value)"><option value="">Choose a preset</option><option value="#9b70ff">Violet</option><option value="#2585ff">Ocean Blue</option><option value="#16a085">Emerald</option><option value="#e67e22">Sunset Orange</option><option value="#e84393">Pink</option></select></div></div></div>
   <div class="card"><h3>📐 Interface Preferences</h3><label for="textScale">Text size: <strong id="textScaleValue">16px</strong></label><input id="textScale" type="range" min="14" max="19" step="1" value="16" oninput="previewTextScale(this.value)" onchange="savePreferences()"><label><input id="compactMode" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Compact layout (more content on screen)</label><label><input id="reduceMotion" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Reduce animations</label><label><input id="highContrast" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> High contrast text</label><div class="actions"><button class="secondary-btn" onclick="resetPreferences()">↩️ Reset Appearance</button></div><p id="preferencesStatus" class="small" role="status">Your preferences are saved in this browser.</p></div>
-  <div class="card"><h3>📦 Workspace Backup</h3><p>Export your saved Brand Kit, recent activity and appearance setting into one JSON backup file.</p><div class="actions"><button onclick="exportWorkspaceBackup()">⬇️ Download Backup</button></div><label for="workspaceBackupFile">Restore a backup file</label><input id="workspaceBackupFile" type="file" accept=".json,application/json"><div class="actions"><button class="secondary-btn" onclick="importWorkspaceBackup()">↩️ Restore Backup</button></div><p id="backupStatus" class="small" role="status">Your backup stays on your device unless you choose to share it.</p></div>
+  <div class="card"><h3>🧰 15 More Workspace Controls</h3><p>Extra controls for layout, convenience and managing data stored on this device.</p>
+<label for="fontFamily">1. Font family</label><select id="fontFamily" onchange="saveExtraSettings()"><option value="Arial,sans-serif">Arial</option><option value="system-ui,sans-serif">System default</option><option value="Georgia,serif">Georgia</option><option value="monospace">Monospace</option></select>
+<label for="lineSpacing">2. Line spacing: <strong id="lineSpacingValue">1.5</strong></label><input id="lineSpacing" type="range" min="1.2" max="2" step=".1" value="1.5" oninput="previewExtraSettings()" onchange="saveExtraSettings()">
+<label for="cornerRadius">3. Card corner roundness: <strong id="cornerRadiusValue">17px</strong></label><input id="cornerRadius" type="range" min="6" max="28" step="1" value="17" oninput="previewExtraSettings()" onchange="saveExtraSettings()">
+<label><input id="cardShadow" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">4. Soft card shadows</label>
+<label><input id="stickyHeader" type="checkbox" style="width:auto;margin-right:8px" checked onchange="saveExtraSettings()">5. Keep top bar sticky</label>
+<label><input id="hideSidebarNote" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">6. Hide sidebar information panel</label>
+<label><input id="hideToolDescriptions" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">7. Hide tool descriptions on Home</label>
+<label><input id="autoSaveDraft" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">8. Auto-save Project Builder draft on this device</label>
+<div class="actions"><button class="secondary-btn" onclick="restoreBuilderDraft()">9. Restore saved Builder draft</button><button class="secondary-btn" onclick="clearBuilderDraft()">10. Delete saved Builder draft</button></div>
+<label for="startPage">11. Preferred start page (saved for next visit)</label><select id="startPage" onchange="saveExtraSettings()"><option value="home">Home</option><option value="builder">Project Builder</option><option value="photo">Photo Studio</option><option value="settings">Settings</option></select>
+<div class="actions"><button class="secondary-btn" onclick="clearRecentActivity()">12. Clear recent activity</button><button class="secondary-btn" onclick="exportPreferencesOnly()">13. Export settings only</button><button class="secondary-btn" onclick="updateStorageUsage()">14. Check local storage usage</button></div>
+<p id="storageUsage" class="small" role="status">Storage estimate has not been checked yet.</p>
+<div class="actions"><button class="secondary-btn" onclick="resetAllLocalData()">15. Reset all local workspace data</button></div>
+<p id="extraSettingsStatus" class="small" role="status">These options only affect this browser on this device.</p></div>
+<div class="card"><h3>📦 Workspace Backup</h3><p>Export your saved Brand Kit, recent activity and appearance setting into one JSON backup file.</p><div class="actions"><button onclick="exportWorkspaceBackup()">⬇️ Download Backup</button></div><label for="workspaceBackupFile">Restore a backup file</label><input id="workspaceBackupFile" type="file" accept=".json,application/json"><div class="actions"><button class="secondary-btn" onclick="importWorkspaceBackup()">↩️ Restore Backup</button></div><p id="backupStatus" class="small" role="status">Your backup stays on your device unless you choose to share it.</p></div>
   <div class="card"><h3>ℹ️ About this prototype</h3><p>FinFrame AI Lab is a free browser-based prototype. Your saved data is stored locally in this browser; clearing browser site data may remove it.</p></div>
  </section>
  </main>
@@ -1295,11 +1317,11 @@ function setTheme(theme){
 function loadTheme(){
  let theme='dark';try{theme=localStorage.getItem('finframeTheme')||'dark'}catch(e){}
  setTheme(theme);
- if($('accentColor'))loadPreferences();
+ if($('accentColor')){loadPreferences();loadExtraSettings();}
 }
 function exportWorkspaceBackup(){
  let brand=null,recent=[];try{brand=JSON.parse(localStorage.getItem('finframeBrandKit')||'null');recent=JSON.parse(localStorage.getItem('finframeRecent')||'[]')}catch(e){}
- const backup={app:'FinFrame AI Lab',version:1,exportedAt:new Date().toISOString(),theme:document.body.dataset.theme||'dark',preferences:JSON.parse(localStorage.getItem('finframePreferences')||'{}'),brandKit:brand,recentActivity:recent};
+ const backup={app:'FinFrame AI Lab',version:1,exportedAt:new Date().toISOString(),theme:document.body.dataset.theme||'dark',preferences:JSON.parse(localStorage.getItem('finframePreferences')||'{}'),extraSettings:JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}'),builderDraft:JSON.parse(localStorage.getItem('finframeBuilderDraft')||'null'),brandKit:brand,recentActivity:recent};
  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='finframe-workspace-backup.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
  $('backupStatus').textContent='Workspace backup downloaded.';
@@ -1311,7 +1333,7 @@ function importWorkspaceBackup(){
    const backup=JSON.parse(reader.result);if(!backup||backup.app!=='FinFrame AI Lab'||backup.version!==1)throw new Error('Invalid backup');
    if(backup.brandKit&&typeof backup.brandKit==='object')localStorage.setItem('finframeBrandKit',JSON.stringify(backup.brandKit));
    if(Array.isArray(backup.recentActivity))localStorage.setItem('finframeRecent',JSON.stringify(backup.recentActivity.slice(0,5)));
-   if(backup.theme==='light'||backup.theme==='dark')setTheme(backup.theme);if(backup.preferences&&typeof backup.preferences==='object')localStorage.setItem('finframePreferences',JSON.stringify(backup.preferences));if($('accentColor'))loadPreferences();renderRecent();loadBrandKit();$('backupStatus').textContent='Backup restored successfully on this device.';
+   if(backup.theme==='light'||backup.theme==='dark')setTheme(backup.theme);if(backup.preferences&&typeof backup.preferences==='object')localStorage.setItem('finframePreferences',JSON.stringify(backup.preferences));if(backup.extraSettings&&typeof backup.extraSettings==='object')localStorage.setItem('finframeExtraSettings',JSON.stringify(backup.extraSettings));if(backup.builderDraft&&typeof backup.builderDraft==='object')localStorage.setItem('finframeBuilderDraft',JSON.stringify(backup.builderDraft));if($('accentColor')){loadPreferences();loadExtraSettings();}renderRecent();loadBrandKit();$('backupStatus').textContent='Backup restored successfully on this device.';
   }catch(e){$('backupStatus').textContent='This backup file is invalid or could not be restored.'}
  };reader.onerror=function(){$("backupStatus").textContent="Could not read that file."};reader.readAsText(file);
 }
@@ -1338,6 +1360,48 @@ function loadPreferences(){
  const scale=Math.min(19,Math.max(14,Number(p.textScale)||16));
  $('accentColor').value=accent;$('textScale').value=scale;$('compactMode').checked=!!p.compact;$('reduceMotion').checked=!!p.reduceMotion;$('highContrast').checked=!!p.highContrast;
  applyAccentColor(accent);previewTextScale(scale);document.body.classList.toggle('compact-mode',!!p.compact);document.body.classList.toggle('reduce-motion',!!p.reduceMotion);document.body.classList.toggle('high-contrast',!!p.highContrast);
+}
+function previewExtraSettings(){
+ const line=Number($('lineSpacing').value||1.5),radius=Number($('cornerRadius').value||17);
+ document.documentElement.style.setProperty('--ui-line-height',line);
+ document.documentElement.style.setProperty('--ui-card-radius',radius+'px');
+ $('lineSpacingValue').textContent=line.toFixed(1);$('cornerRadiusValue').textContent=radius+'px';
+}
+function saveExtraSettings(){
+ const p={font:$('fontFamily').value,line:Number($('lineSpacing').value),radius:Number($('cornerRadius').value),shadow:$('cardShadow').checked,sticky:$('stickyHeader').checked,hideNote:$('hideSidebarNote').checked,hideDescriptions:$('hideToolDescriptions').checked,autoDraft:$('autoSaveDraft').checked,startPage:$('startPage').value};
+ try{localStorage.setItem('finframeExtraSettings',JSON.stringify(p))}catch(e){}
+ applyExtraSettings(p);$('extraSettingsStatus').textContent='Extra settings saved on this device.';
+}
+function applyExtraSettings(p){
+ document.documentElement.style.setProperty('--ui-font-family',p.font||'Arial,sans-serif');
+ $('fontFamily').value=p.font||'Arial,sans-serif';$('lineSpacing').value=p.line||1.5;$('cornerRadius').value=p.radius||17;
+ $('cardShadow').checked=!!p.shadow;$('stickyHeader').checked=p.sticky!==false;$('hideSidebarNote').checked=!!p.hideNote;$('hideToolDescriptions').checked=!!p.hideDescriptions;$('autoSaveDraft').checked=!!p.autoDraft;$('startPage').value=p.startPage||'home';
+ previewExtraSettings();
+ document.body.classList.toggle('soft-card-shadows',!!p.shadow);document.body.classList.toggle('no-sticky-header',p.sticky===false);document.body.classList.toggle('hide-sidebar-note',!!p.hideNote);document.body.classList.toggle('hide-tool-descriptions',!!p.hideDescriptions);
+}
+function loadExtraSettings(){let p={};try{p=JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}')||{}}catch(e){}applyExtraSettings(p);}
+function saveBuilderDraft(){
+ if(!$('autoSaveDraft')||!$('autoSaveDraft').checked)return;
+ try{localStorage.setItem('finframeBuilderDraft',JSON.stringify({name:$('projectName').value,idea:$('projectIdea').value,type:$('projectType').value,code:$('projectCode').value}))}catch(e){}
+}
+function restoreBuilderDraft(){
+ try{const p=JSON.parse(localStorage.getItem('finframeBuilderDraft')||'null');if(!p){$('extraSettingsStatus').textContent='No saved Builder draft found.';return}
+ $('projectName').value=p.name||'';$('projectIdea').value=p.idea||'';$('projectType').value=p.type||'website';$('projectCode').value=p.code||'';refreshProjectPreview();show('builder');}catch(e){$('extraSettingsStatus').textContent='Could not restore the draft.'}
+}
+function clearBuilderDraft(){try{localStorage.removeItem('finframeBuilderDraft')}catch(e){}$('extraSettingsStatus').textContent='Saved Builder draft deleted.';}
+function clearRecentActivity(){try{localStorage.removeItem('finframeRecent')}catch(e){}if(typeof renderRecent==='function')renderRecent();$('extraSettingsStatus').textContent='Recent activity cleared on this device.';}
+function exportPreferencesOnly(){
+ let data={};try{data={appearance:JSON.parse(localStorage.getItem('finframePreferences')||'{}'),extra:JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}'),theme:localStorage.getItem('finframeTheme')||'dark'}}catch(e){}
+ const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.href=url;a.download='finframe-settings.json';a.click();URL.revokeObjectURL(url);$('extraSettingsStatus').textContent='Settings file download started.';
+}
+function updateStorageUsage(){
+ let bytes=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);bytes+=new Blob([k,localStorage.getItem(k)||'']).size}}catch(e){}
+ $('storageUsage').textContent='Approximate FinFrame local storage used: '+(bytes<1024?bytes+' bytes':(bytes/1024).toFixed(1)+' KB')+'. Browser-wide storage limits vary.';
+}
+function resetAllLocalData(){
+ if(!confirm('Reset all FinFrame data saved in this browser? This cannot be undone.'))return;
+ ['finframeTheme','finframePreferences','finframeExtraSettings','finframeBrandKit','finframeRecent','finframeBuilderDraft'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+ location.reload();
 }
 function resetPreferences(){
  try{localStorage.removeItem('finframePreferences')}catch(e){}
