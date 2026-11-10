@@ -5,6 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090914">
+<meta name="description" content="FinFrame AI Lab — creative tools for building, designing and exploring ideas.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/finframe.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/finframe.svg">
 <title>FinFrame AI Lab</title>
 <style>
 :root{
@@ -712,7 +716,12 @@ function renderCart(){document.getElementById('cartitems').innerHTML=cart.length
 function showCart(){const el=document.getElementById('cartbox');el.style.display=el.style.display==='block'?'none':'block';renderCart()}
 function clearCart(){cart.length=0;document.getElementById('count').textContent='0';renderCart()}
 document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.product').forEach(p=>p.style.display=p.dataset.name.includes(q)?'block':'none')});
-</script></body></html>`;
+</script><script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body></html>`;
  }
  const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
  const action=isGame?'Start playing':(isApp?'Get started':'Explore products');
