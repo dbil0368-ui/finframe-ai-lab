@@ -675,6 +675,14 @@ window.toggleMobileMenu=function(){
  const menuButton=document.querySelector('.menu-toggle');
  if(menuButton)menuButton.setAttribute('aria-expanded',side.classList.contains('mobile-open')?'true':'false');
 };
+document.addEventListener('click',function(event){
+ const side=document.querySelector('.sidebar');
+ const menuButton=document.querySelector('.menu-toggle');
+ if(!side||!side.classList.contains('mobile-open'))return;
+ if(side.contains(event.target)||(menuButton&&menuButton.contains(event.target)))return;
+ side.classList.remove('mobile-open');
+ if(menuButton)menuButton.setAttribute('aria-expanded','false');
+});
 
 window.show=function(id){
  const target=document.getElementById(id);
