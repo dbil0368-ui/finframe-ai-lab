@@ -694,16 +694,34 @@ function makeStarterWebsite(name,idea,type){
  const isApp=type.toLowerCase().includes('app');
  const isShop=/shop|store|shopping|flipkart|ecommerce|e-commerce|cart|product/i.test(name+' '+idea);
  if(isShop){
-  return [
-   '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FF_SAFE_NAME_TOKEN</title>',
-   '<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#211b35}.nav{display:flex;justify-content:space-between;align-items:center;padding:18px max(5%,calc((100% - 1050px)/2));background:#fff}.nav b{font-size:20px}.nav a{color:#6841c6;text-decoration:none}.hero{padding:75px 20px;text-align:center;background:linear-gradient(135deg,#6d49ce,#e66ac1);color:white}.hero h1{font-size:clamp(32px,6vw,58px);margin:0 0 15px}.hero p{max-width:650px;margin:0 auto 25px;line-height:1.6}.btn,button{display:inline-block;background:#fff;color:#5732b0;border:0;border-radius:12px;padding:13px 20px;font-weight:bold;text-decoration:none;cursor:pointer}.wrap{max-width:1050px;margin:35px auto;padding:0 18px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;padding:24px;border-radius:18px;box-shadow:0 8px 30px #35205c12}.emoji{font-size:30px}footer{text-align:center;padding:30px;color:#746b88}</style></head><body>',
-   '<nav class="nav"><b>FF_SAFE_NAME_TOKEN</b><a href="#about">About</a></nav>',
-   '<header class="hero"><h1>FF_TITLE_TOKEN</h1><p>FF_SAFE_IDEA_TOKEN</p><a class="btn" href="#features">FF_ACTION_TOKEN</a></header>',
-   '<main class="wrap" id="features"><div class="cards">FF_CARDS_TOKEN</div><section class="card" id="about" style="margin-top:18px"><h2>About this project</h2><p>Built with an editable FinFrame AI Lab starter template.</p></section></main>',
-   '<footer>Made with care · FF_SAFE_NAME_TOKEN</footer>',
-   '<script>const playButton=document.getElementById("play");if(playButton){playButton.addEventListener("click",()=>{const score=document.getElementById("score");score.textContent=String(Number(score.textContent)+1);});}</\\/script>',
-   '</body></html>'
-  ].join('').replaceAll('FF_SAFE_NAME_TOKEN',safeName).replaceAll('FF_SAFE_IDEA_TOKEN',safeIdea).replaceAll('FF_TITLE_TOKEN',title).replaceAll('FF_ACTION_TOKEN',action).replaceAll('FF_CARDS_TOKEN',cards);
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeName}</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f3f6;color:#212121}.top{background:#2874f0;color:#fff;padding:13px 5%;display:flex;gap:20px;align-items:center;flex-wrap:wrap}.brand{font-size:23px;font-weight:bold;font-style:italic}.search{flex:1;min-width:180px;display:flex}.search input{width:100%;padding:11px;border:0;border-radius:3px;font-size:15px}.cart{background:#fff;color:#2874f0;border:0;padding:10px 16px;border-radius:3px;font-weight:bold}.hero{margin:14px auto;max-width:1200px;background:linear-gradient(110deg,#dceaff,#fff);padding:30px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px}.hero h1{font-size:clamp(25px,4vw,42px);margin:0 0 8px;color:#172b4d}.hero p{margin:0;color:#555}.hero .tag{font-size:54px}.wrap{max-width:1200px;margin:14px auto;padding:0 14px}.heading{background:#fff;padding:18px 20px;font-size:21px;font-weight:bold}.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;background:#fff;padding:16px}.product{border:1px solid #eee;border-radius:5px;padding:15px;text-align:center;background:#fff}.photo{height:125px;display:grid;place-items:center;background:#f7f9fc;font-size:58px;border-radius:4px}.product h3{font-size:16px;margin:12px 0 6px}.price{font-weight:bold;color:#188038;font-size:18px;margin:7px}.product button{background:#ff9f00;color:#fff;border:0;border-radius:3px;padding:10px 14px;font-weight:bold;cursor:pointer}.empty{padding:18px;color:#666}.foot{text-align:center;padding:25px;color:#666}.cartbox{background:#fff;margin-top:14px;padding:18px;display:none}.cartbox h2{margin-top:0}.cartrow{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:9px 0;gap:12px}@media(max-width:550px){.top{gap:10px}.hero{padding:24px 18px}.hero .tag{font-size:38px}}
+</style></head><body>
+<header class="top"><div class="brand">${safeName}</div><div class="search"><input id="search" type="search" placeholder="Search for products, brands and more"></div><button class="cart" onclick="showCart()">🛒 Cart (<span id="count">0</span>)</button></header>
+<section class="hero"><div><h1>Big savings. Great finds.</h1><p>${safeIdea}</p></div><div class="tag">🛍️</div></section>
+<main class="wrap"><div class="heading">Best picks for you</div><section class="products" id="products">
+<article class="product" data-name="wireless headphones"><div class="photo">🎧</div><h3>Wireless Headphones</h3><p>Clear sound · Comfortable fit</p><div class="price">₹1,499</div><button onclick="addToCart('Wireless Headphones',1499)">Add to Cart</button></article>
+<article class="product" data-name="smart watch"><div class="photo">⌚</div><h3>Smart Watch</h3><p>Fitness · Notifications</p><div class="price">₹2,299</div><button onclick="addToCart('Smart Watch',2299)">Add to Cart</button></article>
+<article class="product" data-name="running shoes"><div class="photo">👟</div><h3>Running Shoes</h3><p>Lightweight · Everyday comfort</p><div class="price">₹1,899</div><button onclick="addToCart('Running Shoes',1899)">Add to Cart</button></article>
+<article class="product" data-name="backpack"><div class="photo">🎒</div><h3>Everyday Backpack</h3><p>Spacious · Durable design</p><div class="price">₹999</div><button onclick="addToCart('Everyday Backpack',999)">Add to Cart</button></article>
+<article class="product" data-name="camera"><div class="photo">📷</div><h3>Digital Camera</h3><p>Capture your best moments</p><div class="price">₹5,499</div><button onclick="addToCart('Digital Camera',5499)">Add to Cart</button></article>
+<article class="product" data-name="coffee maker"><div class="photo">☕</div><h3>Coffee Maker</h3><p>Fresh coffee at home</p><div class="price">₹1,299</div><button onclick="addToCart('Coffee Maker',1299)">Add to Cart</button></article>
+</section><section class="cartbox" id="cartbox"><h2>Your Cart</h2><div id="cartitems"></div><p><b>Total: ₹<span id="total">0</span></b></p><button onclick="clearCart()" style="background:#2874f0;color:white;border:0;padding:10px 15px">Clear Cart</button></section></main>
+<footer class="foot">Demo storefront · Made with FinFrame AI Lab</footer>
+<script>
+const cart=[];function addToCart(name,price){cart.push({name,price});document.getElementById('count').textContent=cart.length;renderCart()}
+function renderCart(){document.getElementById('cartitems').innerHTML=cart.length?cart.map(x=>'<div class="cartrow"><span>'+x.name+'</span><b>₹'+x.price.toLocaleString('en-IN')+'</b></div>').join(''):'<p class="empty">Your cart is empty.</p>';document.getElementById('total').textContent=cart.reduce((s,x)=>s+x.price,0).toLocaleString('en-IN')}
+function showCart(){const el=document.getElementById('cartbox');el.style.display=el.style.display==='block'?'none':'block';renderCart()}
+function clearCart(){cart.length=0;document.getElementById('count').textContent='0';renderCart()}
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.product').forEach(p=>p.style.display=p.dataset.name.includes(q)?'block':'none')});
+<\/script><script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body></html>`;
  }
  const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
  const action=isGame?'Start playing':(isApp?'Get started':'Explore products');
