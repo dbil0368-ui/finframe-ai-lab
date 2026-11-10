@@ -266,6 +266,7 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  <button class="side-btn" data-page="poster" onclick="show('poster')">🖼️ &nbsp; Poster Maker</button>
  <button class="side-btn" data-page="creative" onclick="show('creative')">🎨 &nbsp; Creative Studio</button>
  <button class="side-btn" data-page="game" onclick="show('game')">🎮 &nbsp; Game Studio</button>
+ <button class="side-btn" data-page="privacy" onclick="show('privacy')">🔐 &nbsp; Privacy & Security</button>
  <div class="sidebar-bottom">
   <div class="sidebar-note">
    <strong>✨ FinFrame Workspace</strong><br>
@@ -367,6 +368,27 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
     <p>FinFrame AI Lab is a browser-based creative toolkit. You can use its image tools directly in your browser.</p>
     <p class="small">This prototype does not connect to a real AI generation service. Some features depend on browser and device support.</p>
    </div>
+  </div>
+ </section>
+
+
+ <section id="privacy">
+  <div class="page-title"><h2>🔐 Privacy & Security</h2><p>Your privacy matters. Here is what this browser-based prototype does and does not store.</p></div>
+  <div class="card">
+   <h3>What this version stores</h3>
+   <p>FinFrame AI Lab currently saves a short list of recently opened tool names and timestamps in this browser's local storage. It does not save your prompts, uploaded images, generated files, passwords or payment details there.</p>
+   <p>Uploaded images are processed in your browser for the selected tool. This static version does not send them to a FinFrame server.</p>
+   <h3>What this version does not provide</h3>
+   <p>This prototype has no user accounts, cloud sync, server-side encryption, or payment processing. Your browser/device and any browser extensions remain outside our control. Do not enter sensitive personal, financial, medical or confidential information.</p>
+   <h3>Control your recent activity</h3>
+   <p>You can clear the recent-tool history saved by this site on this browser. This does not clear your browser history, downloads, or other website data.</p>
+   <button class="secondary-btn" onclick="clearRecentHistory()">🗑️ Clear Recent Activity</button>
+   <p id="privacyStatus" class="small" role="status" aria-live="polite">No account or personal profile is required in this prototype.</p>
+  </div>
+  <div class="card">
+   <h3>Privacy-first promise</h3>
+   <p>We aim to collect only what is needed. Before adding accounts, analytics, cloud storage or AI services, we will explain what data is involved and provide appropriate controls. Never place private API keys in this public website.</p>
+   <p class="small">This is an informational privacy notice for the current prototype, not a guarantee of absolute security or a substitute for a legally reviewed privacy policy.</p>
   </div>
  </section>
 
@@ -557,7 +579,8 @@ const pageNames={
  caption:'✍️ Caption Generator',
  voice:'🎙️ Voiceover Studio',
  video:'🎬 Promo Video Maker',
- tryon:'👗 Virtual Try-On'
+ tryon:'👗 Virtual Try-On',
+ privacy:'🔐 Privacy & Security'
 };
 
 function show(id){
@@ -615,6 +638,17 @@ function saveRecent(id){
   localStorage.setItem('finframeRecent',JSON.stringify(list));
   renderRecent();
  }catch(e){}
+}
+function clearRecentHistory(){
+ try{
+  localStorage.removeItem('finframeRecent');
+  renderRecent();
+  const status=$('privacyStatus');
+  if(status)status.textContent='Recent activity for this site has been cleared from this browser.';
+ }catch(e){
+  const status=$('privacyStatus');
+  if(status)status.textContent='Could not clear local history. Please clear this site data in your browser settings.';
+ }
 }
 function renderRecent(){
  const box=$('recentList');
