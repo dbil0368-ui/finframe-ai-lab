@@ -1,51 +1,163 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090914">
 <title>FinFrame AI Lab</title>
 <style>
 :root{
- --bg:#090914;--panel:#151526;--panel2:#202039;
- --text:#f5f4ff;--muted:#aaa9c3;--accent:#9b70ff;
- --accent2:#ef6bcb;--border:#34334f;
+ --bg:#090914;
+ --panel:#151526;
+ --panel2:#202039;
+ --text:#f5f4ff;
+ --muted:#aaa9c3;
+ --accent:#9b70ff;
+ --accent2:#ef6bcb;
+ --border:#34334f;
 }
 *{box-sizing:border-box}
 body{
  margin:0;background:var(--bg);color:var(--text);
  font-family:Arial,sans-serif;
 }
-header{
- padding:24px 16px;text-align:center;
- background:linear-gradient(130deg,#25104c,#10152f,#391347);
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.sidebar{
+ position:fixed;left:0;top:0;bottom:0;width:250px;
+ background:#101020;border-right:1px solid var(--border);
+ padding:20px 14px;display:flex;flex-direction:column;
+ z-index:20;
+}
+.brand{
+ display:flex;align-items:center;gap:10px;
+ padding:8px 10px 24px;font-size:19px;font-weight:bold;
+}
+.brand-icon{
+ width:38px;height:38px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+.side-btn{
+ width:100%;text-align:left;padding:13px;
+ border:1px solid transparent;border-radius:11px;
+ background:transparent;color:var(--text);
+ margin:3px 0;font-size:14px;
+}
+.side-btn:hover,.side-btn.active{
+ background:var(--panel2);border-color:var(--border);
+}
+.sidebar-bottom{margin-top:auto}
+.sidebar-note{
+ padding:14px;background:var(--panel);
+ border:1px solid var(--border);border-radius:12px;
+ color:var(--muted);font-size:12px;line-height:1.6;
+}
+.main-area{margin-left:250px;min-height:100vh}
+.topbar{
+ height:65px;display:flex;align-items:center;
+ justify-content:space-between;padding:0 25px;
  border-bottom:1px solid var(--border);
+ background:rgba(9,9,20,.9);
+ position:sticky;top:0;z-index:10;
+ backdrop-filter:blur(12px);
 }
-header h1{margin:0;font-size:28px}
-header p{color:#d1c6ff;margin:9px 0 0}
-nav{
- display:flex;gap:8px;padding:12px;
- overflow-x:auto;background:#101020;
- position:sticky;top:0;z-index:5;
- border-bottom:1px solid var(--border);
+.top-title{font-weight:bold;font-size:15px}
+.top-actions{display:flex;gap:9px;align-items:center}
+.icon-btn{
+ background:var(--panel2);border:1px solid var(--border);
+ color:white;border-radius:10px;padding:9px 12px;
 }
-nav button{white-space:nowrap}
-button{
- border:0;border-radius:10px;padding:11px 15px;
- background:linear-gradient(120deg,var(--accent),var(--accent2));
- color:white;font-weight:bold;cursor:pointer;
-}
-button.secondary{background:var(--panel2);border:1px solid var(--border)}
-button:active{transform:scale(.97)}
-main{max-width:950px;margin:auto;padding:16px}
+.content{max-width:1150px;margin:auto;padding:28px 25px 90px}
 section{display:none}
 section.active{display:block}
+.home-wrap{max-width:900px;margin:30px auto}
+.hero{text-align:center;padding:25px 10px 18px}
+.hero-logo{
+ width:62px;height:62px;border-radius:21px;
+ display:grid;place-items:center;margin:0 auto 20px;
+ font-size:29px;
+ background:linear-gradient(135deg,#9b70ff,#ef6bcb);
+ box-shadow:0 12px 40px #9b70ff33;
+}
+.hero h1{font-size:clamp(27px,5vw,42px);margin:0 0 12px}
+.hero p{color:var(--muted);line-height:1.6;margin:0}
+.prompt-box{
+ margin:28px auto 17px;max-width:760px;
+ background:var(--panel);border:1px solid #494467;
+ border-radius:19px;padding:14px;
+ box-shadow:0 15px 50px #0005;
+}
+.prompt-box textarea{
+ width:100%;min-height:90px;border:0;outline:0;
+ resize:vertical;background:transparent;color:white;
+ font-size:16px;padding:8px;
+}
+.prompt-bottom{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px;flex-wrap:wrap;
+}
+.prompt-hint{color:var(--muted);font-size:12px;padding-left:8px}
+.primary-btn{
+ border:0;border-radius:11px;padding:12px 18px;
+ color:white;font-weight:bold;
+ background:linear-gradient(120deg,var(--accent),var(--accent2));
+}
+.secondary-btn{
+ background:var(--panel2);color:white;
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 14px;
+}
+.suggestions{
+ display:flex;justify-content:center;gap:9px;
+ flex-wrap:wrap;margin:15px 0 35px;
+}
+.suggestion{
+ background:#17172a;border:1px solid var(--border);
+ color:#ddd8ff;border-radius:30px;padding:10px 14px;
+ font-size:13px;
+}
+.section-head{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:10px;margin:28px 0 15px;
+}
+.section-head h2{margin:0;font-size:20px}
+.search{
+ max-width:250px;padding:10px 12px;
+ border-radius:10px;border:1px solid var(--border);
+ background:#101020;color:white;
+}
+.tool-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:13px;
+}
+.tool-card{
+ text-align:left;color:white;background:var(--panel);
+ border:1px solid var(--border);border-radius:16px;
+ padding:18px;min-height:145px;
+ transition:.2s;
+}
+.tool-card:hover{
+ transform:translateY(-3px);
+ border-color:var(--accent);
+ background:#1b1a31;
+}
+.tool-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;font-size:22px;
+ background:#292342;margin-bottom:14px;
+}
+.tool-card strong{display:block;font-size:15px;margin-bottom:7px}
+.tool-card span{color:var(--muted);font-size:13px;line-height:1.5}
 .card{
  background:var(--panel);border:1px solid var(--border);
- border-radius:17px;padding:17px;margin-bottom:16px;
+ border-radius:17px;padding:19px;margin-bottom:16px;
 }
 h2{font-size:21px;margin:0 0 14px}
 h3{font-size:16px;margin:15px 0 8px}
-p,.muted{color:var(--muted);line-height:1.5}
+p,.muted{color:var(--muted);line-height:1.55}
 label{display:block;margin:13px 0 6px;color:#dedafa;font-size:14px}
 input,textarea,select{
  width:100%;padding:12px;border-radius:9px;
@@ -57,10 +169,15 @@ input[type=range]{padding:0}
 input[type=file]{font-size:13px}
 textarea{min-height:90px;resize:vertical}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.actions button{
+ border:0;border-radius:10px;padding:11px 15px;
+ background:linear-gradient(120deg,var(--accent),var(--accent2));
+ color:white;font-weight:bold;
+}
+.actions button.secondary-btn{background:var(--panel2);border:1px solid var(--border)}
 canvas{
  display:block;max-width:100%;height:auto;
- margin:15px auto;border-radius:10px;
- background:#29293c;
+ margin:15px auto;border-radius:10px;background:#29293c;
 }
 .preview{
  background:#0d0d19;border:1px dashed #55516f;
@@ -74,278 +191,453 @@ canvas{
  cursor:pointer;text-align:left;color:white;
 }
 .tool strong{display:block;margin-bottom:6px}
-footer{text-align:center;padding:24px;color:var(--muted)}
+.recent-list{display:grid;gap:9px}
+.recent-item{
+ display:flex;align-items:center;gap:12px;
+ padding:13px;background:#101020;
+ border:1px solid var(--border);border-radius:12px;
+}
+.recent-icon{font-size:21px}
+.recent-item strong{font-size:14px}
+.recent-item small{display:block;color:var(--muted);margin-top:4px}
+.empty-recent{
+ color:var(--muted);padding:17px;border:1px dashed var(--border);
+ border-radius:12px;font-size:13px;
+}
+.page-title{margin:8px 0 22px}
+.page-title p{margin:6px 0}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+.mobile-nav{display:none}
 .small{font-size:12px}
-@media(max-width:520px){
- header h1{font-size:23px}
- main{padding:11px}
- .grid{grid-template-columns:1fr}
+.hidden{display:none!important}
+@media(max-width:900px){
+ .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .sidebar{display:none}
+ .main-area{margin-left:0}
+ .topbar{padding:0 13px;height:58px}
+ .content{padding:17px 13px 100px}
+ .home-wrap{margin:10px auto}
+ .hero{padding:28px 5px 12px}
+ .hero h1{font-size:29px}
+ .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .tool-card{padding:13px;min-height:135px}
+ .tool-card strong{font-size:13px}
+ .tool-card span{font-size:11px}
+ .tool-icon{width:38px;height:38px;font-size:19px}
+ .search{max-width:145px}
+ .mobile-nav{
+  display:flex;position:fixed;bottom:0;left:0;right:0;
+  z-index:30;background:#111122;
+  border-top:1px solid var(--border);
+  justify-content:space-around;padding:8px 3px calc(8px + env(safe-area-inset-bottom));
+ }
+ .mobile-nav button{
+  background:transparent;color:var(--muted);
+  border:0;font-size:11px;padding:5px;
+ }
+ .mobile-nav button span{display:block;font-size:19px;margin-bottom:3px}
  .card{padding:14px}
 }
 </style>
 </head>
 <body>
+<div class="app">
 
-<header>
- <h1>✨ FinFrame AI Lab</h1>
- <p>Build • Create • Design • Imagine</p>
- <p class="small">Your Creative Studio</p>
-</header>
-
-<nav>
- <button onclick="show('home')">🏠 Home</button>
- <button onclick="show('builder')">🚀 Builder</button>
- <button onclick="show('photo')">📸 Photo</button>
- <button onclick="show('product')">💎 Product</button>
- <button onclick="show('poster')">🖼️ Poster</button>
- <button onclick="show('creative')">🎨 Creative</button>
- <button onclick="show('game')">🎮 Game</button>
-</nav>
-
-<main>
-
-<section id="home" class="active">
- <div class="card">
-  <h2>Welcome to FinFrame AI Lab ✨</h2>
-  <p>Create designs, enhance photos, build project previews and explore creative tools—all in one place.</p>
-  <div class="grid">
-   <button class="tool" onclick="show('builder')"><strong>🚀 Project Builder</strong><span class="muted">Create project previews</span></button>
-   <button class="tool" onclick="show('photo')"><strong>📸 Photo Enhancer</strong><span class="muted">Adjust your photos</span></button>
-   <button class="tool" onclick="show('product')"><strong>💎 Product Studio</strong><span class="muted">Design product visuals</span></button>
-   <button class="tool" onclick="show('poster')"><strong>🖼️ Poster Maker</strong><span class="muted">Create custom posters</span></button>
-   <button class="tool" onclick="show('creative')"><strong>🎨 Creative Studio</strong><span class="muted">Captions, voice and video</span></button>
-   <button class="tool" onclick="show('game')"><strong>🎮 Game Studio</strong><span class="muted">Play a mini game</span></button>
+<aside class="sidebar">
+ <div class="brand">
+  <div class="brand-icon">✨</div>
+  <span>FinFrame AI Lab</span>
+ </div>
+ <button class="side-btn active" data-page="home" onclick="show('home')">🏠 &nbsp; Home</button>
+ <button class="side-btn" data-page="builder" onclick="show('builder')">🚀 &nbsp; Project Builder</button>
+ <button class="side-btn" data-page="photo" onclick="show('photo')">📸 &nbsp; Photo Studio</button>
+ <button class="side-btn" data-page="product" onclick="show('product')">💎 &nbsp; Product Studio</button>
+ <button class="side-btn" data-page="poster" onclick="show('poster')">🖼️ &nbsp; Poster Maker</button>
+ <button class="side-btn" data-page="creative" onclick="show('creative')">🎨 &nbsp; Creative Studio</button>
+ <button class="side-btn" data-page="game" onclick="show('game')">🎮 &nbsp; Game Studio</button>
+ <div class="sidebar-bottom">
+  <div class="sidebar-note">
+   <strong>✨ FinFrame Workspace</strong><br>
+   Your creative tools in one place.<br><br>
+   <span>Free browser-based prototype</span>
   </div>
  </div>
- <div class="card">
-  <h2>💡 About this prototype</h2>
-  <p>FinFrame AI Lab is a free browser-based creative toolkit. Your uploaded images are processed locally in your browser.</p>
-  <p class="small">This version does not connect to a real AI generation service.</p>
- </div>
-</section>
+</aside>
 
-<section id="builder">
- <div class="card">
-  <h2>🚀 AI Project Builder</h2>
-  <label>Choose project type</label>
-  <select id="projectType">
-   <option>Website</option>
-   <option>Android App</option>
-   <option>Game</option>
-  </select>
-  <label>Project name</label>
-  <input id="projectName" placeholder="My Creative Project">
-  <label>Describe your project idea</label>
-  <textarea id="projectIdea" placeholder="Describe what you want to build..."></textarea>
-  <div class="actions">
-   <button onclick="buildProject()">✨ Create Preview</button>
-   <button class="secondary" onclick="clearProject()">Clear</button>
-  </div>
-  <h3>Project Preview</h3>
-  <div class="preview" id="projectOutput">Your project preview will appear here.</div>
- </div>
-</section>
-
-<section id="photo">
- <div class="card">
-  <h2>📸 Photo Enhancer</h2>
-  <p>Upload a photo and adjust its appearance.</p>
-  <label>Choose photo</label>
-  <input type="file" id="photoFile" accept="image/*">
-  <label>Brightness: <span id="brightVal">100</span>%</label>
-  <input type="range" id="bright" min="0" max="200" value="100">
-  <label>Contrast: <span id="contrastVal">100</span>%</label>
-  <input type="range" id="contrast" min="0" max="200" value="100">
-  <label>Saturation: <span id="satVal">100</span>%</label>
-  <input type="range" id="sat" min="0" max="200" value="100">
-  <canvas id="photoCanvas" width="900" height="650"></canvas>
-  <div class="actions">
-   <button onclick="resetPhoto()">↩ Reset</button>
-   <button onclick="downloadCanvas('photoCanvas','finframe-enhanced-photo.png')">⬇ Download Photo</button>
-  </div>
-  <p id="photoStatus">Upload a photo to begin.</p>
- </div>
-</section>
-
-<section id="product">
- <div class="card">
-  <h2>💎 4K Product Visuals Studio</h2>
-  <p>Create beautiful product designs with custom text and shadow.</p>
-  <label>Upload Product Photo</label>
-  <input type="file" id="productFile" accept="image/*">
-  <label>Product Name</label>
-  <input id="productNameInput" placeholder="Enter product name">
-  <label>Tagline</label>
-  <input id="productTagline" placeholder="Example: Premium Quality">
-  <label>Background Color</label>
-  <input type="color" id="productBg" value="#17152d">
-  <label>Text Color</label>
-  <input type="color" id="productText" value="#ffffff">
-  <label>Shadow Strength: <span id="shadowVal">20</span></label>
-  <input type="range" id="shadow" min="0" max="50" value="20">
-  <canvas id="productCanvas" width="1000" height="1000"></canvas>
-  <div class="actions">
-   <button onclick="createProduct()">✨ Create Design</button>
-   <button onclick="downloadCanvas('productCanvas','finframe-product-design.png')">⬇ Download Design</button>
-  </div>
-  <p id="productStatus">Upload a product photo to begin.</p>
- </div>
-</section>
-
-<section id="poster">
- <div class="card">
-  <h2>🖼️ Poster Maker Studio</h2>
-  <p>Create your own custom poster.</p>
-  <label>Upload Poster Image</label>
-  <input type="file" id="posterFile" accept="image/*">
-  <label>Poster Title</label>
-  <input id="posterTitle" placeholder="Enter poster title">
-  <label>Subtitle</label>
-  <input id="posterSubtitle" placeholder="Enter subtitle">
-  <label>Background Color</label>
-  <input type="color" id="posterBg" value="#17152d">
-  <label>Text Color</label>
-  <input type="color" id="posterText" value="#ffffff">
-  <canvas id="posterCanvas" width="1000" height="1200"></canvas>
-  <div class="actions">
-   <button onclick="createPoster()">✨ Create Poster</button>
-   <button onclick="downloadCanvas('posterCanvas','finframe-poster.png')">⬇ Download Poster</button>
-  </div>
-  <p id="posterStatus">Upload an image to begin.</p>
- </div>
-</section>
-
-<section id="creative">
- <div class="card">
-  <h2>🎨 Creative Studio</h2>
-  <div class="grid">
-   <button class="tool" onclick="show('tryon')"><strong>👗 Virtual Try-On</strong><span class="muted">Image composition tool</span></button>
-   <button class="tool" onclick="show('product')"><strong>💎 Product Visuals</strong><span class="muted">Product design tool</span></button>
-   <button class="tool" onclick="show('video')"><strong>🎬 Promo Videos</strong><span class="muted">Make a simple video</span></button>
-   <button class="tool" onclick="show('poster')"><strong>🖼️ Posters</strong><span class="muted">Poster design</span></button>
-   <button class="tool" onclick="show('caption')"><strong>✍️ Captions</strong><span class="muted">Create caption ideas</span></button>
-   <button class="tool" onclick="show('voice')"><strong>🎙️ Voiceover</strong><span class="muted">Browser text-to-speech</span></button>
-   <button class="tool" onclick="show('game')"><strong>🎮 Game Studio</strong><span class="muted">Play a mini game</span></button>
+<div class="main-area">
+ <div class="topbar">
+  <div class="top-title" id="topTitle">✨ FinFrame AI Lab</div>
+  <div class="top-actions">
+   <button class="icon-btn" onclick="show('home')">⌂ Home</button>
+   <button class="icon-btn" onclick="show('builder')">＋ New</button>
   </div>
  </div>
-</section>
 
-<section id="caption">
- <div class="card">
-  <h2>✍️ Caption Generator</h2>
-  <label>What is your post about?</label>
-  <input id="captionTopic" placeholder="Example: New product launch">
-  <label>Choose style</label>
-  <select id="captionStyle">
-   <option>Professional</option>
-   <option>Funny</option>
-   <option>Inspirational</option>
-   <option>Promotional</option>
-   <option>Short and simple</option>
-  </select>
-  <div class="actions">
-   <button onclick="makeCaption()">✨ Generate Caption</button>
+ <main class="content">
+
+ <section id="home" class="active">
+  <div class="home-wrap">
+   <div class="hero">
+    <div class="hero-logo">✨</div>
+    <h1>What can I create for you?</h1>
+    <p>Welcome to FinFrame AI Lab.<br>Build, design, edit and explore your ideas.</p>
+   </div>
+
+   <div class="prompt-box">
+    <textarea id="homePrompt" placeholder="Describe what you want to create..."></textarea>
+    <div class="prompt-bottom">
+     <span class="prompt-hint">✨ Choose an idea or describe your project</span>
+     <button class="primary-btn" onclick="sendPrompt()">Create ↗</button>
+    </div>
+   </div>
+
+   <div class="suggestions">
+    <button class="suggestion" onclick="quickPrompt('Build a website')">🌐 Build a website</button>
+    <button class="suggestion" onclick="quickPrompt('Enhance my photo')">📸 Enhance photo</button>
+    <button class="suggestion" onclick="quickPrompt('Design a product poster')">🖼️ Design a poster</button>
+    <button class="suggestion" onclick="quickPrompt('Create a game')">🎮 Create a game</button>
+   </div>
+
+   <div class="section-head">
+    <h2>Explore your tools</h2>
+    <input class="search" id="toolSearch" placeholder="🔍 Search tools..." oninput="filterTools()">
+   </div>
+
+   <div class="tool-grid" id="homeToolGrid">
+    <button class="tool-card" data-search="builder project website app game" onclick="openTool('builder')">
+     <div class="tool-icon">🚀</div><strong>AI Project Builder</strong>
+     <span>Create website, app and game project previews.</span>
+    </button>
+    <button class="tool-card" data-search="photo image enhancer edit brightness" onclick="openTool('photo')">
+     <div class="tool-icon">📸</div><strong>Photo Enhancer</strong>
+     <span>Adjust brightness, contrast and saturation.</span>
+    </button>
+    <button class="tool-card" data-search="product visual design image" onclick="openTool('product')">
+     <div class="tool-icon">💎</div><strong>Product Studio</strong>
+     <span>Create stylish product image designs.</span>
+    </button>
+    <button class="tool-card" data-search="poster maker design image" onclick="openTool('poster')">
+     <div class="tool-icon">🖼️</div><strong>Poster Maker</strong>
+     <span>Design custom posters with your own text.</span>
+    </button>
+    <button class="tool-card" data-search="creative caption voice video tryon" onclick="openTool('creative')">
+     <div class="tool-icon">🎨</div><strong>Creative Studio</strong>
+     <span>Explore captions, voiceover, videos and more.</span>
+    </button>
+    <button class="tool-card" data-search="game play tap challenge" onclick="openTool('game')">
+     <div class="tool-icon">🎮</div><strong>Game Studio</strong>
+     <span>Play the Tap Challenge mini game.</span>
+    </button>
+    <button class="tool-card" data-search="caption writing social media" onclick="openTool('caption')">
+     <div class="tool-icon">✍️</div><strong>Caption Generator</strong>
+     <span>Create caption ideas for your posts.</span>
+    </button>
+    <button class="tool-card" data-search="voice audio speech voiceover" onclick="openTool('voice')">
+     <div class="tool-icon">🎙️</div><strong>Voiceover Studio</strong>
+     <span>Read your text aloud using browser voices.</span>
+    </button>
+    <button class="tool-card" data-search="video promo animation" onclick="openTool('video')">
+     <div class="tool-icon">🎬</div><strong>Promo Video Maker</strong>
+     <span>Create a simple animated video from an image.</span>
+    </button>
+    <button class="tool-card" data-search="virtual try on clothes fashion" onclick="openTool('tryon')">
+     <div class="tool-icon">👗</div><strong>Virtual Try-On Preview</strong>
+     <span>Combine portrait and clothing images.</span>
+    </button>
+   </div>
+
+   <div class="section-head"><h2>🕘 Recent Projects</h2></div>
+   <div class="recent-list" id="recentList">
+    <div class="empty-recent">Your recent project previews will appear here.</div>
+   </div>
+
+   <div class="card" style="margin-top:25px">
+    <h2>✨ About FinFrame AI Lab</h2>
+    <p>FinFrame AI Lab is a browser-based creative toolkit. You can use its image tools directly in your browser.</p>
+    <p class="small">This prototype does not connect to a real AI generation service. Some features depend on browser and device support.</p>
+   </div>
   </div>
-  <div class="preview" id="captionOutput">Your caption will appear here.</div>
-  <button class="secondary" onclick="copyText('captionOutput')">📋 Copy Caption</button>
- </div>
-</section>
+ </section>
 
-<section id="voice">
- <div class="card">
-  <h2>🎙️ Voiceover Studio</h2>
-  <p>Use your browser's built-in speech engine to read your text aloud.</p>
-  <label>Enter your script</label>
-  <textarea id="voiceText" placeholder="Write something to speak..."></textarea>
-  <label>Voice</label>
-  <select id="voiceSelect"><option value="">Default voice</option></select>
-  <label>Speed</label>
-  <input type="range" id="voiceRate" min="0.5" max="2" step="0.1" value="1">
-  <div class="actions">
-   <button onclick="speakText()">▶ Speak</button>
-   <button class="secondary" onclick="stopSpeak()">■ Stop</button>
+ <section id="builder">
+  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Create a simple project plan and preview.</p></div>
+  <div class="card">
+   <label>Choose project type</label>
+   <select id="projectType"><option>Website</option><option>Android App</option><option>Game</option></select>
+   <label>Project name</label>
+   <input id="projectName" placeholder="My Creative Project">
+   <label>Describe your project idea</label>
+   <textarea id="projectIdea" placeholder="Describe what you want to build..."></textarea>
+   <div class="actions">
+    <button onclick="buildProject()">✨ Create Preview</button>
+    <button class="secondary-btn" onclick="clearProject()">Clear</button>
+   </div>
+   <h3>Project Preview</h3>
+   <div class="preview" id="projectOutput">Your project preview will appear here.</div>
   </div>
-  <p id="voiceStatus">Voice availability depends on your browser and device.</p>
- </div>
-</section>
+ </section>
 
-<section id="video">
- <div class="card">
-  <h2>🎬 Promo Video Maker</h2>
-  <p>Create a simple animated video from an image and text. Browser recording support is required.</p>
-  <label>Upload image</label>
-  <input type="file" id="videoFile" accept="image/*">
-  <label>Video title</label>
-  <input id="videoTitle" placeholder="Your promotion title">
-  <label>Subtitle</label>
-  <input id="videoSubtitle" placeholder="Your message">
-  <canvas id="videoCanvas" width="720" height="900"></canvas>
-  <div class="actions">
-   <button onclick="makeVideo()">🎬 Create Video</button>
+ <section id="photo">
+  <div class="card">
+   <h2>📸 Photo Enhancer</h2><p>Upload a photo and adjust its appearance.</p>
+   <label>Choose photo</label><input type="file" id="photoFile" accept="image/*">
+   <label>Brightness: <span id="brightVal">100</span>%</label><input type="range" id="bright" min="0" max="200" value="100">
+   <label>Contrast: <span id="contrastVal">100</span>%</label><input type="range" id="contrast" min="0" max="200" value="100">
+   <label>Saturation: <span id="satVal">100</span>%</label><input type="range" id="sat" min="0" max="200" value="100">
+   <canvas id="photoCanvas" width="900" height="650"></canvas>
+   <div class="actions">
+    <button class="secondary-btn" onclick="resetPhoto()">↩ Reset</button>
+    <button onclick="downloadCanvas('photoCanvas','finframe-enhanced-photo.png')">⬇ Download Photo</button>
+   </div>
+   <p id="photoStatus">Upload a photo to begin.</p>
   </div>
-  <p id="videoStatus">Upload an image to begin.</p>
-  <a id="videoDownload" style="display:none;color:#d9c4ff" download="finframe-promo.webm">⬇ Download Promo Video</a>
- </div>
-</section>
+ </section>
 
-<section id="tryon">
- <div class="card">
-  <h2>👗 Virtual Try-On Preview</h2>
-  <p>This is a basic image composition tool, not an AI clothing try-on.</p>
-  <label>Upload portrait image</label>
-  <input type="file" id="personFile" accept="image/*">
-  <label>Upload clothing image</label>
-  <input type="file" id="clothFile" accept="image/*">
-  <canvas id="tryCanvas" width="800" height="900"></canvas>
-  <div class="actions">
-   <button onclick="createTryon()">✨ Create Composition</button>
-   <button onclick="downloadCanvas('tryCanvas','finframe-tryon.png')">⬇ Download</button>
+ <section id="product">
+  <div class="card">
+   <h2>💎 Product Visuals Studio</h2><p>Create product designs with custom text and shadow.</p>
+   <label>Upload Product Photo</label><input type="file" id="productFile" accept="image/*">
+   <label>Product Name</label><input id="productNameInput" placeholder="Enter product name">
+   <label>Tagline</label><input id="productTagline" placeholder="Example: Premium Quality">
+   <label>Background Color</label><input type="color" id="productBg" value="#17152d">
+   <label>Text Color</label><input type="color" id="productText" value="#ffffff">
+   <label>Shadow Strength: <span id="shadowVal">20</span></label><input type="range" id="shadow" min="0" max="50" value="20">
+   <canvas id="productCanvas" width="1000" height="1000"></canvas>
+   <div class="actions">
+    <button onclick="createProduct()">✨ Create Design</button>
+    <button class="secondary-btn" onclick="downloadCanvas('productCanvas','finframe-product-design.png')">⬇ Download Design</button>
+   </div>
+   <p id="productStatus">Upload a product photo to begin.</p>
   </div>
-  <p id="tryStatus">Upload both images to begin.</p>
- </div>
-</section>
+ </section>
 
-<section id="game">
- <div class="card">
-  <h2>🎮 Game Studio — Tap Challenge</h2>
-  <p>Tap the button as many times as you can!</p>
-  <h3>Score: <span id="score">0</span></h3>
-  <button style="width:100%;padding:25px;font-size:22px" onclick="tapGame()">🎯 TAP ME!</button>
-  <div class="actions">
-   <button class="secondary" onclick="resetGame()">↩ Reset Game</button>
+ <section id="poster">
+  <div class="card">
+   <h2>🖼️ Poster Maker Studio</h2><p>Create your own custom poster.</p>
+   <label>Upload Poster Image</label><input type="file" id="posterFile" accept="image/*">
+   <label>Poster Title</label><input id="posterTitle" placeholder="Enter poster title">
+   <label>Subtitle</label><input id="posterSubtitle" placeholder="Enter subtitle">
+   <label>Background Color</label><input type="color" id="posterBg" value="#17152d">
+   <label>Text Color</label><input type="color" id="posterText" value="#ffffff">
+   <canvas id="posterCanvas" width="1000" height="1200"></canvas>
+   <div class="actions">
+    <button onclick="createPoster()">✨ Create Poster</button>
+    <button class="secondary-btn" onclick="downloadCanvas('posterCanvas','finframe-poster.png')">⬇ Download Poster</button>
+   </div>
+   <p id="posterStatus">Upload an image to begin.</p>
   </div>
-  <p id="gameMessage">Ready? Start tapping!</p>
- </div>
-</section>
+ </section>
 
-</main>
+ <section id="creative">
+  <div class="card">
+   <h2>🎨 Creative Studio</h2><p>Explore your creative tools.</p>
+   <div class="tool-grid">
+    <button class="tool-card" onclick="openTool('tryon')"><div class="tool-icon">👗</div><strong>Virtual Try-On</strong><span>Image composition tool</span></button>
+    <button class="tool-card" onclick="openTool('product')"><div class="tool-icon">💎</div><strong>Product Visuals</strong><span>Product design tool</span></button>
+    <button class="tool-card" onclick="openTool('video')"><div class="tool-icon">🎬</div><strong>Promo Videos</strong><span>Simple video maker</span></button>
+    <button class="tool-card" onclick="openTool('poster')"><div class="tool-icon">🖼️</div><strong>Posters</strong><span>Poster design</span></button>
+    <button class="tool-card" onclick="openTool('caption')"><div class="tool-icon">✍️</div><strong>Captions</strong><span>Caption ideas</span></button>
+    <button class="tool-card" onclick="openTool('voice')"><div class="tool-icon">🎙️</div><strong>Voiceover</strong><span>Browser text-to-speech</span></button>
+    <button class="tool-card" onclick="openTool('game')"><div class="tool-icon">🎮</div><strong>Game Studio</strong><span>Play a mini game</span></button>
+   </div>
+  </div>
+ </section>
 
-<footer>
- FinFrame AI Lab • Free Prototype • Made with ❤️
-</footer>
+ <section id="caption">
+  <div class="card">
+   <h2>✍️ Caption Generator</h2>
+   <label>What is your post about?</label><input id="captionTopic" placeholder="Example: New product launch">
+   <label>Choose style</label>
+   <select id="captionStyle"><option>Professional</option><option>Funny</option><option>Inspirational</option><option>Promotional</option><option>Short and simple</option></select>
+   <div class="actions"><button onclick="makeCaption()">✨ Generate Caption</button></div>
+   <div class="preview" id="captionOutput">Your caption will appear here.</div>
+   <div class="actions"><button class="secondary-btn" onclick="copyText('captionOutput')">📋 Copy Caption</button></div>
+  </div>
+ </section>
+
+ <section id="voice">
+  <div class="card">
+   <h2>🎙️ Voiceover Studio</h2><p>Use your browser's built-in speech engine.</p>
+   <label>Enter your script</label><textarea id="voiceText" placeholder="Write something to speak..."></textarea>
+   <label>Voice</label><select id="voiceSelect"><option value="">Default voice</option></select>
+   <label>Speed</label><input type="range" id="voiceRate" min="0.5" max="2" step="0.1" value="1">
+   <div class="actions"><button onclick="speakText()">▶ Speak</button><button class="secondary-btn" onclick="stopSpeak()">■ Stop</button></div>
+   <p id="voiceStatus">Voice availability depends on your browser and device.</p>
+  </div>
+ </section>
+
+ <section id="video">
+  <div class="card">
+   <h2>🎬 Promo Video Maker</h2><p>Create a simple animated video from an image and text.</p>
+   <label>Upload image</label><input type="file" id="videoFile" accept="image/*">
+   <label>Video title</label><input id="videoTitle" placeholder="Your promotion title">
+   <label>Subtitle</label><input id="videoSubtitle" placeholder="Your message">
+   <canvas id="videoCanvas" width="720" height="900"></canvas>
+   <div class="actions"><button onclick="makeVideo()">🎬 Create Video</button></div>
+   <p id="videoStatus">Upload an image to begin.</p>
+   <a id="videoDownload" style="display:none;color:#d9c4ff" download="finframe-promo.webm">⬇ Download Promo Video</a>
+  </div>
+ </section>
+
+ <section id="tryon">
+  <div class="card">
+   <h2>👗 Virtual Try-On Preview</h2>
+   <p>This is a basic image composition tool, not AI clothing fitting.</p>
+   <label>Upload portrait image</label><input type="file" id="personFile" accept="image/*">
+   <label>Upload clothing image</label><input type="file" id="clothFile" accept="image/*">
+   <canvas id="tryCanvas" width="800" height="900"></canvas>
+   <div class="actions">
+    <button onclick="createTryon()">✨ Create Composition</button>
+    <button class="secondary-btn" onclick="downloadCanvas('tryCanvas','finframe-tryon.png')">⬇ Download</button>
+   </div>
+   <p id="tryStatus">Upload both images to begin.</p>
+  </div>
+ </section>
+
+ <section id="game">
+  <div class="card">
+   <h2>🎮 Game Studio — Tap Challenge</h2>
+   <p>Tap the button as many times as you can!</p>
+   <h3>Score: <span id="score">0</span></h3>
+   <button style="width:100%;padding:25px;font-size:22px" onclick="tapGame()">🎯 TAP ME!</button>
+   <div class="actions"><button class="secondary-btn" onclick="resetGame()">↩ Reset Game</button></div>
+   <p id="gameMessage">Ready? Start tapping!</p>
+  </div>
+ </section>
+
+ </main>
+ <footer>FinFrame AI Lab • Free Browser Prototype • Made with ❤️</footer>
+</div>
+</div>
+
+<div class="mobile-nav">
+ <button onclick="show('home')"><span>🏠</span>Home</button>
+ <button onclick="show('builder')"><span>🚀</span>Builder</button>
+ <button onclick="show('photo')"><span>📸</span>Photo</button>
+ <button onclick="show('creative')"><span>🎨</span>Creative</button>
+ <button onclick="show('game')"><span>🎮</span>Game</button>
+</div>
 
 <script>
+const $=id=>document.getElementById(id);
+
+const pageNames={
+ home:'✨ FinFrame AI Lab',
+ builder:'🚀 Project Builder',
+ photo:'📸 Photo Enhancer',
+ product:'💎 Product Studio',
+ poster:'🖼️ Poster Maker',
+ creative:'🎨 Creative Studio',
+ game:'🎮 Game Studio',
+ caption:'✍️ Caption Generator',
+ voice:'🎙️ Voiceover Studio',
+ video:'🎬 Promo Video Maker',
+ tryon:'👗 Virtual Try-On'
+};
+
 function show(id){
  document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
- const target=document.getElementById(id);
- if(target) target.classList.add('active');
- window.scrollTo(0,0);
+ const target=$(id);
+ if(!target)return;
+ target.classList.add('active');
+ document.querySelectorAll('.side-btn').forEach(b=>{
+  b.classList.toggle('active',b.dataset.page===id);
+ });
+ $('topTitle').textContent=pageNames[id]||'FinFrame AI Lab';
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function openTool(id){
+ show(id);
+ saveRecent(id);
+}
+function quickPrompt(text){
+ $('homePrompt').value=text;
+ $('homePrompt').focus();
+}
+function sendPrompt(){
+ const text=$('homePrompt').value.trim();
+ if(!text){alert('Please describe what you want to create.');return}
+ const t=text.toLowerCase();
+ let destination='builder';
+ if(t.includes('photo')||t.includes('image')||t.includes('enhance'))destination='photo';
+ else if(t.includes('product'))destination='product';
+ else if(t.includes('poster'))destination='poster';
+ else if(t.includes('caption'))destination='caption';
+ else if(t.includes('video'))destination='video';
+ else if(t.includes('voice'))destination='voice';
+ else if(t.includes('game'))destination='game';
+ else if(t.includes('try on')||t.includes('clothing'))destination='tryon';
+ if(destination==='builder'){
+  $('projectIdea').value=text;
+  $('projectName').value='My New Project';
+ }
+ if(destination==='caption')$('captionTopic').value=text;
+ show(destination);
+ saveRecent(destination);
+}
+function filterTools(){
+ const q=$('toolSearch').value.toLowerCase();
+ document.querySelectorAll('#homeToolGrid .tool-card').forEach(card=>{
+  card.style.display=card.dataset.search.includes(q)?'':'none';
+ });
+}
+function saveRecent(id){
+ try{
+  let list=JSON.parse(localStorage.getItem('finframeRecent')||'[]');
+  list=list.filter(x=>x.id!==id);
+  list.unshift({id,time:new Date().toLocaleString()});
+  list=list.slice(0,5);
+  localStorage.setItem('finframeRecent',JSON.stringify(list));
+  renderRecent();
+ }catch(e){}
+}
+function renderRecent(){
+ const box=$('recentList');
+ if(!box)return;
+ let list=[];
+ try{list=JSON.parse(localStorage.getItem('finframeRecent')||'[]')}catch(e){}
+ if(!list.length){
+  box.innerHTML='<div class="empty-recent">Your recent project previews will appear here.</div>';
+  return;
+ }
+ box.innerHTML='';
+ list.forEach(item=>{
+  const name=pageNames[item.id]||item.id;
+  const div=document.createElement('div');
+  div.className='recent-item';
+  const icon=document.createElement('div');
+  icon.className='recent-icon';
+  icon.textContent=name.split(' ')[0];
+  const detail=document.createElement('div');
+  const strong=document.createElement('strong');
+  strong.textContent=name;
+  const small=document.createElement('small');
+  small.textContent='Recently opened';
+  detail.append(strong,small);
+  div.append(icon,detail);
+  div.onclick=()=>show(item.id);
+  div.style.cursor='pointer';
+  box.appendChild(div);
+ });
 }
 
 function buildProject(){
- const type=document.getElementById('projectType').value;
- const name=document.getElementById('projectName').value.trim()||'My Project';
- const idea=document.getElementById('projectIdea').value.trim();
- document.getElementById('projectOutput').textContent=
+ const type=$('projectType').value;
+ const name=$('projectName').value.trim()||'My Project';
+ const idea=$('projectIdea').value.trim();
+ $('projectOutput').textContent=
  'PROJECT PREVIEW\n\nName: '+name+
  '\nType: '+type+
  '\n\nProject idea:\n'+(idea||'No description added yet.')+
  '\n\nSuggested next steps:\n1. Plan the design.\n2. Create the main features.\n3. Test the project.\n\nNote: This is a text preview, not an automatically generated app.';
+ saveRecent('builder');
 }
 function clearProject(){
- document.getElementById('projectName').value='';
- document.getElementById('projectIdea').value='';
- document.getElementById('projectOutput').textContent='Your project preview will appear here.';
+ $('projectName').value='';
+ $('projectIdea').value='';
+ $('projectOutput').textContent='Your project preview will appear here.';
 }
 
 function loadImage(file,callback){
@@ -354,6 +646,7 @@ function loadImage(file,callback){
  reader.onload=e=>{
   const img=new Image();
   img.onload=()=>callback(img);
+  img.onerror=()=>alert('Could not load this image.');
   img.src=e.target.result;
  };
  reader.readAsDataURL(file);
@@ -364,91 +657,95 @@ function fitImage(ctx,img,x,y,w,h){
  ctx.drawImage(img,x+(w-sw)/2,y+(h-sh)/2,sw,sh);
 }
 function downloadCanvas(id,name){
- const c=document.getElementById(id);
- if(!c){return}
+ const c=$(id);
+ if(!c)return;
  const a=document.createElement('a');
- a.download=name;a.href=c.toDataURL('image/png');a.click();
+ a.download=name;
+ a.href=c.toDataURL('image/png');
+ a.click();
 }
 
 let photoImg=null;
-document.getElementById('photoFile').addEventListener('change',e=>{
+$('photoFile').addEventListener('change',e=>{
  loadImage(e.target.files[0],img=>{
-  photoImg=img;drawPhoto();
-  document.getElementById('photoStatus').textContent='Photo loaded successfully.';
+  photoImg=img;
+  drawPhoto();
+  $('photoStatus').textContent='Photo loaded successfully.';
  });
 });
 ['bright','contrast','sat'].forEach(id=>{
- document.getElementById(id).addEventListener('input',()=>{
-  document.getElementById(id+'Val').textContent=document.getElementById(id).value;
+ $(id).addEventListener('input',()=>{
+  $(id+'Val').textContent=$(id).value;
   drawPhoto();
  });
 });
 function drawPhoto(){
  if(!photoImg)return;
- const c=document.getElementById('photoCanvas'),ctx=c.getContext('2d');
+ const c=$('photoCanvas'),ctx=c.getContext('2d');
  ctx.clearRect(0,0,c.width,c.height);
- ctx.filter='brightness('+bright.value+'%) contrast('+contrast.value+'%) saturate('+sat.value+'%)';
+ ctx.filter='brightness('+ $('bright').value+'%) contrast('+ $('contrast').value+'%) saturate('+ $('sat').value+'%)';
  fitImage(ctx,photoImg,0,0,c.width,c.height);
  ctx.filter='none';
 }
 function resetPhoto(){
- bright.value=100;contrast.value=100;sat.value=100;
- brightVal.textContent=100;contrastVal.textContent=100;satVal.textContent=100;
+ $('bright').value=100;$('contrast').value=100;$('sat').value=100;
+ $('brightVal').textContent=100;
+ $('contrastVal').textContent=100;
+ $('satVal').textContent=100;
  drawPhoto();
 }
 
 let productImg=null;
-productFile.addEventListener('change',e=>{
+$('productFile').addEventListener('change',e=>{
  loadImage(e.target.files[0],img=>{
   productImg=img;
-  productStatus.textContent='Product photo loaded. Press Create Design.';
+  $('productStatus').textContent='Product photo loaded. Press Create Design.';
  });
 });
-shadow.addEventListener('input',()=>shadowVal.textContent=shadow.value);
+$('shadow').addEventListener('input',()=>$('shadowVal').textContent=$('shadow').value);
 function createProduct(){
- if(!productImg){productStatus.textContent='Please upload a product photo first.';return}
- const c=productCanvas,ctx=c.getContext('2d');
- ctx.fillStyle=productBg.value;ctx.fillRect(0,0,1000,1000);
+ if(!productImg){$('productStatus').textContent='Please upload a product photo first.';return}
+ const c=$('productCanvas'),ctx=c.getContext('2d');
+ ctx.fillStyle=$('productBg').value;ctx.fillRect(0,0,1000,1000);
  ctx.save();
  ctx.shadowColor='rgba(0,0,0,.7)';
- ctx.shadowBlur=Number(shadow.value)*2;
- ctx.fillStyle='#ffffff';
- ctx.fillRect(100,80,800,680);
+ ctx.shadowBlur=Number($('shadow').value)*2;
+ ctx.fillStyle='#ffffff';ctx.fillRect(100,80,800,680);
  ctx.restore();
  fitImage(ctx,productImg,130,100,740,710);
- ctx.fillStyle=productText.value;
- ctx.textAlign='center';
- ctx.font='bold 58px Arial';
- ctx.fillText(productNameInput.value||'Premium Product',500,860,900);
+ ctx.fillStyle=$('productText').value;
+ ctx.textAlign='center';ctx.font='bold 58px Arial';
+ ctx.fillText($('productNameInput').value||'Premium Product',500,860,900);
  ctx.font='30px Arial';
- ctx.fillText(productTagline.value||'Quality • Style • Excellence',500,925,900);
- productStatus.textContent='Your product design is ready to download.';
+ ctx.fillText($('productTagline').value||'Quality • Style • Excellence',500,925,900);
+ $('productStatus').textContent='Your product design is ready to download.';
+ saveRecent('product');
 }
 
 let posterImg=null;
-posterFile.addEventListener('change',e=>{
+$('posterFile').addEventListener('change',e=>{
  loadImage(e.target.files[0],img=>{
   posterImg=img;
-  posterStatus.textContent='Image loaded successfully.';
+  $('posterStatus').textContent='Image loaded successfully.';
  });
 });
 function createPoster(){
- if(!posterImg){posterStatus.textContent='Please upload an image first.';return}
- const c=posterCanvas,ctx=c.getContext('2d');
- ctx.fillStyle=posterBg.value;ctx.fillRect(0,0,1000,1200);
+ if(!posterImg){$('posterStatus').textContent='Please upload an image first.';return}
+ const c=$('posterCanvas'),ctx=c.getContext('2d');
+ ctx.fillStyle=$('posterBg').value;ctx.fillRect(0,0,1000,1200);
  fitImage(ctx,posterImg,55,50,890,850);
- ctx.fillStyle=posterText.value;
- ctx.textAlign='center';
+ ctx.fillStyle=$('posterText').value;ctx.textAlign='center';
  ctx.font='bold 65px Arial';
- ctx.fillText(posterTitle.value||'YOUR TITLE',500,1010,920);
+ ctx.fillText($('posterTitle').value||'YOUR TITLE',500,1010,920);
  ctx.font='32px Arial';
- ctx.fillText(posterSubtitle.value||'Your subtitle goes here',500,1080,920);
- posterStatus.textContent='Poster created successfully!';
+ ctx.fillText($('posterSubtitle').value||'Your subtitle goes here',500,1080,920);
+ $('posterStatus').textContent='Poster created successfully!';
+ saveRecent('poster');
 }
 
 function makeCaption(){
- const topic=captionTopic.value.trim()||'our latest creation';
- const style=captionStyle.value;
+ const topic=$('captionTopic').value.trim()||'our latest creation';
+ const style=$('captionStyle').value;
  const samples={
  Professional:'Introducing '+topic+'. Thoughtfully created with quality and care. Discover more today. #Quality #Innovation',
  Funny:'We tried to keep '+topic+' a secret… but it is too good! 😄✨ #Fun',
@@ -456,10 +753,11 @@ function makeCaption(){
  Promotional:'✨ SPECIAL UPDATE! Discover '+topic+'. Do not miss out—explore it today! #NewLaunch',
  'Short and simple':'✨ '+topic+' — Made with love. ❤️'
  };
- captionOutput.textContent=samples[style];
+ $('captionOutput').textContent=samples[style];
+ saveRecent('caption');
 }
 function copyText(id){
- const text=document.getElementById(id).textContent;
+ const text=$(id).textContent;
  if(navigator.clipboard){
   navigator.clipboard.writeText(text).then(()=>alert('Copied!')).catch(()=>alert(text));
  }else alert(text);
@@ -468,115 +766,134 @@ function copyText(id){
 function getVoices(){
  if(!('speechSynthesis' in window))return;
  const voices=speechSynthesis.getVoices();
- voiceSelect.innerHTML='<option value="">Default voice</option>';
+ $('voiceSelect').innerHTML='<option value="">Default voice</option>';
  voices.forEach((v,i)=>{
   const o=document.createElement('option');
   o.value=i;o.textContent=v.name+' ('+v.lang+')';
-  voiceSelect.appendChild(o);
+  $('voiceSelect').appendChild(o);
  });
 }
 if('speechSynthesis' in window){
- getVoices();speechSynthesis.onvoiceschanged=getVoices;
+ getVoices();
+ speechSynthesis.onvoiceschanged=getVoices;
 }
 function speakText(){
  if(!('speechSynthesis' in window)){
-  voiceStatus.textContent='Speech is not supported in this browser.';return;
+  $('voiceStatus').textContent='Speech is not supported in this browser.';return;
  }
- const text=voiceText.value.trim();
- if(!text){voiceStatus.textContent='Please enter some text.';return}
+ const text=$('voiceText').value.trim();
+ if(!text){$('voiceStatus').textContent='Please enter some text.';return}
  speechSynthesis.cancel();
  const utter=new SpeechSynthesisUtterance(text);
  const voices=speechSynthesis.getVoices();
- if(voiceSelect.value!==''&&voices[voiceSelect.value])utter.voice=voices[voiceSelect.value];
- utter.rate=Number(voiceRate.value);
- utter.onend=()=>voiceStatus.textContent='Speech finished.';
+ const selected=$('voiceSelect').value;
+ if(selected!==''&&voices[selected])utter.voice=voices[selected];
+ utter.rate=Number($('voiceRate').value);
+ utter.onend=()=>$('voiceStatus').textContent='Speech finished.';
  speechSynthesis.speak(utter);
- voiceStatus.textContent='Speaking...';
+ $('voiceStatus').textContent='Speaking...';
+ saveRecent('voice');
 }
 function stopSpeak(){
  if('speechSynthesis' in window)speechSynthesis.cancel();
- voiceStatus.textContent='Speech stopped.';
+ $('voiceStatus').textContent='Speech stopped.';
 }
 
 let videoImg=null;
-videoFile.addEventListener('change',e=>{
+$('videoFile').addEventListener('change',e=>{
  loadImage(e.target.files[0],img=>{
-  videoImg=img;videoStatus.textContent='Image loaded.';
+  videoImg=img;
+  $('videoStatus').textContent='Image loaded.';
  });
 });
 async function makeVideo(){
- if(!videoImg){videoStatus.textContent='Please upload an image first.';return}
- const c=videoCanvas,ctx=c.getContext('2d');
+ if(!videoImg){$('videoStatus').textContent='Please upload an image first.';return}
+ const c=$('videoCanvas'),ctx=c.getContext('2d');
  if(!c.captureStream||!window.MediaRecorder){
-  videoStatus.textContent='Video recording is not supported by this browser. Try a supported browser.';
+  $('videoStatus').textContent='Video recording is not supported by this browser.';
   return;
  }
- videoStatus.textContent='Creating video... Please wait.';
+ $('videoStatus').textContent='Creating video... Please wait.';
  const stream=c.captureStream(24);
  let recorder;
- try{recorder=new MediaRecorder(stream,{mimeType:'video/webm'})}
- catch(e){videoStatus.textContent='Video format is not supported on this device.';return}
+ try{
+  const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
+  recorder=new MediaRecorder(stream,{mimeType:mime});
+ }catch(e){
+  $('videoStatus').textContent='Video format is not supported on this device.';
+  stream.getTracks().forEach(t=>t.stop());
+  return;
+ }
  const chunks=[];
  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
  recorder.onstop=()=>{
   const blob=new Blob(chunks,{type:'video/webm'});
   const url=URL.createObjectURL(blob);
-  videoDownload.href=url;videoDownload.style.display='block';
-  videoStatus.textContent='Video ready! Tap Download Promo Video.';
+  $('videoDownload').href=url;
+  $('videoDownload').style.display='block';
+  $('videoStatus').textContent='Video ready! Tap Download Promo Video.';
   stream.getTracks().forEach(t=>t.stop());
  };
  recorder.start();
  let frame=0;
- const title=videoTitle.value||'SPECIAL OFFER';
- const subtitle=videoSubtitle.value||'Discover something amazing';
+ const title=$('videoTitle').value||'SPECIAL OFFER';
+ const subtitle=$('videoSubtitle').value||'Discover something amazing';
  function drawFrame(){
   ctx.fillStyle='#17152d';ctx.fillRect(0,0,c.width,c.height);
   fitImage(ctx,videoImg,20,20,680,650);
   ctx.fillStyle='#ffffff';ctx.textAlign='center';
   ctx.font='bold 48px Arial';ctx.fillText(title,360,750,680);
   ctx.font='28px Arial';ctx.fillText(subtitle,360,815,680);
-  ctx.fillStyle='#b58cff';
-  ctx.fillRect(0,870,c.width,30);
-  ctx.fillStyle='#ffffff';
-  ctx.font='20px Arial';ctx.fillText('FinFrame AI Lab',360,890);
+  ctx.fillStyle='#b58cff';ctx.fillRect(0,870,c.width,30);
+  ctx.fillStyle='#ffffff';ctx.font='20px Arial';
+  ctx.fillText('FinFrame AI Lab',360,890);
  }
  drawFrame();
  const interval=setInterval(()=>{
-  frame++;
-  drawFrame();
+  frame++;drawFrame();
   if(frame>=72){clearInterval(interval);recorder.stop()}
  },1000/24);
+ saveRecent('video');
 }
 
 let personImg=null,clothImg=null;
-personFile.addEventListener('change',e=>{
- loadImage(e.target.files[0],img=>{personImg=img;tryStatus.textContent='Portrait loaded.'});
+$('personFile').addEventListener('change',e=>{
+ loadImage(e.target.files[0],img=>{
+  personImg=img;$('tryStatus').textContent='Portrait loaded.';
+ });
 });
-clothFile.addEventListener('change',e=>{
- loadImage(e.target.files[0],img=>{clothImg=img;tryStatus.textContent='Clothing image loaded.'});
+$('clothFile').addEventListener('change',e=>{
+ loadImage(e.target.files[0],img=>{
+  clothImg=img;$('tryStatus').textContent='Clothing image loaded.';
+ });
 });
 function createTryon(){
  if(!personImg||!clothImg){
-  tryStatus.textContent='Please upload both images.';return;
+  $('tryStatus').textContent='Please upload both images.';return;
  }
- const c=tryCanvas,ctx=c.getContext('2d');
+ const c=$('tryCanvas'),ctx=c.getContext('2d');
  ctx.fillStyle='#18152d';ctx.fillRect(0,0,c.width,c.height);
  fitImage(ctx,personImg,0,0,800,900);
  ctx.save();ctx.globalAlpha=.85;
  fitImage(ctx,clothImg,210,220,380,450);
  ctx.restore();
- tryStatus.textContent='Composition created. This is not automatic AI fitting.';
+ $('tryStatus').textContent='Composition created. This is not automatic AI fitting.';
+ saveRecent('tryon');
 }
 
 let score=0;
 function tapGame(){
- score++;document.getElementById('score').textContent=score;
- document.getElementById('gameMessage').textContent='Great! Keep going! 🎉';
+ score++;
+ $('score').textContent=score;
+ $('gameMessage').textContent='Great! Keep going! 🎉';
 }
 function resetGame(){
- score=0;document.getElementById('score').textContent=0;
- document.getElementById('gameMessage').textContent='Ready? Start tapping!';
+ score=0;
+ $('score').textContent=0;
+ $('gameMessage').textContent='Ready? Start tapping!';
 }
+
+renderRecent();
 </script>
 </body>
-                                                    </html>
+</html>
