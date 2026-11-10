@@ -1081,14 +1081,14 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
  const say=t=>{if(el('vyCloudStatus'))el('vyCloudStatus').textContent=t;};
  async function profileFor(user){
   const name=(user.user_metadata&&user.user_metadata.full_name)||((user.email||'creator').split('@')[0]);
-  await db.from('profiles').upsert({id:user.id,full_name:name,username:(user.email||'creator').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,25)||'creator'},{onConflict:'id',ignoreDuplicates:true});
+  const uname=((user.email||'creator').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,20)||'creator')+'_'+user.id.slice(0,5); await db.from('profiles').upsert({id:user.id,full_name:name,username:uname},{onConflict:'id',ignoreDuplicates:true}); await db.from('profiles').update({username:uname}).eq('id',user.id).is('username',null);
   return name;
  }
  window.vySignUp=async function(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
   if(!email||password.length<6){say('Enter a valid email and a password with at least 6 characters.');return;}
   say('Creating your account…');
-  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name}}});
+  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://finframe-ai-lab.vercel.app/'}});
   if(r.error){say(r.error.message);return;}
   if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
   else say('Account created. Check your email for the confirmation link, then log in here.');
