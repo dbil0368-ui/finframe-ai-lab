@@ -1,4 +1,4 @@
-const CACHE_NAME = "finframe-pwa-v2";
+const CACHE_NAME = "finframe-pwa-v3";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/finframe.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
