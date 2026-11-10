@@ -73,7 +73,7 @@ button{cursor:pointer}
 }
 .top-title{font-weight:bold;font-size:15px}
 .menu-toggle{display:none}
-@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}body.menu-open{position:fixed!important;overflow:hidden!important;overscroll-behavior:none;width:100%;height:100%;touch-action:none}body.menu-open::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:1000;touch-action:pan-y}.sidebar{display:flex;position:fixed!important;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;height:100dvh;overflow-y:auto;overscroll-behavior:contain;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:1001;touch-action:pan-y}.sidebar.mobile-open{transform:translateX(0)}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.main-area{margin-left:0}}
+@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}body.menu-open{overflow:hidden;overscroll-behavior:none}body.menu-open::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:40}.sidebar{display:flex;position:fixed;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;overflow-y:auto;overscroll-behavior:contain;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}.sidebar.mobile-open{transform:translateX(0)}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.main-area{margin-left:0}}
 .top-actions{display:flex;gap:9px;align-items:center}
 .icon-btn{
  background:var(--panel2);border:1px solid var(--border);
@@ -781,32 +781,17 @@ window.vyEditProfile=function(){const name=prompt('Choose your profile name','yo
 window.closeMobileMenu=function(){
  const side=document.querySelector('.sidebar');
  const menuButton=document.querySelector('.menu-toggle');
- if(!document.body.classList.contains('menu-open'))return;
- const savedY=Number(document.body.dataset.menuScrollY||0);
  if(side)side.classList.remove('mobile-open');
  document.body.classList.remove('menu-open');
- document.body.classList.remove('menu-scroll-lock');
- document.body.style.top='';
- document.body.style.left='';
- document.body.style.right='';
- document.body.style.width='';
  if(menuButton)menuButton.setAttribute('aria-expanded','false');
- window.scrollTo(0,savedY);
 };
 window.toggleMobileMenu=function(){
  const side=document.querySelector('.sidebar');
  if(!side)return;
- if(document.body.classList.contains('menu-open')){window.closeMobileMenu();return;}
- const y=window.scrollY||window.pageYOffset||0;
- document.body.dataset.menuScrollY=String(y);
- document.body.style.top='-'+y+'px';
- document.body.style.left='0';
- document.body.style.right='0';
- document.body.style.width='100%';
- document.body.classList.add('menu-scroll-lock','menu-open');
- side.classList.add('mobile-open');
+ const opened=side.classList.toggle('mobile-open');
+ document.body.classList.toggle('menu-open',opened);
  const menuButton=document.querySelector('.menu-toggle');
- if(menuButton)menuButton.setAttribute('aria-expanded','true');
+ if(menuButton)menuButton.setAttribute('aria-expanded',opened?'true':'false');
 };
 document.addEventListener('click',function(event){
  const side=document.querySelector('.sidebar');
