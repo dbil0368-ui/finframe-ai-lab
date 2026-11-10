@@ -550,7 +550,17 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  <section id="tryon">
   <div class="card">
    <h2>👗 Virtual Try-On Preview</h2>
-   <p>Make a manual outfit mock-up by placing a clothing image over a portrait. This tool does not automatically fit clothes or remove image backgrounds.</p>
+   <p>Upload a person's photo and a separate clothing photo. The AI service can create a realistic try-on after a secure backend is connected. Until then, the manual preview below remains available.</p>
+   <div class="card" style="background:#101020;border-color:#65528f">
+    <h3>✨ AI Virtual Try-On</h3>
+    <p>Use the two uploads below, then generate an AI outfit preview. Your images are sent only when you press Generate; the AI provider and its privacy terms will apply once a backend is configured.</p>
+    <button class="primary-btn" id="aiTryonButton" type="button" onclick="generateAiTryon()">✨ Generate AI Try-On</button>
+    <p id="aiTryonStatus" role="status" aria-live="polite">AI service is not connected yet. The secure backend setup is being prepared.</p>
+    <div id="aiTryonResultWrap" class="hidden">
+     <img id="aiTryonResult" alt="AI virtual try-on result" style="display:block;max-width:100%;max-height:650px;margin:12px auto;border-radius:12px">
+     <a id="aiTryonDownload" class="secondary-btn" download="finframe-ai-tryon.png">⬇ Save AI result</a>
+    </div>
+   </div>
    <label>1. Upload portrait image</label><input type="file" id="personFile" accept="image/*">
    <label>2. Upload clothing image (a transparent PNG works best)</label><input type="file" id="clothFile" accept="image/*">
    <div class="tryon-upload-grid">
@@ -1072,6 +1082,28 @@ $('clothFile').addEventListener('change',e=>{
   if(personImg&&clothImg)createTryon();
  });
 });
+async function generateAiTryon(){
+ const person=$('personFile').files[0], garment=$('clothFile').files[0];
+ const status=$('aiTryonStatus'), button=$('aiTryonButton'), wrap=$('aiTryonResultWrap');
+ if(!person||!garment){status.textContent='Please choose both a person's photo and a separate clothing photo first.';return;}
+ if(!person.type.startsWith('image/')||!garment.type.startsWith('image/')){status.textContent='Please select image files only.';return;}
+ if(person.size>10*1024*1024||garment.size>10*1024*1024){status.textContent='Each image must be 10 MB or smaller.';return;}
+ const form=new FormData();form.append('person',person);form.append('garment',garment);
+ button.disabled=true;button.textContent='Generating…';status.textContent='Sending images securely to the configured AI service…';wrap.classList.add('hidden');
+ try{
+  const response=await fetch('./api/tryon',{method:'POST',body:form});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'AI service is not configured yet. Please connect a compatible provider on the secure backend.');
+  let image=data.imageUrl||data.image_url||data.imageBase64||data.image_base64||data.output;
+  if(Array.isArray(image))image=image[0];
+  if(typeof image==='string'&&!image.startsWith('data:')&&!/^https?:\/\//i.test(image)&&!image.startsWith('/'))image='data:image/png;base64,'+image;
+  if(!image){throw new Error('The AI provider responded, but did not return an image in imageUrl, imageBase64, or output.');}
+  const img=$('aiTryonResult');img.src=image;$('aiTryonDownload').href=image;wrap.classList.remove('hidden');
+  status.textContent='AI try-on image generated. Check the result before saving.';saveRecent('AI Virtual Try-On');
+ }catch(error){status.textContent=error.message||'Could not generate the AI try-on. Please try again.';}
+ finally{button.disabled=false;button.textContent='✨ Generate AI Try-On';}
+}
+
 function createTryon(){
  if(!personImg||!clothImg){
   $('tryStatus').textContent='Please upload both a portrait and a clothing image.';return;
