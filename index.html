@@ -677,6 +677,17 @@ body.hide-tool-descriptions .tool-card span{display:none}
  <section id="vybora">
   <div class="page-title"><h2>💜 VYBORA</h2><p>Watch. Create. Connect. — your short-video community.</p></div>
   <style>
+   #vybora .vy-main-nav{display:flex;justify-content:space-around;gap:6px;max-width:980px;margin:0 auto 18px;padding:8px;background:var(--panel);border:1px solid var(--border);border-radius:15px;position:sticky;top:8px;z-index:5}
+   #vybora .vy-main-nav button{flex:1;min-width:0;border:0;border-radius:10px;padding:11px 7px;background:transparent;color:var(--muted);font-weight:650;cursor:pointer}
+   #vybora .vy-main-nav button.active{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff}
+   #vybora .vy-main-nav button span{margin-left:4px}
+   #vybora .vy-page-panel{max-width:980px;margin:0 auto 18px;padding:20px;background:var(--panel);border:1px solid var(--border);border-radius:18px;min-height:220px}
+   #vybora .vy-page-panel h3{margin-top:0}
+   #vybora .vy-inbox-item{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--border)}
+   #vybora .vy-inbox-item:last-child{border-bottom:0}
+   #vybora .vy-explore-tags{display:flex;gap:9px;flex-wrap:wrap}
+   #vybora .vy-explore-tags button{border:1px solid var(--border);border-radius:999px;padding:10px 14px;background:var(--panel2);color:var(--text)}
+   @media(max-width:520px){#vybora .vy-main-nav{gap:2px;padding:5px}#vybora .vy-main-nav button{padding:10px 2px;font-size:12px}#vybora .vy-main-nav button span{display:block;margin:3px 0 0}}
    #vybora .vy-wrap{max-width:980px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px}
    #vybora .vy-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px}
    #vybora .vy-head{display:flex;align-items:center;gap:10px;padding:13px;min-width:0}
@@ -704,6 +715,15 @@ body.hide-tool-descriptions .tool-card span{display:none}
    #vybora .vy-profile-name{overflow-wrap:anywhere}
    @media(max-width:760px){#vybora .vy-wrap{grid-template-columns:1fr}#vybora .vy-side{position:static;grid-row:1}#vybora .vy-video{height:66vh;min-height:420px}#vybora .vy-side .card{margin-bottom:10px}}
   </style>
+  <nav class="vy-main-nav" aria-label="VYBORA main navigation">
+   <button class="active" data-vy-page="home" onclick="vyNavigate('home',this)">⌂ <span>Home</span></button>
+   <button data-vy-page="reels" onclick="vyNavigate('reels',this)">▶ <span>Reels</span></button>
+   <button data-vy-page="explore" onclick="vyNavigate('explore',this)">⌕ <span>Explore</span></button>
+   <button data-vy-page="create" onclick="vyNavigate('create',this)">＋ <span>Create</span></button>
+   <button data-vy-page="inbox" onclick="vyNavigate('inbox',this)">✉ <span>Inbox</span></button>
+   <button data-vy-page="profile" onclick="vyNavigate('profile',this)">◉ <span>Profile</span></button>
+  </nav>
+  <div id="vyPagePanel" class="vy-page-panel" hidden aria-live="polite"></div>
   <div class="vy-wrap">
    <div>
     <div class="vy-search"><input id="vySearchInput" type="text" placeholder="🔎 Search captions or #hashtags" oninput="vyRenderFeed()"><button class="secondary-btn" onclick="document.getElementById('vySearchInput').value='';vyRenderFeed()">Clear</button></div>
@@ -807,6 +827,24 @@ window.vyShare=function(btn){const card=btn?.closest('[data-vy-id]'),title=card?
 window.vyComment=function(btn){const card=btn.closest('[data-vy-id]'),box=card.querySelector('.vy-comments');const comment=prompt('Write a comment');if(comment&&comment.trim()){const line=document.createElement('div');line.className='vy-comment';line.textContent=vyProfile()+': '+comment.trim();box.appendChild(line);const s=vyState(),comments=s.comments||{};comments[card.dataset.vyId]=comments[card.dataset.vyId]||[];comments[card.dataset.vyId].push(comment.trim());vySaveState({comments});}};
 window.vyUpload=function(){const file=$('vyVideoFile').files[0],caption=$('vyCaptionInput').value.trim(),status=$('vyUploadStatus');if(!file){status.textContent='Please choose a video from your phone first.';return;}if(!file.type.startsWith('video/')){status.textContent='Please select a video file.';return;}if(file.size>100*1024*1024){status.textContent='Choose a video smaller than 100 MB for this browser preview.';return;}const url=URL.createObjectURL(file),id='local-'+Date.now(),card=document.createElement('article');card.className='vy-card';card.dataset.vyId=id;card.dataset.vyUser=vyProfile();const head=document.createElement('div');head.className='vy-head';const avatar=document.createElement('div');avatar.className='vy-avatar';avatar.textContent=vyProfile().charAt(0).toUpperCase();const name=document.createElement('strong');name.textContent=vyProfile()+' · just now';head.append(avatar,name);const video=document.createElement('video');video.controls=true;video.playsInline=true;video.preload='metadata';video.src=url;video.style.cssText='display:block;width:100%;max-height:620px;background:#000';const cap=document.createElement('div');cap.className='vy-caption';cap.textContent=caption||'My first VYBORA Reel ✨';const comments=document.createElement('div');comments.className='vy-comments';const actions=document.createElement('div');actions.className='vy-actions';actions.innerHTML='<button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>0</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button>';card.append(head,video,actions,cap,comments);$('vyFeed').prepend(card);$('vyPostCount').textContent=String((Number($('vyPostCount').textContent)||0)+1);$('vyCaptionInput').value='';status.textContent='Your Reel preview has been added. It is available only in this open browser session—not uploaded for other users.';window.vyFilter='for-you';document.querySelectorAll('#vybora .vy-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.vyFilter==='for-you'));vyRenderFeed();};
 window.vyEditProfile=function(){const name=prompt('Choose your VYBORA profile name',vyProfile());if(name&&name.trim()){const clean=name.trim().replace(/^@/,'').slice(0,24);vySaveState({profile:clean});$('vyProfileName').textContent=clean;$('vyProfileAvatar').textContent=clean.charAt(0).toUpperCase();}};
+window.vyNavigate=function(page,button){
+ document.querySelectorAll('#vybora .vy-main-nav button').forEach(function(b){b.classList.toggle('active',b.dataset.vyPage===page);});
+ const panel=$('vyPagePanel'),wrap=document.querySelector('#vybora .vy-wrap');
+ if(!panel||!wrap)return;
+ if(page==='home'||page==='reels'){panel.hidden=true;wrap.hidden=false;window.vyFilter=page==='reels'?'for-you':(window.vyFilter||'for-you');document.querySelectorAll('#vybora .vy-tabs button').forEach(function(b){b.classList.toggle('active',b.dataset.vyFilter===window.vyFilter);});vyRenderFeed();if(page==='reels')$('vyFeed').scrollIntoView({behavior:'smooth',block:'start'});return;}
+ wrap.hidden=true;panel.hidden=false;
+ if(page==='explore'){
+  panel.innerHTML='<h3>⌕ Explore VYBORA</h3><p class="small">Discover topics and find creators. Choose a hashtag to filter the Reels feed.</p><div class="vy-explore-tags"><button onclick="vySearchTag(\'VYBORA\');vyNavigate(\'reels\')">#VYBORA</button><button onclick="vySearchTag(\'Travel\');vyNavigate(\'reels\')">#Travel</button><button onclick="vySearchTag(\'Music\');vyNavigate(\'reels\')">#Music</button><button onclick="vySearchTag(\'Nature\');vyNavigate(\'reels\')">#Nature</button><button onclick="vySearchTag(\'Creators\');vyNavigate(\'reels\')">#Creators</button></div><h3 style="margin-top:24px">Suggested creators</h3><div class="vy-inbox-item"><div class="vy-avatar">V</div><div style="flex:1"><b>vybora.daily</b><div class="small">Daily inspiration</div></div><button class="secondary-btn" onclick="vyFollow(this)" data-user="vybora.daily">＋ Follow</button></div><div class="vy-inbox-item"><div class="vy-avatar">M</div><div style="flex:1"><b>motion.maker</b><div class="small">Creative videos</div></div><button class="secondary-btn" onclick="vyFollow(this)" data-user="motion.maker">＋ Follow</button></div>';
+ }else if(page==='create'){
+  panel.innerHTML='<h3>＋ Create a Reel</h3><p>Share a moment with the VYBORA community.</p><p class="small">Choose a video, write a caption, then preview it in your local feed. Uploading for everyone will come with the shared backend phase.</p><button class="primary-btn" onclick="$(\'vyVideoFile\').click()">Choose video from phone</button><p id="vyCreateFileName" class="small">No video selected yet.</p><button class="secondary-btn" onclick="vyNavigate(\'home\')">Back to Home</button>';
+  const file=$('vyVideoFile');if(file)file.onchange=function(){const label=$('vyCreateFileName');if(label)label.textContent=file.files[0]?file.files[0].name:'No video selected yet.';};
+ }else if(page==='inbox'){
+  panel.innerHTML='<h3>✉ Inbox</h3><p class="small">Your conversations will appear here when VYBORA accounts and messaging are connected.</p><div class="vy-empty"><div style="font-size:34px">💬</div><b>No messages yet</b><p>Direct messaging is not connected in this prototype.</p></div>';
+ }else if(page==='profile'){
+  const s=vyState(),name=s.profile||'your_profile',posts=document.querySelectorAll('#vyFeed [data-vy-id]').length;
+  panel.innerHTML='<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div class="vy-avatar" style="width:64px;height:64px;font-size:24px">'+name.charAt(0).toUpperCase()+'</div><div><h3 style="margin:0">'+name.replace(/[&<>"]/g,'')+'</h3><p class="small">Your VYBORA creator profile</p></div><button class="secondary-btn" onclick="vyEditProfile()">✏️ Edit profile</button></div><div class="vy-tabs" style="margin-top:20px"><button>'+posts+' Reels</button><button>'+(s.follows||[]).length+' Following</button><button>'+(s.saved||[]).length+' Saved</button></div><p class="small">Your local profile details are saved on this device only.</p><button class="primary-btn" onclick="vyNavigate(\'create\')">＋ Create a Reel</button>';
+ }
+};
 function vyRestoreLocalState(){const s=vyState();if($('vyProfileName')){$('vyProfileName').textContent=s.profile||'your_profile';$('vyProfileAvatar').textContent=(s.profile||'Y').charAt(0).toUpperCase();}document.querySelectorAll('#vyFeed [data-vy-id]').forEach(card=>{const id=card.dataset.vyId,user=card.dataset.vyUser||'',btn=card.querySelector('.vy-head button');if(btn&&(s.follows||[]).includes(user))btn.textContent='✓ Following';const like=card.querySelector('.vy-actions button[onclick^="vyLike"]');if(like&&(s.likes||{})[id]){like.querySelector('span').textContent='Liked';like.setAttribute('aria-pressed','true');like.style.color='#ff6b9a';}const save=card.querySelector('.vy-actions button[onclick^="vySave"]');if(save&&(s.saved||[]).includes(id)){save.textContent='✓ Saved';save.setAttribute('aria-pressed','true');}((s.comments||{})[id]||[]).forEach(comment=>{const line=document.createElement('div');line.className='vy-comment';line.textContent=(s.profile||'you')+': '+comment;card.querySelector('.vy-comments')?.appendChild(line);});});vyRenderFeed();}
 window.addEventListener('DOMContentLoaded',vyRestoreLocalState);
 window.closeMobileMenu=function(){
