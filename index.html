@@ -1379,7 +1379,7 @@ function applyExtraSettings(p){
  previewExtraSettings();
  document.body.classList.toggle('soft-card-shadows',!!p.shadow);document.body.classList.toggle('no-sticky-header',p.sticky===false);document.body.classList.toggle('hide-sidebar-note',!!p.hideNote);document.body.classList.toggle('hide-tool-descriptions',!!p.hideDescriptions);
 }
-function loadExtraSettings(){let p={};try{p=JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}')||{}}catch(e){}applyExtraSettings(p);}
+function loadExtraSettings(){let p={};try{p=JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}')||{}}catch(e){}applyExtraSettings(p);['projectName','projectIdea','projectType','projectCode'].forEach(id=>{const el=$(id);if(el)el.oninput=saveBuilderDraft;});}
 function saveBuilderDraft(){
  if(!$('autoSaveDraft')||!$('autoSaveDraft').checked)return;
  try{localStorage.setItem('finframeBuilderDraft',JSON.stringify({name:$('projectName').value,idea:$('projectIdea').value,type:$('projectType').value,code:$('projectCode').value}))}catch(e){}
