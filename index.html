@@ -676,6 +676,19 @@ body.hide-tool-descriptions .tool-card span{display:none}
  </section>
  <section id="vybora">
   <div class="page-title"><h2>💜 VYBORA</h2><p>Watch. Create. Connect. — your short-video community.</p></div>
+  <div class="card" id="vyCloudAuth" style="max-width:980px;margin:0 auto 16px;padding:16px;border:1px solid var(--border);border-radius:16px">
+   <h3 style="margin-top:0">🔐 VYBORA Account</h3>
+   <p class="small" id="vyCloudStatus">Connect with an email account to publish Reels and connect with other creators.</p>
+   <div id="vyAuthForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px">
+    <input id="vyAuthName" type="text" placeholder="Your name (for sign up)" autocomplete="name">
+    <input id="vyAuthEmail" type="email" placeholder="Email address" autocomplete="email">
+    <input id="vyAuthPassword" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
+    <button class="primary-btn" type="button" onclick="vySignUp()">Create account</button>
+    <button class="secondary-btn" type="button" onclick="vySignIn()">Log in</button>
+   </div>
+   <div id="vyAuthSignedIn" hidden style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
+  </div>
+  <div id="vyCloudFeed" style="max-width:980px;margin:0 auto"></div>
   <style>
    #vybora .vy-stories{display:flex;gap:14px;overflow-x:auto;padding:12px;margin:0 0 14px;background:var(--panel);border:1px solid var(--border);border-radius:16px}#vybora .vy-story{flex:0 0 64px;text-align:center;cursor:pointer}#vybora .vy-story span{width:54px;height:54px;margin:auto auto 5px;border-radius:50%;display:grid;place-items:center;font-size:25px;background:linear-gradient(135deg,#9b70ff,#ef6bcb);border:2px solid #d8a7ff}#vybora .vy-story.own span{background:var(--panel2);border:2px dashed var(--accent)}#vybora .vy-story small{display:block;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
    #vybora .vy-main-nav{display:flex;justify-content:space-around;gap:6px;max-width:980px;margin:0 auto 18px;padding:8px;background:var(--panel);border:1px solid var(--border);border-radius:15px;position:sticky;top:8px;z-index:5}
@@ -1051,6 +1064,139 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 <\/script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+<script>
+
+(function(){
+ const URL='https://pxgoaygwtxrrqkftluut.supabase.co';
+ const KEY='sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh';
+ if(!window.supabase || !window.supabase.createClient){
+  const s=document.getElementById('vyCloudStatus'); if(s)s.textContent='The VYBORA connection library did not load. Refresh the page and try again.'; return;
+ }
+ const db=window.supabase.createClient(URL,KEY);
+ window.vyClient=db;
+ let currentUser=null, channel=null;
+ const el=id=>document.getElementById(id);
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const say=t=>{if(el('vyCloudStatus'))el('vyCloudStatus').textContent=t;};
+ async function profileFor(user){
+  const name=(user.user_metadata&&user.user_metadata.full_name)||((user.email||'creator').split('@')[0]);
+  await db.from('profiles').upsert({id:user.id,full_name:name,username:(user.email||'creator').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,25)||'creator'},{onConflict:'id',ignoreDuplicates:true});
+  return name;
+ }
+ window.vySignUp=async function(){
+  const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
+  if(!email||password.length<6){say('Enter a valid email and a password with at least 6 characters.');return;}
+  say('Creating your account…');
+  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name}}});
+  if(r.error){say(r.error.message);return;}
+  if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
+  else say('Account created. Check your email for the confirmation link, then log in here.');
+ };
+ window.vySignIn=async function(){
+  const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value;
+  if(!email||!password){say('Enter your email and password first.');return;}
+  say('Logging in…');
+  const r=await db.auth.signInWithPassword({email:email,password:password});
+  if(r.error){say(r.error.message);return;}
+  currentUser=r.data.user;await profileFor(currentUser);await signedIn();
+ };
+ window.vySignOut=async function(){const r=await db.auth.signOut();if(r.error){say(r.error.message);return;}currentUser=null;await signedOut();};
+ async function signedIn(){
+  el('vyAuthForm').hidden=true;el('vyAuthSignedIn').hidden=false;
+  el('vyAuthSignedIn').style.display='flex';
+  el('vyAuthUser').textContent=(currentUser.email||'')+' · Signed in';
+  say('Your account is connected. Reels you publish are saved online for other VYBORA users.');
+  await loadFeed();
+  if(channel)db.removeChannel(channel);
+  channel=db.channel('vybora-live-posts').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},()=>loadFeed()).subscribe();
+ }
+ async function signedOut(){
+  el('vyAuthForm').hidden=false;el('vyAuthSignedIn').hidden=true;
+  el('vyAuthSignedIn').style.display='none';
+  el('vyAuthUser').textContent='';
+  say('Logged out. Log in to publish, like, comment or follow creators.');
+  if(channel){db.removeChannel(channel);channel=null;}
+  await loadFeed();
+ }
+ async function loadFeed(){
+  const host=el('vyCloudFeed');if(!host)return;
+  const r=await db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').order('created_at',{ascending:false}).limit(40);
+  if(r.error){host.innerHTML='<div class="vy-empty">Could not load online Reels: '+esc(r.error.message)+'</div>';return;}
+  if(!r.data.length){host.innerHTML='';return;}
+  const ids=[...new Set(r.data.map(p=>p.user_id))];
+  const pr=await db.from('profiles').select('id,username,full_name,avatar_url').in('id',ids);
+  const profiles={};(pr.data||[]).forEach(p=>profiles[p.id]=p);
+  const postIds=r.data.map(p=>p.id);
+  const [lr,cr,mr]=await Promise.all([
+   db.from('likes').select('post_id,user_id').in('post_id',postIds),
+   db.from('comments').select('post_id').in('post_id',postIds),
+   currentUser?db.from('follows').select('following_id').eq('follower_id',currentUser.id):Promise.resolve({data:[]})
+  ]);
+  const likes=lr.data||[],comments=cr.data||[],following=(mr.data||[]).map(x=>x.following_id);
+  host.innerHTML=r.data.map(p=>{
+   const user=profiles[p.user_id]||{},name=user.username||user.full_name||'VYBORA creator';
+   const count=likes.filter(x=>x.post_id===p.id).length,liked=!!(currentUser&&likes.some(x=>x.post_id===p.id&&x.user_id===currentUser.id));
+   const commentCount=comments.filter(x=>x.post_id===p.id).length;
+   const media=p.media_type==='image'?'<img src="'+esc(p.media_url)+'" alt="VYBORA post" style="width:100%;max-height:620px;object-fit:contain;background:#08080d">':'<video src="'+esc(p.media_url)+'" controls playsinline preload="metadata" style="width:100%;max-height:620px;background:#08080d"></video>';
+   return '<article class="vy-card" data-vy-cloud-id="'+esc(p.id)+'"><div class="vy-head"><div class="vy-avatar">'+esc(name.slice(0,1).toUpperCase())+'</div><div><strong>'+esc(name)+'</strong><div class="small">VYBORA creator</div></div>'+(currentUser&&p.user_id!==currentUser.id?'<button class="secondary-btn" style="margin-left:auto" onclick="vyCloudFollow(\''+esc(p.user_id)+'\',this)">'+(following.includes(p.user_id)?'Following':'＋ Follow')+'</button>':'')+'</div>'+media+'<div class="vy-actions"><button aria-pressed="'+liked+'" onclick="vyCloudLike(\''+esc(p.id)+'\',this)">'+(liked?'♥':'♡')+' Like <b>'+count+'</b></button><button onclick="vyCloudShowComments(\''+esc(p.id)+'\',this)">💬 Comments ('+commentCount+')</button></div><div class="vy-caption"><strong>'+esc(name)+'</strong> '+esc(p.caption)+'<div class="small">'+new Date(p.created_at).toLocaleString()+'</div></div><div class="vy-comments" id="vyComments-'+esc(p.id)+'"></div></article>';
+  }).join('');
+ }
+ window.vyCloudLike=async function(id,btn){
+  if(!currentUser){say('Log in first to like a Reel.');return;}
+  const exists=btn.getAttribute('aria-pressed')==='true';
+  const r=exists?await db.from('likes').delete().eq('post_id',id).eq('user_id',currentUser.id):await db.from('likes').insert({post_id:id,user_id:currentUser.id});
+  if(r.error){say(r.error.message);return;}await loadFeed();
+ };
+ window.vyCloudFollow=async function(id,btn){
+  if(!currentUser){say('Log in first to follow creators.');return;}
+  const is=btn.textContent.includes('Following');
+  const r=is?await db.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',id):await db.from('follows').insert({follower_id:currentUser.id,following_id:id});
+  if(r.error){say(r.error.message);return;}await loadFeed();
+ };
+ window.vyCloudShowComments=async function(id,btn){
+  const box=el('vyComments-'+id);if(!box)return;
+  if(!currentUser){say('Log in to view and add comments.');return;}
+  const r=await db.from('comments').select('body,user_id,created_at,profiles(username)').eq('post_id',id).order('created_at',{ascending:true}).limit(30);
+  if(r.error){say(r.error.message);return;}
+  box.innerHTML=(r.data||[]).map(c=>'<div class="vy-comment"><b>'+esc(c.profiles&&c.profiles.username||'creator')+'</b> '+esc(c.body)+'</div>').join('')+
+   '<div style="display:flex;gap:6px"><input id="vyCommentInput-'+id+'" type="text" maxlength="2000" placeholder="Write a comment…"><button class="secondary-btn" onclick="vyCloudComment(\''+id+'\')">Send</button></div>';
+ };
+ window.vyCloudComment=async function(id){
+  if(!currentUser){say('Log in first.');return;}
+  const input=el('vyCommentInput-'+id),body=input&&input.value.trim();if(!body)return;
+  const r=await db.from('comments').insert({post_id:id,user_id:currentUser.id,body:body});
+  if(r.error){say(r.error.message);return;}await window.vyCloudShowComments(id);await loadFeed();
+ };
+ window.vyUpload=async function(){
+  if(!currentUser){say('Log in before publishing a Reel.');return;}
+  const file=el('vyVideoFile').files[0],caption=el('vyCaptionInput').value.trim();
+  if(!file){el('vyUploadStatus').textContent='Choose a video file first.';return;}
+  if(file.size>100*1024*1024){el('vyUploadStatus').textContent='Please choose a video smaller than 100 MB.';return;}
+  if(!file.type.startsWith('video/')){el('vyUploadStatus').textContent='Please choose a video file.';return;}
+  el('vyUploadStatus').textContent='Uploading video to VYBORA…';
+  const ext=(file.name.split('.').pop()||'mp4').toLowerCase().replace(/[^a-z0-9]/g,'')||'mp4';
+  const path=currentUser.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
+  const up=await db.storage.from('vybora-media').upload(path,file,{contentType:file.type,upsert:false});
+  if(up.error){el('vyUploadStatus').textContent=up.error.message;return;}
+  const pub=db.storage.from('vybora-media').getPublicUrl(path).data.publicUrl;
+  const post=await db.from('posts').insert({user_id:currentUser.id,caption:caption,media_url:pub,media_type:'video'});
+  if(post.error){el('vyUploadStatus').textContent='Upload finished, but post save failed: '+post.error.message;return;}
+  el('vyUploadStatus').textContent='Your Reel is now published online!';
+  el('vyVideoFile').value='';el('vyCaptionInput').value='';
+  await loadFeed();
+ };
+ db.auth.getSession().then(async r=>{
+  if(r.data&&r.data.session){currentUser=r.data.session.user;await profileFor(currentUser);await signedIn();}
+  else{await signedOut();}
+ });
+ db.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_IN'&&session){currentUser=session.user;profileFor(currentUser).then(signedIn);}
+  if(event==='SIGNED_OUT'){currentUser=null;signedOut();}
+ });
+})();
+
+</script>
 </body></html>`;
  }
  const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
