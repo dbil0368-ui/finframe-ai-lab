@@ -1099,7 +1099,7 @@ $('clothFile').addEventListener('change',e=>{
 async function generateAiTryon(){
  const person=$('personFile').files[0], garment=$('clothFile').files[0];
  const status=$('aiTryonStatus'), button=$('aiTryonButton'), wrap=$('aiTryonResultWrap');
- if(!person||!garment){status.textContent='Please choose both a person's photo and a separate clothing photo first.';return;}
+ if(!person||!garment){status.textContent="Please choose both a person's photo and a separate clothing photo first.";return;}
  if(!person.type.startsWith('image/')||!garment.type.startsWith('image/')){status.textContent='Please select image files only.';return;}
  if(person.size>10*1024*1024||garment.size>10*1024*1024){status.textContent='Each image must be 10 MB or smaller.';return;}
  const form=new FormData();form.append('person',person);form.append('garment',garment);
