@@ -1,31 +1,25 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FinFrame AI Lab</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080c18;color:#f4f2ff;font-family:Arial,sans-serif}
 header{padding:20px;background:#11182a;border-bottom:1px solid #34304f}
-header h1{color:#a998ff;margin:0}
-header p,.muted{color:#a6aec5}
-main{max-width:950px;margin:auto;padding:18px}
-.card{background:#141c30;border:1px solid #303b59;border-radius:17px;padding:18px;margin:14px 0}
-.hero{background:linear-gradient(135deg,#252052,#15253d)}
-h2{font-size:21px}
-h3{font-size:17px}
-button{background:#7763ed;color:white;border:0;padding:12px 15px;border-radius:10px;margin:5px 3px;font-weight:bold;cursor:pointer}
-button.secondary{background:#283550}
-button:active{transform:scale(.97)}
-textarea,input,select{width:100%;background:#080f20;color:white;border:1px solid #465171;border-radius:10px;padding:13px;margin:7px 0;font-size:15px}
-textarea{height:110px;resize:vertical}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.tool{background:#0e172a;border:1px solid #35415e;padding:15px;border-radius:13px;cursor:pointer}
-.tool b{display:block;margin-bottom:8px}
-.tag{color:#b3a6ff;font-size:12px}
-#preview{background:#f6f5ff;color:#202033;padding:17px;border-radius:12px;min-height:110px;white-space:pre-wrap}
-footer{text-align:center;padding:25px;color:#909bb3}
+h1{color:#a998ff;margin:0}
+main{max-width:900px;margin:auto;padding:16px}
+.card{background:#141c30;border:1px solid #303b59;border-radius:16px;padding:18px;margin:14px 0}
+p{color:#a6aec5}
+button{background:#7763ed;color:white;border:0;padding:12px 15px;border-radius:10px;margin:5px;cursor:pointer}
+input,textarea{width:100%;padding:12px;margin:8px 0;background:#080f20;color:white;border:1px solid #465171;border-radius:9px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tool{background:#0e172a;border:1px solid #35415e;padding:15px;border-radius:12px;cursor:pointer}
+#preview{background:#f6f5ff;color:#202033;padding:15px;border-radius:10px;white-space:pre-wrap}
+#photo{display:block;max-width:100%;max-height:400px;margin:15px auto;border-radius:10px}
+label{display:block;margin-top:12px}
 </style>
 </head>
 <body>
@@ -34,68 +28,139 @@ footer{text-align:center;padding:25px;color:#909bb3}
 <p>Build • Create • Design • Imagine</p>
 </header>
 <main>
-<section class="card hero">
-<p class="tag">YOUR CREATIVE WORKSPACE</p>
-<h2>Welcome to FinFrame AI Lab</h2>
-<p>Create websites, Android app concepts, games and ecommerce content from one studio.</p>
-<p>🟢 Free Prototype Mode</p>
-</section>
-
 <section class="card">
 <h2>🚀 AI Project Builder</h2>
-<p class="muted">Choose your project type</p>
+<p>Choose your project type</p>
 <div class="grid">
 <button onclick="setMode('Website')">🌐 Website</button>
 <button onclick="setMode('Android App')">📱 Android App</button>
-<button onclick="setMode('2D / 3D Game')">🎮 Game Studio</button>
+<button onclick="setMode('Game')">🎮 Game Studio</button>
 </div>
 <h3 id="mode">Selected: Website</h3>
-<textarea id="prompt" placeholder="Describe your idea. Example: Build a fashion ecommerce website with product gallery..."></textarea>
-<button onclick="createPreview()">✨ Create Project Preview</button>
-<div id="preview">Your project preview will appear here.</div>
-<p class="muted">Note: This prototype creates a text preview. Real AI code generation is not connected yet.</p>
+<textarea id="prompt" placeholder="Describe your project idea..."></textarea>
+<button onclick="createPreview()">Create Preview</button>
+<div id="preview">Your preview will appear here.</div>
 </section>
 
 <section class="card">
-<h2>🧰 FinFrame Creative Studio</h2>
+<h2>📸 Photo Enhancer</h2>
+<p>Upload a photo and adjust its appearance.</p>
+<input type="file" id="upload" accept="image/*">
+<img id="photo" hidden alt="Photo preview">
+<label>Brightness: <span id="bv">100</span>%</label>
+<input type="range" id="bright" min="0" max="200" value="100">
+<label>Contrast: <span id="cv">100</span>%</label>
+<input type="range" id="contrast" min="0" max="200" value="100">
+<label>Saturation: <span id="sv">100</span>%</label>
+<input type="range" id="saturate" min="0" max="200" value="100">
+<button onclick="resetPhoto()">Reset</button>
+<button onclick="downloadPhoto()">Download Photo</button>
+<canvas id="canvas" hidden></canvas>
+<p id="photoStatus">Upload a photo to begin.</p>
+</section>
+
+<section class="card">
+<h2>🧰 Creative Studio</h2>
 <div class="grid">
-<div class="tool" onclick="openTool('AI Virtual Try-On')"><b>👗 Virtual Try-On</b><span class="tag">Coming Soon</span><p>Fashion model studio</p></div>
-<div class="tool" onclick="openTool('Product Photo Enhancer')"><b>📸 Photo Enhancer</b><span class="tag">Prototype</span><p>Photo adjustments</p></div>
-<div class="tool" onclick="openTool('4K Product Visuals')"><b>💎 4K Visuals</b><span class="tag">Prototype</span><p>Product image studio</p></div>
-<div class="tool" onclick="openTool('Promo Video Maker')"><b>🎬 Promo Videos</b><span class="tag">Coming Soon</span><p>Social media reels</p></div>
-<div class="tool" onclick="openTool('Poster & Thumbnail Maker')"><b>🖼️ Posters</b><span class="tag">Prototype</span><p>Marketing designs</p></div>
-<div class="tool" onclick="openTool('Captions & Hashtags')"><b>✍️ Captions</b><span class="tag">Prototype</span><p>Social media copy</p></div>
-<div class="tool" onclick="openTool('AI Voiceover')"><b>🎙️ Voiceover</b><span class="tag">Coming Soon</span><p>Voice studio</p></div>
-<div class="tool" onclick="openTool('Game Studio')"><b>🎮 Game Studio</b><span class="tag">Prototype</span><p>Game concepts</p></div>
+<div class="tool" onclick="showTool('Virtual Try-On')">👗 Virtual Try-On</div>
+<div class="tool" onclick="showTool('4K Visuals')">💎 4K Visuals</div>
+<div class="tool" onclick="showTool('Promo Videos')">🎬 Promo Videos</div>
+<div class="tool" onclick="showTool('Posters')">🖼️ Posters</div>
+<div class="tool" onclick="showTool('Captions')">✍️ Captions</div>
+<div class="tool" onclick="showTool('Voiceover')">🎙️ Voiceover</div>
+<div class="tool" onclick="showTool('Game Studio')">🎮 Game Studio</div>
 </div>
-<div id="toolInfo" class="muted">Select a studio tool to see its status.</div>
+<p id="toolInfo">Choose a tool.</p>
 </section>
-
-<section class="card">
-<h2>🗂️ My Workspace</h2>
-<p class="muted">Your project workspace is ready. Project saving and cloud history will be added later.</p>
-<button class="secondary" onclick="alert('Project Gallery is coming soon!')">Project Gallery</button>
-<button class="secondary" onclick="alert('Code Editor is coming soon!')">Code Editor</button>
-</section>
+<footer>FinFrame AI Lab • Free Prototype • ❤️</footer>
 </main>
-<footer>FinFrame AI Lab • Free Prototype • Made with ❤️</footer>
 <script>
 let selected="Website";
+let original=null;
+let imageReady=false;
+
 function setMode(mode){
 selected=mode;
 document.getElementById("mode").textContent="Selected: "+mode;
 }
+
 function createPreview(){
 let value=document.getElementById("prompt").value.trim();
-if(!value){alert("Please describe your project first.");return;}
+if(!value){alert("Describe your project first.");return;}
 document.getElementById("preview").textContent=
-"PROJECT TYPE: "+selected+"\n\nYOUR IDEA:\n"+value+
-"\n\nStatus: Basic concept preview created.\nReal AI generation is not connected yet.";
+"PROJECT: "+selected+"\n\nIDEA:\n"+value+
+"\n\nBasic concept preview created.";
 }
-function openTool(name){
+
+function showTool(name){
 document.getElementById("toolInfo").textContent=
-name+" selected. This is the current prototype stage. More working features will be added step by step.";
+name+" selected. More features coming soon.";
+}
+
+const upload=document.getElementById("upload");
+const photo=document.getElementById("photo");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+upload.addEventListener("change",function(){
+const file=this.files[0];
+if(!file)return;
+if(!file.type.startsWith("image/"))return;
+const reader=new FileReader();
+reader.onload=function(e){
+const img=new Image();
+img.onload=function(){
+original=img;
+imageReady=true;
+photo.hidden=false;
+drawPhoto();
+document.getElementById("photoStatus").textContent="Photo ready to edit!";
+};
+img.src=e.target.result;
+};
+reader.readAsDataURL(file);
+});
+
+function drawPhoto(){
+if(!imageReady)return;
+const w=original.naturalWidth;
+const h=original.naturalHeight;
+canvas.width=w;
+canvas.height=h;
+ctx.filter="brightness("+bright.value+"%) contrast("+contrast.value+"%) saturate("+saturate.value+"%)";
+ctx.drawImage(original,0,0,w,h);
+ctx.filter="none";
+photo.src=canvas.toDataURL("image/png");
+document.getElementById("bv").textContent=bright.value;
+document.getElementById("cv").textContent=contrast.value;
+document.getElementById("sv").textContent=saturate.value;
+}
+
+const bright=document.getElementById("bright");
+const contrast=document.getElementById("contrast");
+const saturate=document.getElementById("saturate");
+
+[bright,contrast,saturate].forEach(function(control){
+control.addEventListener("input",drawPhoto);
+});
+
+function resetPhoto(){
+bright.value=100;
+contrast.value=100;
+saturate.value=100;
+drawPhoto();
+}
+
+function downloadPhoto(){
+if(!imageReady){
+alert("Please upload a photo first.");
+return;
+}
+const link=document.createElement("a");
+link.download="finframe-enhanced.png";
+link.href=canvas.toDataURL("image/png");
+link.click();
 }
 </script>
 </body>
-  </html>
+</html>
