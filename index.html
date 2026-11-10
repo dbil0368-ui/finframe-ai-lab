@@ -716,7 +716,7 @@ function renderCart(){document.getElementById('cartitems').innerHTML=cart.length
 function showCart(){const el=document.getElementById('cartbox');el.style.display=el.style.display==='block'?'none':'block';renderCart()}
 function clearCart(){cart.length=0;document.getElementById('count').textContent='0';renderCart()}
 document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.product').forEach(p=>p.style.display=p.dataset.name.includes(q)?'block':'none')});
-</script><script>
+<\/script><script>
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
