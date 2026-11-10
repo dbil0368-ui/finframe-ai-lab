@@ -710,15 +710,16 @@ function makeStarterWebsite(name,idea,type){
  const cards=isGame
  ? '<article class="card"><h2>🎯 Quick Challenge</h2><p>Tap the button and see your score grow.</p><button id="play">Tap to score: <b id="score">0</b></button></article>'
  : '<article class="card"><div class="emoji">✨</div><h2>Beautifully simple</h2><p>Make your idea easy to explore.</p></article><article class="card"><div class="emoji">🚀</div><h2>Made for your goals</h2><p>Customize this starter to fit your project.</p></article><article class="card"><div class="emoji">💜</div><h2>Ready to grow</h2><p>Add your own content, pages and features.</p></article>';
- return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeName}</title>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#211b35}.nav{display:flex;justify-content:space-between;align-items:center;padding:18px max(5%,calc((100% - 1050px)/2));background:#fff}.nav b{font-size:20px}.nav a{color:#6841c6;text-decoration:none}.hero{padding:75px 20px;text-align:center;background:linear-gradient(135deg,#6d49ce,#e66ac1);color:white}.hero h1{font-size:clamp(32px,6vw,58px);margin:0 0 15px}.hero p{max-width:650px;margin:0 auto 25px;line-height:1.6}.btn,button{display:inline-block;background:#fff;color:#5732b0;border:0;border-radius:12px;padding:13px 20px;font-weight:bold;text-decoration:none;cursor:pointer}.wrap{max-width:1050px;margin:35px auto;padding:0 18px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;padding:24px;border-radius:18px;box-shadow:0 8px 30px #35205c12}.emoji{font-size:30px}footer{text-align:center;padding:30px;color:#746b88}</style></head><body>
-<nav class="nav"><b>${safeName}</b><a href="#about">About</a></nav>
-<header class="hero"><h1>${title}</h1><p>${safeIdea}</p><a class="btn" href="#features">${action}</a></header>
-<main class="wrap" id="features"><div class="cards">${cards}</div><section class="card" id="about" style="margin-top:18px"><h2>About this project</h2><p>Built with an editable FinFrame AI Lab starter template.</p></section></main>
-<footer>Made with care · ${safeName}</footer>
-<script>const playButton=document.getElementById('play');if(playButton){playButton.addEventListener('click',()=>{const score=document.getElementById('score');score.textContent=String(Number(score.textContent)+1);});}</\/script>
-</body></html>`;
+  return [
+   '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FF_SAFE_NAME_TOKEN</title>',
+   '<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#211b35}.nav{display:flex;justify-content:space-between;align-items:center;padding:18px max(5%,calc((100% - 1050px)/2));background:#fff}.nav b{font-size:20px}.nav a{color:#6841c6;text-decoration:none}.hero{padding:75px 20px;text-align:center;background:linear-gradient(135deg,#6d49ce,#e66ac1);color:white}.hero h1{font-size:clamp(32px,6vw,58px);margin:0 0 15px}.hero p{max-width:650px;margin:0 auto 25px;line-height:1.6}.btn,button{display:inline-block;background:#fff;color:#5732b0;border:0;border-radius:12px;padding:13px 20px;font-weight:bold;text-decoration:none;cursor:pointer}.wrap{max-width:1050px;margin:35px auto;padding:0 18px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;padding:24px;border-radius:18px;box-shadow:0 8px 30px #35205c12}.emoji{font-size:30px}footer{text-align:center;padding:30px;color:#746b88}</style></head><body>',
+   '<nav class="nav"><b>FF_SAFE_NAME_TOKEN</b><a href="#about">About</a></nav>',
+   '<header class="hero"><h1>FF_TITLE_TOKEN</h1><p>FF_SAFE_IDEA_TOKEN</p><a class="btn" href="#features">FF_ACTION_TOKEN</a></header>',
+   '<main class="wrap" id="features"><div class="cards">FF_CARDS_TOKEN</div><section class="card" id="about" style="margin-top:18px"><h2>About this project</h2><p>Built with an editable FinFrame AI Lab starter template.</p></section></main>',
+   '<footer>Made with care · FF_SAFE_NAME_TOKEN</footer>',
+   '<script>const playButton=document.getElementById("play");if(playButton){playButton.addEventListener("click",()=>{const score=document.getElementById("score");score.textContent=String(Number(score.textContent)+1);});}</\\/script>',
+   '</body></html>'
+  ].join('').replaceAll('FF_SAFE_NAME_TOKEN',safeName).replaceAll('FF_SAFE_IDEA_TOKEN',safeIdea).replaceAll('FF_TITLE_TOKEN',title).replaceAll('FF_ACTION_TOKEN',action).replaceAll('FF_CARDS_TOKEN',cards);
 }
 function buildProject(){
  const type=$('projectType').value;
