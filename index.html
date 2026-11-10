@@ -983,7 +983,7 @@ async function makeVideo(){
  drawFrame();
  const interval=setInterval(()=>{
   frame++;drawFrame();
-  if(frame>=72){clearInterval(interval);recorder.stop()}
+  if(frame>=360){clearInterval(interval);recorder.stop()}
  },1000/24);
  saveRecent('video');
 }
