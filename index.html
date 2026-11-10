@@ -1197,6 +1197,89 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 })();
 
 </script>
+<script>
+
+(function(){
+ const db=window.vyClient;if(!db)return;
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function me(){const r=await db.auth.getUser();return r.data&&r.data.user||null;}
+ function shell(title,sub){const p=$('vyPagePanel'),w=document.querySelector('#vybora .vy-wrap');if(!p||!w)return null;w.hidden=true;p.hidden=false;p.innerHTML='<h3>'+title+'</h3><p class="small">'+sub+'</p><div id="vyCloudPanelBody">Loading…</div>';return $('vyCloudPanelBody');}
+ window.vyLoadConversation=async function(other){
+  const user=await me(),body=$('vyCloudMessages');if(!user||!other||!body)return;
+  body.innerHTML='Loading messages…';
+  const filter='and(sender_id.eq.'+user.id+',receiver_id.eq.'+other+'),and(sender_id.eq.'+other+',receiver_id.eq.'+user.id+')';
+  const r=await db.from('messages').select('id,sender_id,receiver_id,body,created_at').or(filter).order('created_at',{ascending:true}).limit(100);
+  if(r.error){body.textContent=r.error.message;return;}
+  body.innerHTML=(r.data||[]).map(m=>'<div style="justify-self:'+(m.sender_id===user.id?'end':'start')+';max-width:85%;padding:10px 13px;border-radius:13px;background:var(--panel2);overflow-wrap:anywhere"><div>'+esc(m.body)+'</div><small class="small">'+new Date(m.created_at).toLocaleString()+'</small></div>').join('')||'<div class="vy-empty">No messages yet. Say hello!</div>';
+  await db.from('messages').update({read_at:new Date().toISOString()}).eq('sender_id',other).eq('receiver_id',user.id).is('read_at',null);
+  body.scrollTop=body.scrollHeight;
+  const sel=$('vyCloudContact');if(sel)sel.value=other;
+ };
+ window.vySendDm=async function(){
+  const user=await me(),sel=$('vyCloudContact'),input=$('vyCloudDmInput');
+  if(!user){return;}const other=sel&&sel.value,body=input&&input.value.trim();
+  if(!other||!body)return;
+  const r=await db.from('messages').insert({sender_id:user.id,receiver_id:other,body:body});
+  if(r.error){const s=$('vyCloudStatus');if(s)s.textContent=r.error.message;return;}
+  input.value='';await window.vyLoadConversation(other);
+ };
+ async function inbox(){
+  const body=shell('✉ Inbox','Private messages are delivered to the selected VYBORA account.');
+  if(!body)return;const user=await me();if(!user){body.innerHTML='Please log in to use Inbox.';return;}
+  const r=await db.from('profiles').select('id,username,full_name').neq('id',user.id).order('username').limit(100);
+  if(r.error){body.textContent=r.error.message;return;}
+  const contacts=r.data||[];
+  if(!contacts.length){body.innerHTML='<div class="vy-empty">No other VYBORA members yet. Invite someone to create an account.</div>';return;}
+  body.innerHTML='<label for="vyCloudContact">Choose a person</label><select id="vyCloudContact" onchange="vyLoadConversation(this.value)">'+contacts.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.username||c.full_name||'VYBORA member')+'</option>').join('')+'</select><div id="vyCloudMessages" style="display:grid;gap:8px;max-height:360px;overflow:auto;padding:12px 0"></div><div style="display:flex;gap:8px;align-items:center"><input id="vyCloudDmInput" type="text" maxlength="5000" placeholder="Write a private message…" style="flex:1;min-width:0"><button class="primary-btn" onclick="vySendDm()">Send</button></div>';
+  await window.vyLoadConversation(contacts[0].id);
+ }
+ async function activity(){
+  const body=shell('♡ Activity','Likes, comments and new followers on your account.');
+  if(!body)return;const user=await me();if(!user){body.innerHTML='Please log in to view Activity.';return;}
+  const r=await db.from('notifications').select('id,actor_id,kind,post_id,created_at,read_at').eq('recipient_id',user.id).order('created_at',{ascending:false}).limit(50);
+  if(r.error){body.textContent=r.error.message;return;}
+  const rows=r.data||[],ids=[...new Set(rows.map(x=>x.actor_id).filter(Boolean))];
+  const pr=ids.length?await db.from('profiles').select('id,username,full_name').in('id',ids):{data:[]};
+  const map={};(pr.data||[]).forEach(x=>map[x.id]=x);
+  body.innerHTML=rows.map(n=>{
+   const actor=map[n.actor_id]||{},name=actor.username||actor.full_name||'A creator';
+   const verb=n.kind==='like'?'liked your Reel':n.kind==='comment'?'commented on your Reel':'started following you';
+   return '<div class="vy-inbox-item"><div class="vy-avatar">'+esc(name.slice(0,1).toUpperCase())+'</div><div style="flex:1"><b>'+esc(name)+'</b> '+verb+'<div class="small">'+new Date(n.created_at).toLocaleString()+'</div></div>'+(n.read_at?'':'<span class="small">New</span>')+'</div>';
+  }).join('')||'<div class="vy-empty">No activity yet. Likes, comments and follows will appear here.</div>';
+  await db.from('notifications').update({read_at:new Date().toISOString()}).eq('recipient_id',user.id).is('read_at',null);
+ }
+ async function profile(){
+  const body=shell('◉ Your Profile','Your public VYBORA creator profile.');
+  if(!body)return;const user=await me();if(!user){body.innerHTML='Please log in to view your profile.';return;}
+  const [p,posts,followers,following]=await Promise.all([
+   db.from('profiles').select('username,full_name,bio,avatar_url,website').eq('id',user.id).maybeSingle(),
+   db.from('posts').select('id',{count:'exact',head:true}).eq('user_id',user.id),
+   db.from('follows').select('follower_id',{count:'exact',head:true}).eq('following_id',user.id),
+   db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',user.id)
+  ]);
+  const x=p.data||{},name=x.username||x.full_name||user.email;
+  body.innerHTML='<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="vy-avatar" style="width:68px;height:68px;font-size:26px">'+esc(name.slice(0,1).toUpperCase())+'</div><div><h3 style="margin:0">'+esc(name)+'</h3><div class="small">'+esc(user.email)+'</div></div></div><p>'+esc(x.bio||'Add a short bio to introduce yourself.')+'</p><div class="vy-tabs"><button>'+(posts.count||0)+' Reels</button><button>'+(followers.count||0)+' Followers</button><button>'+(following.count||0)+' Following</button></div><button class="secondary-btn" onclick="vyCloudEditProfile()">✏️ Edit profile</button>';
+ }
+ window.vyCloudEditProfile=async function(){
+  const user=await me();if(!user)return;
+  const name=prompt('Your display name',user.user_metadata&&user.user_metadata.full_name||'');if(name===null)return;
+  const username=prompt('Choose a username (3–30 characters)',(user.email||'creator').split('@')[0]);if(username===null)return;
+  const clean=username.trim().replace(/^@/,'').toLowerCase();
+  if(clean.length<3||clean.length>30||!/^[a-z0-9_]+$/.test(clean)){alert('Username must be 3–30 characters using letters, numbers or underscores.');return;}
+  const r=await db.from('profiles').update({full_name:name.trim(),username:clean,updated_at:new Date().toISOString()}).eq('id',user.id);
+  if(r.error){alert(r.error.message);return;}await profile();
+ };
+ const old=window.vyNavigate;
+ window.vyNavigate=function(page,button){
+  if(page==='inbox'){document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));inbox();return;}
+  if(page==='notifications'){document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));activity();return;}
+  if(page==='profile'){document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));profile();return;}
+  return old.apply(this,arguments);
+ };
+})();
+
+</script>
 </body></html>`;
  }
  const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
