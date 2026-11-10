@@ -523,7 +523,8 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
    <label>Upload image</label><input type="file" id="videoFile" accept="image/*">
    <label>Video title</label><input id="videoTitle" placeholder="Your promotion title">
    <label>Subtitle</label><input id="videoSubtitle" placeholder="Your message">
-   <label>Hindi voiceover script</label><textarea id="videoHindiScript">वाह! यह साड़ी बहुत ही खूबसूरत है। इसका रंग और डिज़ाइन बेहद शानदार है। इसे पहनकर आप बहुत सुंदर लगेंगी।</textarea>
+   <label>Hindi voiceover script (Hindi or Roman Hindi)</label><textarea id="videoHindiScript" placeholder="Example: Wah! Yeh saree bahut hi sundar hai. Iska rang aur design bahut pyara hai.">Wah! Yeh saree bahut hi sundar hai. Iska rang aur design bahut pyara hai. Ise pehenkar aap bahut sundar lagengi.</textarea>
+   <p class="small">You can type Hindi using English letters (Roman Hindi) or Devanagari. The browser will try to speak it with a Hindi voice; pronunciation depends on the Hindi voice installed on the device.</p>
    <div class="actions">
     <button class="secondary-btn" onclick="speakHindiAd()">🔊 Preview Hindi Voice</button>
     <button class="secondary-btn" onclick="stopHindiAd()">■ Stop Voice</button>
@@ -531,7 +532,7 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
    <p class="small">Hindi speech is played by your browser as a preview. It is not embedded in the downloaded video. A real AI model wearing the uploaded sari and a narrated video need a secure AI backend.</p>
    <canvas id="videoCanvas" width="720" height="900"></canvas>
    <div class="actions"><button onclick="makeVideo()">🎬 Create 15-Second Video</button></div>
-   <p id="videoVoiceStatus" class="small" role="status" aria-live="polite">Hindi voice preview is ready when your browser has a Hindi voice.</p>
+   <p id="videoVoiceStatus" class="small" role="status" aria-live="polite">Ready for Roman Hindi or Devanagari. Pronunciation depends on your browser's Hindi voice.</p>
    <p id="videoStatus">Upload an image to begin.</p>
    <a id="videoDownload" style="display:none;color:#d9c4ff" download="finframe-promo.webm">⬇ Download Promo Video</a>
   </div>
