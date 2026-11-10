@@ -229,8 +229,8 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
  .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:650px){
- .sidebar{display:flex;left:-270px;width:250px;transition:left .25s;box-shadow:12px 0 35px #0008}
- .sidebar.mobile-open{left:0}
+ .sidebar{display:flex;left:0;width:250px;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}
+ .sidebar.mobile-open{transform:translateX(0)}
  .main-area{margin-left:0}
  .topbar{padding:0 13px;height:58px}
  .content{padding:17px 13px 100px}
@@ -628,24 +628,30 @@ const pageNames={
  privacy:'🔐 Privacy & Security'
 };
 
-function toggleMobileMenu(){
+window.toggleMobileMenu=function(){
  const side=document.querySelector('.sidebar');
- if(side)side.classList.toggle('mobile-open');
-}
+ if(!side)return;
+ side.classList.toggle('mobile-open');
+ const menuButton=document.querySelector('.menu-toggle');
+ if(menuButton)menuButton.setAttribute('aria-expanded',side.classList.contains('mobile-open')?'true':'false');
+};
 
-function show(id){
+window.show=function(id){
+ const target=document.getElementById(id);
+ if(!target)return;
+ document.querySelectorAll('main section').forEach(section=>section.classList.remove('active'));
+ target.classList.add('active');
+ document.querySelectorAll('.side-btn').forEach(button=>{
+  button.classList.toggle('active',button.dataset.page===id);
+ });
+ const title=document.getElementById('topTitle');
+ if(title)title.textContent=pageNames[id]||'FinFrame AI Lab';
  const side=document.querySelector('.sidebar');
  if(side)side.classList.remove('mobile-open');
- document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
- const target=$(id);
- if(!target)return;
- target.classList.add('active');
- document.querySelectorAll('.side-btn').forEach(b=>{
-  b.classList.toggle('active',b.dataset.page===id);
- });
- $('topTitle').textContent=pageNames[id]||'FinFrame AI Lab';
- window.scrollTo({top:0,behavior:'smooth'});
-}
+ const menuButton=document.querySelector('.menu-toggle');
+ if(menuButton)menuButton.setAttribute('aria-expanded','false');
+ window.scrollTo({top:0,behavior:'auto'});
+};
 function openTool(id){
  show(id);
  saveRecent(id);
