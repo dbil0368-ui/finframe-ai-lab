@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "FinFrame AI Lab",
+  "short_name": "FinFrame",
+  "description": "Creative tools for building, designing and exploring ideas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090914",
+  "theme_color": "#090914",
+  "icons": [
+    {
+      "src": "./icons/finframe.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
