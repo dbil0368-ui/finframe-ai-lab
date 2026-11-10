@@ -73,7 +73,7 @@ button{cursor:pointer}
 }
 .top-title{font-weight:bold;font-size:15px}
 .menu-toggle{display:none}
-@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.sidebar{display:flex;position:fixed;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}.sidebar.mobile-open{transform:translateX(0)}.main-area{margin-left:0}}
+@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}body.menu-open{overflow:hidden;overscroll-behavior:none}body.menu-open::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:40}.sidebar.mobile-open{z-index:50;overscroll-behavior:contain;touch-action:pan-y}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.sidebar{display:flex;position:fixed;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}.sidebar.mobile-open{transform:translateX(0)}.main-area{margin-left:0}}
 .top-actions{display:flex;gap:9px;align-items:center}
 .icon-btn{
  background:var(--panel2);border:1px solid var(--border);
@@ -781,9 +781,10 @@ window.vyEditProfile=function(){const name=prompt('Choose your profile name','yo
 window.toggleMobileMenu=function(){
  const side=document.querySelector('.sidebar');
  if(!side)return;
- side.classList.toggle('mobile-open');
+ const opened=side.classList.toggle('mobile-open');
+ document.body.classList.toggle('menu-open',opened);
  const menuButton=document.querySelector('.menu-toggle');
- if(menuButton)menuButton.setAttribute('aria-expanded',side.classList.contains('mobile-open')?'true':'false');
+ if(menuButton)menuButton.setAttribute('aria-expanded',opened?'true':'false');
 };
 document.addEventListener('click',function(event){
  const side=document.querySelector('.sidebar');
@@ -791,6 +792,7 @@ document.addEventListener('click',function(event){
  if(!side||!side.classList.contains('mobile-open'))return;
  if(side.contains(event.target)||(menuButton&&menuButton.contains(event.target)))return;
  side.classList.remove('mobile-open');
+ document.body.classList.remove('menu-open');
  if(menuButton)menuButton.setAttribute('aria-expanded','false');
 });
 
@@ -806,6 +808,7 @@ window.show=function(id){
  if(title)title.textContent=pageNames[id]||'FinFrame AI Lab';
  const side=document.querySelector('.sidebar');
  if(side)side.classList.remove('mobile-open');
+ document.body.classList.remove('menu-open');
  const menuButton=document.querySelector('.menu-toggle');
  if(menuButton)menuButton.setAttribute('aria-expanded','false');
  window.scrollTo({top:0,behavior:'auto'});
