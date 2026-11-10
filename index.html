@@ -677,6 +677,7 @@ body.hide-tool-descriptions .tool-card span{display:none}
  <section id="vybora">
   <div class="page-title"><h2>💜 VYBORA</h2><p>Watch. Create. Connect. — your short-video community.</p></div>
   <style>
+   #vybora .vy-stories{display:flex;gap:14px;overflow-x:auto;padding:12px;margin:0 0 14px;background:var(--panel);border:1px solid var(--border);border-radius:16px}#vybora .vy-story{flex:0 0 64px;text-align:center;cursor:pointer}#vybora .vy-story span{width:54px;height:54px;margin:auto auto 5px;border-radius:50%;display:grid;place-items:center;font-size:25px;background:linear-gradient(135deg,#9b70ff,#ef6bcb);border:2px solid #d8a7ff}#vybora .vy-story.own span{background:var(--panel2);border:2px dashed var(--accent)}#vybora .vy-story small{display:block;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
    #vybora .vy-main-nav{display:flex;justify-content:space-around;gap:6px;max-width:980px;margin:0 auto 18px;padding:8px;background:var(--panel);border:1px solid var(--border);border-radius:15px;position:sticky;top:8px;z-index:5}
    #vybora .vy-main-nav button{flex:1;min-width:0;border:0;border-radius:10px;padding:11px 7px;background:transparent;color:var(--muted);font-weight:650;cursor:pointer}
    #vybora .vy-main-nav button.active{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff}
@@ -721,11 +722,13 @@ body.hide-tool-descriptions .tool-card span{display:none}
    <button data-vy-page="explore" onclick="vyNavigate('explore',this)">⌕ <span>Explore</span></button>
    <button data-vy-page="create" onclick="vyNavigate('create',this)">＋ <span>Create</span></button>
    <button data-vy-page="inbox" onclick="vyNavigate('inbox',this)">✉ <span>Inbox</span></button>
+   <button data-vy-page="notifications" onclick="vyNavigate('notifications',this)">♡ <span>Activity</span></button>
    <button data-vy-page="profile" onclick="vyNavigate('profile',this)">◉ <span>Profile</span></button>
   </nav>
   <div id="vyPagePanel" class="vy-page-panel" hidden aria-live="polite"></div>
   <div class="vy-wrap">
    <div>
+    <div class="vy-stories" aria-label="Stories"><div class="vy-story own" onclick="vyNavigate('create')"><span>＋</span><small>Your story</small></div><div class="vy-story" onclick="vySearchTag('DailyReels')"><span>🌅</span><small>vybora.daily</small></div><div class="vy-story" onclick="vySearchTag('Nature')"><span>🌿</span><small>motion.maker</small></div><div class="vy-story" onclick="vySearchTag('Travel')"><span>✈️</span><small>travel.tales</small></div><div class="vy-story" onclick="vySearchTag('Music')"><span>🎵</span><small>music.loop</small></div></div>
     <div class="vy-search"><input id="vySearchInput" type="text" placeholder="🔎 Search captions or #hashtags" oninput="vyRenderFeed()"><button class="secondary-btn" onclick="document.getElementById('vySearchInput').value='';vyRenderFeed()">Clear</button></div>
     <div class="vy-tabs" aria-label="Reels feed filters">
      <button class="active" data-vy-filter="for-you" onclick="vySetFilter('for-you',this)">✨ For You</button>
@@ -838,12 +841,17 @@ window.vyNavigate=function(page,button){
  }else if(page==='create'){
   panel.hidden=true;wrap.hidden=false;const creator=document.querySelector('#vybora .vy-upload');if(creator)creator.scrollIntoView({behavior:'smooth',block:'center'});return;
  }else if(page==='inbox'){
-  panel.innerHTML='<h3>✉ Inbox</h3><p class="small">Your conversations will appear here when VYBORA accounts and messaging are connected.</p><div class="vy-empty"><div style="font-size:34px">💬</div><b>No messages yet</b><p>Direct messaging is not connected in this prototype.</p></div>';
+  const chats=vyState().chats||{};const chat=chats['vybora.daily']||[];panel.innerHTML='<h3>✉ Inbox</h3><p class="small">Local demo chat · messages stay on this device and are not sent to another person.</p><div class="vy-inbox-item"><div class="vy-avatar">V</div><div style="flex:1"><b>vybora.daily</b><div class="small">VYBORA community demo</div></div><span class="small">Demo</span></div><div id="vyChatLog" style="display:grid;gap:8px;max-height:280px;overflow:auto;padding:12px 0">'+(chat.length?chat.map(function(m){return '<div style="justify-self:'+(m.mine?'end':'start')+';max-width:85%;padding:9px 12px;border-radius:12px;background:var(--panel2)">'+vyEscape(m.text)+'</div>';}).join(''):'<div class="vy-empty">Start a local demo conversation below.</div>')+'</div><div style="display:flex;gap:8px;align-items:center"><input id="vyMessageInput" type="text" placeholder="Write a message..." style="flex:1;min-width:0"><button class="primary-btn" onclick="vySendMessage()">Send</button></div><p class="small">Real person-to-person messaging needs user accounts and a shared backend.</p>';
+ }else if(page==='notifications'){
+  const items=vyState().activity||[];panel.innerHTML='<h3>♡ Activity</h3><p class="small">Your activity on this device.</p>'+(items.length?items.slice().reverse().map(function(a){return '<div class="vy-inbox-item"><div class="vy-avatar">'+vyEscape(a.icon||'♡')+'</div><div><b>'+vyEscape(a.title)+'</b><div class="small">'+vyEscape(a.detail||'')+'</div></div></div>';}).join(''):'<div class="vy-empty">No activity yet. Your local interactions will appear here.</div>');
  }else if(page==='profile'){
   const s=vyState(),name=s.profile||'your_profile',posts=document.querySelectorAll('#vyFeed [data-vy-id]').length;
   panel.innerHTML='<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div class="vy-avatar" style="width:64px;height:64px;font-size:24px">'+name.charAt(0).toUpperCase()+'</div><div><h3 style="margin:0">'+name.replace(/[&<>"]/g,'')+'</h3><p class="small">Your VYBORA creator profile</p></div><button class="secondary-btn" onclick="vyEditProfile()">✏️ Edit profile</button></div><div class="vy-tabs" style="margin-top:20px"><button>'+posts+' Reels</button><button>'+(s.follows||[]).length+' Following</button><button>'+(s.saved||[]).length+' Saved</button></div><p class="small">Your local profile details are saved on this device only.</p><button class="primary-btn" onclick="vyNavigate(\'create\')">＋ Create a Reel</button>';
  }
 };
+function vyEscape(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+window.vySendMessage=function(){const input=$('vyMessageInput');if(!input||!input.value.trim())return;const chats=vyState().chats||{},list=chats['vybora.daily']||[];list.push({mine:true,text:input.value.trim(),at:Date.now()});chats['vybora.daily']=list;vySaveState({chats});vyNavigate('inbox');};
+window.vyAddActivity=function(title,detail,icon){const s=vyState(),activity=s.activity||[];activity.push({title,detail,icon,at:Date.now()});vySaveState({activity:activity.slice(-50)});};
 function vyRestoreLocalState(){const s=vyState();if($('vyProfileName')){$('vyProfileName').textContent=s.profile||'your_profile';$('vyProfileAvatar').textContent=(s.profile||'Y').charAt(0).toUpperCase();}document.querySelectorAll('#vyFeed [data-vy-id]').forEach(card=>{const id=card.dataset.vyId,user=card.dataset.vyUser||'',btn=card.querySelector('.vy-head button');if(btn&&(s.follows||[]).includes(user))btn.textContent='✓ Following';const like=card.querySelector('.vy-actions button[onclick^="vyLike"]');if(like&&(s.likes||{})[id]){like.querySelector('span').textContent='Liked';like.setAttribute('aria-pressed','true');like.style.color='#ff6b9a';}const save=card.querySelector('.vy-actions button[onclick^="vySave"]');if(save&&(s.saved||[]).includes(id)){save.textContent='✓ Saved';save.setAttribute('aria-pressed','true');}((s.comments||{})[id]||[]).forEach(comment=>{const line=document.createElement('div');line.className='vy-comment';line.textContent=(s.profile||'you')+': '+comment;card.querySelector('.vy-comments')?.appendChild(line);});});vyRenderFeed();}
 window.addEventListener('DOMContentLoaded',vyRestoreLocalState);
 window.closeMobileMenu=function(){
