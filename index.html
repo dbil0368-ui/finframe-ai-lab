@@ -281,6 +281,18 @@ body[data-theme="light"] .mobile-nav{background:#fff}
 body[data-theme="light"] .mobile-nav button{color:#55566b}
 body[data-theme="light"] label{color:#34344b}
 body[data-theme="light"] .search{background:#fff;color:#202033}
+body{font-size:var(--ui-font-size,16px)}
+body.compact-mode .content{padding-top:14px;padding-bottom:55px}
+body.compact-mode .card{padding:12px;margin-bottom:10px}
+body.compact-mode .tool-card{min-height:112px;padding:12px}
+body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+body.high-contrast{--muted:#dedcf2;--border:#77738f}
+body[data-theme="light"].high-contrast{--muted:#303044;--border:#77778b}
+body[data-theme="light"] .card{background:#fff}
+body[data-theme="light"] .tool-icon{background:#eeebfb}
+body[data-theme="light"] .brand{color:#202033}
+body[data-theme="light"] .sidebar-note{background:#f3f2fa;color:#45455c}
+body[data-theme="light"] .preview{border-color:#999}
 </style>
 </head>
 <body>
@@ -654,6 +666,8 @@ body[data-theme="light"] .search{background:#fff;color:#202033}
  <section id="settings">
   <div class="page-title"><h2>⚙️ Settings & Backup</h2><p>Personalize FinFrame and keep a copy of your workspace data.</p></div>
   <div class="card"><h3>🎨 Appearance</h3><p>Switch between dark and light mode. Your choice is saved on this device.</p><div class="actions"><button onclick="setTheme('dark')">🌙 Dark Mode</button><button class="secondary-btn" onclick="setTheme('light')">☀️ Light Mode</button></div><p id="themeStatus" class="small" role="status">Choose the look you prefer.</p></div>
+  <div class="card"><h3>🖌️ Accent Color</h3><p>Choose the highlight color used by buttons and creative tools.</p><div class="grid"><div><label for="accentColor">Custom color</label><input id="accentColor" type="color" value="#9b70ff" onchange="savePreferences()"></div><div><label for="accentPreset">Quick presets</label><select id="accentPreset" onchange="applyAccentPreset(this.value)"><option value="">Choose a preset</option><option value="#9b70ff">Violet</option><option value="#2585ff">Ocean Blue</option><option value="#16a085">Emerald</option><option value="#e67e22">Sunset Orange</option><option value="#e84393">Pink</option></select></div></div></div>
+  <div class="card"><h3>📐 Interface Preferences</h3><label for="textScale">Text size: <strong id="textScaleValue">16px</strong></label><input id="textScale" type="range" min="14" max="19" step="1" value="16" oninput="previewTextScale(this.value)" onchange="savePreferences()"><label><input id="compactMode" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Compact layout (more content on screen)</label><label><input id="reduceMotion" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Reduce animations</label><label><input id="highContrast" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> High contrast text</label><div class="actions"><button class="secondary-btn" onclick="resetPreferences()">↩️ Reset Appearance</button></div><p id="preferencesStatus" class="small" role="status">Your preferences are saved in this browser.</p></div>
   <div class="card"><h3>📦 Workspace Backup</h3><p>Export your saved Brand Kit, recent activity and appearance setting into one JSON backup file.</p><div class="actions"><button onclick="exportWorkspaceBackup()">⬇️ Download Backup</button></div><label for="workspaceBackupFile">Restore a backup file</label><input id="workspaceBackupFile" type="file" accept=".json,application/json"><div class="actions"><button class="secondary-btn" onclick="importWorkspaceBackup()">↩️ Restore Backup</button></div><p id="backupStatus" class="small" role="status">Your backup stays on your device unless you choose to share it.</p></div>
   <div class="card"><h3>ℹ️ About this prototype</h3><p>FinFrame AI Lab is a free browser-based prototype. Your saved data is stored locally in this browser; clearing browser site data may remove it.</p></div>
  </section>
@@ -1281,10 +1295,11 @@ function setTheme(theme){
 function loadTheme(){
  let theme='dark';try{theme=localStorage.getItem('finframeTheme')||'dark'}catch(e){}
  setTheme(theme);
+ if($('accentColor'))loadPreferences();
 }
 function exportWorkspaceBackup(){
  let brand=null,recent=[];try{brand=JSON.parse(localStorage.getItem('finframeBrandKit')||'null');recent=JSON.parse(localStorage.getItem('finframeRecent')||'[]')}catch(e){}
- const backup={app:'FinFrame AI Lab',version:1,exportedAt:new Date().toISOString(),theme:document.body.dataset.theme||'dark',brandKit:brand,recentActivity:recent};
+ const backup={app:'FinFrame AI Lab',version:1,exportedAt:new Date().toISOString(),theme:document.body.dataset.theme||'dark',preferences:JSON.parse(localStorage.getItem('finframePreferences')||'{}'),brandKit:brand,recentActivity:recent};
  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='finframe-workspace-backup.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
  $('backupStatus').textContent='Workspace backup downloaded.';
@@ -1296,9 +1311,38 @@ function importWorkspaceBackup(){
    const backup=JSON.parse(reader.result);if(!backup||backup.app!=='FinFrame AI Lab'||backup.version!==1)throw new Error('Invalid backup');
    if(backup.brandKit&&typeof backup.brandKit==='object')localStorage.setItem('finframeBrandKit',JSON.stringify(backup.brandKit));
    if(Array.isArray(backup.recentActivity))localStorage.setItem('finframeRecent',JSON.stringify(backup.recentActivity.slice(0,5)));
-   if(backup.theme==='light'||backup.theme==='dark')setTheme(backup.theme);renderRecent();loadBrandKit();$('backupStatus').textContent='Backup restored successfully on this device.';
+   if(backup.theme==='light'||backup.theme==='dark')setTheme(backup.theme);if(backup.preferences&&typeof backup.preferences==='object')localStorage.setItem('finframePreferences',JSON.stringify(backup.preferences));if($('accentColor'))loadPreferences();renderRecent();loadBrandKit();$('backupStatus').textContent='Backup restored successfully on this device.';
   }catch(e){$('backupStatus').textContent='This backup file is invalid or could not be restored.'}
  };reader.onerror=function(){$("backupStatus").textContent="Could not read that file."};reader.readAsText(file);
+}
+function applyAccentColor(color){
+ if(!/^#[0-9a-f]{6}$/i.test(color))return;
+ document.documentElement.style.setProperty('--accent',color);
+ const input=$('accentColor');if(input)input.value=color;
+}
+function applyAccentPreset(color){applyAccentColor(color);savePreferences();}
+function previewTextScale(value){
+ const n=Math.min(19,Math.max(14,Number(value)||16));document.documentElement.style.setProperty('--ui-font-size',n+'px');
+ const label=$('textScaleValue');if(label)label.textContent=n+'px';
+}
+function savePreferences(){
+ const prefs={accent:$('accentColor')?.value||'#9b70ff',textScale:Number($('textScale')?.value||16),compact:!!$('compactMode')?.checked,reduceMotion:!!$('reduceMotion')?.checked,highContrast:!!$('highContrast')?.checked};
+ try{localStorage.setItem('finframePreferences',JSON.stringify(prefs))}catch(e){}
+ applyAccentColor(prefs.accent);previewTextScale(prefs.textScale);
+ document.body.classList.toggle('compact-mode',prefs.compact);document.body.classList.toggle('reduce-motion',prefs.reduceMotion);document.body.classList.toggle('high-contrast',prefs.highContrast);
+ const status=$('preferencesStatus');if(status)status.textContent='Preferences saved on this device.';
+}
+function loadPreferences(){
+ let p={};try{p=JSON.parse(localStorage.getItem('finframePreferences')||'{}')||{}}catch(e){}
+ const accent=/^#[0-9a-f]{6}$/i.test(p.accent||'')?p.accent:'#9b70ff';
+ const scale=Math.min(19,Math.max(14,Number(p.textScale)||16));
+ $('accentColor').value=accent;$('textScale').value=scale;$('compactMode').checked=!!p.compact;$('reduceMotion').checked=!!p.reduceMotion;$('highContrast').checked=!!p.highContrast;
+ applyAccentColor(accent);previewTextScale(scale);document.body.classList.toggle('compact-mode',!!p.compact);document.body.classList.toggle('reduce-motion',!!p.reduceMotion);document.body.classList.toggle('high-contrast',!!p.highContrast);
+}
+function resetPreferences(){
+ try{localStorage.removeItem('finframePreferences')}catch(e){}
+ $('accentColor').value='#9b70ff';$('textScale').value=16;$('compactMode').checked=false;$('reduceMotion').checked=false;$('highContrast').checked=false;loadPreferences();
+ const status=$('preferencesStatus');if(status)status.textContent='Appearance preferences reset to defaults.';
 }
 </script>
 </body>
