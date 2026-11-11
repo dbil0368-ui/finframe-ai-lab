@@ -1,4 +1,4 @@
-import { getVercelOidcToken } from "@vercel/oidc";
+import { generateText } from "ai";
 
 const MODEL = process.env.AI_GATEWAY_MODEL || "openai/gpt-5-mini";
 
@@ -20,7 +20,6 @@ export default async function handler(req, res) {
   if (!topic) return res.status(400).json({ error: "Please enter a topic." });
 
   const prompt = [
-    "You are VYBORA Creator Studio, an ethical creator strategist.",
     "Create a practical, original creative brief. Do not invent facts, statistics, quotes, or current events. If the topic needs verification, clearly mark claims to verify.",
     "Write in " + language + ".",
     "Audience: " + audience,
@@ -30,63 +29,38 @@ export default async function handler(req, res) {
   ].join("\n");
 
   try {
-    // Try Vercel OIDC first. A configured but invalid API key must not block OIDC.
-    // Fall back to the Preview API key only if OIDC is unavailable or rejected.
-    const credentials = [];
-    try {
-      const oidcToken = await getVercelOidcToken();
-      if (oidcToken) credentials.push({ apiKey: oidcToken, source: "oidc" });
-    } catch {
-      // OIDC may be unavailable outside a Vercel deployment.
-    }
-    if (process.env.AI_GATEWAY_API_KEY) {
-      credentials.push({ apiKey: process.env.AI_GATEWAY_API_KEY, source: "api-key" });
-    }
-
-    if (!credentials.length) {
-      throw new Error("No AI Gateway authentication is configured.");
-    }
-
-    const credential = credentials[0];
-    const gatewayResponse = await fetch("https://ai-gateway.vercel.sh/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + credential.apiKey,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          { role: "system", content: "You are a helpful creative strategist. Be specific, fresh, safe, and concise." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1100
-      }),
-      signal: AbortSignal.timeout(45000)
+    // The AI SDK's default Gateway provider automatically uses Vercel OIDC
+    // on Preview/Production deployments, without manually forwarding tokens.
+    const result = await generateText({
+      model: MODEL,
+      system: "You are VYBORA Creator Studio, an ethical creator strategist. Be specific, fresh, safe, and concise.",
+      prompt,
+      maxOutputTokens: 1100,
+      timeout: 45000,
+      maxRetries: 0
     });
 
-    const gatewayData = await gatewayResponse.json().catch(() => ({}));
-    if (!gatewayResponse.ok) {
-      const error = new Error(gatewayData?.error?.message || "AI Gateway request failed.");
-      error.status = gatewayResponse.status;
-      throw error;
-    }
-
-    const brief = gatewayData?.choices?.[0]?.message?.content;
-    if (typeof brief !== "string" || !brief.trim()) {
+    if (typeof result.text !== "string" || !result.text.trim()) {
       return res.status(502).json({ error: "AI returned an empty brief. Please try again." });
     }
 
     return res.status(200).json({
-      brief: brief.trim(),
-      model: gatewayData?.model || MODEL
+      brief: result.text.trim(),
+      model: result.response?.modelId || MODEL
     });
   } catch (error) {
     const message = String(error?.message || "");
-    const status = Number(error?.statusCode || error?.status || 0);
+    const status = Number(error?.statusCode || error?.status || error?.response?.status || 0);
+    console.error("[VYBORA Creator] AI generation failed", {
+      status: status || null,
+      errorName: String(error?.name || "Error").slice(0, 80),
+      message: message.replace(/Bearer\s+\S+/gi, "Bearer [redacted]").slice(0, 240),
+      oidcAvailable: Boolean(process.env.VERCEL_OIDC_TOKEN),
+      apiKeyAvailable: Boolean(process.env.AI_GATEWAY_API_KEY)
+    });
+
     if (status === 401 || status === 403 || /unauthori[sz]ed|forbidden|authentication/i.test(message)) {
-      return res.status(502).json({ error: "AI Gateway authentication failed. Check Preview OIDC access and the AI_GATEWAY_API_KEY." });
+      return res.status(502).json({ error: "AI Gateway authentication failed. Preview OIDC access needs attention." });
     }
     if (status === 402 || /insufficient_funds|customer_verification_required|quota_for_entity_exceeded/i.test(message)) {
       return res.status(402).json({ error: "AI Gateway needs billing verification or available credits. Check Vercel AI Gateway billing." });
