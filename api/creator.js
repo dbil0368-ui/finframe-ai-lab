@@ -9,10 +9,10 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Use POST for Creator Studio." });
   }
 
-  const token = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+  const token = process.env.AI_GATEWAY_API_KEY || req.headers["x-vercel-oidc-token"] || process.env.VERCEL_OIDC_TOKEN;
   if (!token) {
     return res.status(503).json({
-      error: "AI is not connected yet. Add AI_GATEWAY_API_KEY in Vercel Project Settings → Environment Variables, then redeploy."
+      error: "AI authentication is unavailable. Check the Vercel OIDC connection or configure AI_GATEWAY_API_KEY in Project Settings → Environment Variables."
     });
   }
 
