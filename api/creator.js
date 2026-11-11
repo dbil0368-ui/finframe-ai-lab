@@ -1,5 +1,3 @@
-import { generateText } from "ai";
-import { createGateway } from "@ai-sdk/gateway";
 import { getVercelOidcToken } from "@vercel/oidc";
 
 const MODEL = process.env.AI_GATEWAY_MODEL || "openai/gpt-5-mini";
@@ -49,40 +47,40 @@ export default async function handler(req, res) {
       throw new Error("No AI Gateway authentication is configured.");
     }
 
-    let result;
-    let lastAuthError;
-    for (const credential of credentials) {
-      try {
-        const gateway = createGateway({ apiKey: credential.apiKey });
-        result = await generateText({
-          model: gateway(MODEL),
-          system: "You are a helpful creative strategist. Be specific, fresh, safe, and concise.",
-          prompt,
-          temperature: 0.7,
-          maxOutputTokens: 1100,
-          abortSignal: AbortSignal.timeout(45000)
-        });
-        break;
-      } catch (error) {
-        const message = String(error?.message || "");
-        const status = Number(error?.statusCode || error?.status || 0);
-        const isAuthError = status === 401 || status === 403 || /unauthori[sz]ed|forbidden|authentication/i.test(message);
-        if (!isAuthError) throw error;
-        lastAuthError = error;
-      }
+    const credential = credentials[0];
+    const gatewayResponse = await fetch("https://ai-gateway.vercel.sh/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + credential.apiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: "You are a helpful creative strategist. Be specific, fresh, safe, and concise." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 1100
+      }),
+      signal: AbortSignal.timeout(45000)
+    });
+
+    const gatewayData = await gatewayResponse.json().catch(() => ({}));
+    if (!gatewayResponse.ok) {
+      const error = new Error(gatewayData?.error?.message || "AI Gateway request failed.");
+      error.status = gatewayResponse.status;
+      throw error;
     }
 
-    if (!result && lastAuthError) throw lastAuthError;
-    if (!result) throw new Error("AI Gateway request did not complete.");
-
-    const { text, response } = result;
-    if (!text || !text.trim()) {
+    const brief = gatewayData?.choices?.[0]?.message?.content;
+    if (typeof brief !== "string" || !brief.trim()) {
       return res.status(502).json({ error: "AI returned an empty brief. Please try again." });
     }
 
     return res.status(200).json({
-      brief: text.trim(),
-      model: response?.modelId || MODEL
+      brief: brief.trim(),
+      model: gatewayData?.model || MODEL
     });
   } catch (error) {
     const message = String(error?.message || "");
