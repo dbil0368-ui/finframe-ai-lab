@@ -32,10 +32,10 @@ export default async function handler(req, res) {
   ].join("\n");
 
   try {
-    // Resolve the rotating OIDC token from this request's Vercel context.
-    // Never send the token to the browser or write it to logs.
-    const oidcToken = await getVercelOidcToken();
-    const gateway = createGateway({ apiKey: oidcToken });
+    // Prefer the Preview-only AI Gateway key when configured.
+    // Otherwise use Vercel's short-lived OIDC token. Never expose either credential.
+    const apiKey = process.env.AI_GATEWAY_API_KEY || await getVercelOidcToken();
+    const gateway = createGateway({ apiKey });
 
     const { text, response } = await generateText({
       model: gateway(MODEL),
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
     const message = String(error?.message || "");
     const status = Number(error?.statusCode || error?.status || 0);
     if (status === 401 || status === 403 || /unauthori[sz]ed|forbidden|authentication/i.test(message)) {
-      return res.status(502).json({ error: "Vercel AI Gateway rejected this Preview deployment's OIDC token. Check the Preview environment's OIDC claims and AI Gateway team access." });
+      return res.status(502).json({ error: "AI Gateway authentication failed. Check the Preview-only AI_GATEWAY_API_KEY or Vercel OIDC access." });
     }
     if (status === 402 || /insufficient_funds|customer_verification_required|quota_for_entity_exceeded/i.test(message)) {
       return res.status(402).json({ error: "AI Gateway needs billing verification or available credits. Check Vercel AI Gateway billing." });
