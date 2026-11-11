@@ -809,6 +809,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   </div>
  </section>
  <section id="vybora">
+  <button id="vyHamburgerButton" type="button" class="vy-hamburger" aria-label="VYBORA menu" aria-expanded="false" onclick="window.toggleMobileMenu()">☰</button>
   <div class="page-title"><h2>💜 VYBORA</h2><p>Watch. Create. Connect. — your short-video community.</p></div>
   <div class="card" id="vyCloudAuth" style="max-width:980px;margin:0 auto 16px;padding:16px;border:1px solid var(--border);border-radius:16px">
    <h3 style="margin-top:0">🔐 VYBORA Account</h3>
@@ -915,6 +916,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 
 
 @media(max-width:900px){body.vybora-mode .main-area .topbar .menu-toggle{font-size:0!important}body.vybora-mode .main-area .topbar .menu-toggle::before{content:"☰";font-size:25px!important;line-height:1}}
+/* Dedicated VYBORA hamburger stays visible while FinFrame navigation is hidden */
+body.vybora-mode #vybora .vy-hamburger{position:fixed;top:8px;right:8px;z-index:2147483005;display:flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border:1px solid #34303c;border-radius:12px;background:#17151d;color:#fff;font-size:25px;line-height:1;cursor:pointer;touch-action:manipulation}
 /* Instagram-style VYBORA hamburger menu */
 body.vybora-mode #vybora .vy-menu-popover{position:fixed;top:62px;right:12px;z-index:2147483004;width:min(250px,calc(100vw - 24px));padding:8px;border:1px solid #34303c;border-radius:14px;background:#17151d;box-shadow:0 12px 34px #0009}
 body.vybora-mode #vybora .vy-menu-popover[hidden]{display:none!important}
@@ -1134,8 +1137,9 @@ window.closeMobileMenu=function(){
  if(menuButton)menuButton.setAttribute('aria-expanded','false');
 };
 window.toggleMobileMenu=function(){
- const menuButton=document.querySelector('.menu-toggle');
+ let menuButton=document.querySelector('.menu-toggle');
  if(document.body.classList.contains('vybora-mode')){
+  menuButton=document.getElementById('vyHamburgerButton');
   let menu=document.getElementById('vyMenuPopover');
   if(!menu){
    menu=document.createElement('div');menu.id='vyMenuPopover';menu.className='vy-menu-popover';menu.hidden=true;
