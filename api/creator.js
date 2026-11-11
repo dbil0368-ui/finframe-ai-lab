@@ -32,20 +32,50 @@ export default async function handler(req, res) {
   ].join("\n");
 
   try {
-    // Prefer the Preview-only AI Gateway key when configured.
-    // Otherwise use Vercel's short-lived OIDC token. Never expose either credential.
-    const apiKey = process.env.AI_GATEWAY_API_KEY || await getVercelOidcToken();
-    const gateway = createGateway({ apiKey });
+    // Try Vercel OIDC first. A configured but invalid API key must not block OIDC.
+    // Fall back to the Preview API key only if OIDC is unavailable or rejected.
+    const credentials = [];
+    try {
+      const oidcToken = await getVercelOidcToken();
+      if (oidcToken) credentials.push({ apiKey: oidcToken, source: "oidc" });
+    } catch {
+      // OIDC may be unavailable outside a Vercel deployment.
+    }
+    if (process.env.AI_GATEWAY_API_KEY) {
+      credentials.push({ apiKey: process.env.AI_GATEWAY_API_KEY, source: "api-key" });
+    }
 
-    const { text, response } = await generateText({
-      model: gateway(MODEL),
-      system: "You are a helpful creative strategist. Be specific, fresh, safe, and concise.",
-      prompt,
-      temperature: 0.7,
-      maxOutputTokens: 1100,
-      abortSignal: AbortSignal.timeout(45000)
-    });
+    if (!credentials.length) {
+      throw new Error("No AI Gateway authentication is configured.");
+    }
 
+    let result;
+    let lastAuthError;
+    for (const credential of credentials) {
+      try {
+        const gateway = createGateway({ apiKey: credential.apiKey });
+        result = await generateText({
+          model: gateway(MODEL),
+          system: "You are a helpful creative strategist. Be specific, fresh, safe, and concise.",
+          prompt,
+          temperature: 0.7,
+          maxOutputTokens: 1100,
+          abortSignal: AbortSignal.timeout(45000)
+        });
+        break;
+      } catch (error) {
+        const message = String(error?.message || "");
+        const status = Number(error?.statusCode || error?.status || 0);
+        const isAuthError = status === 401 || status === 403 || /unauthori[sz]ed|forbidden|authentication/i.test(message);
+        if (!isAuthError) throw error;
+        lastAuthError = error;
+      }
+    }
+
+    if (!result && lastAuthError) throw lastAuthError;
+    if (!result) throw new Error("AI Gateway request did not complete.");
+
+    const { text, response } = result;
     if (!text || !text.trim()) {
       return res.status(502).json({ error: "AI returned an empty brief. Please try again." });
     }
@@ -58,7 +88,7 @@ export default async function handler(req, res) {
     const message = String(error?.message || "");
     const status = Number(error?.statusCode || error?.status || 0);
     if (status === 401 || status === 403 || /unauthori[sz]ed|forbidden|authentication/i.test(message)) {
-      return res.status(502).json({ error: "AI Gateway authentication failed. Check the Preview-only AI_GATEWAY_API_KEY or Vercel OIDC access." });
+      return res.status(502).json({ error: "AI Gateway authentication failed. Check Preview OIDC access and the AI_GATEWAY_API_KEY." });
     }
     if (status === 402 || /insufficient_funds|customer_verification_required|quota_for_entity_exceeded/i.test(message)) {
       return res.status(402).json({ error: "AI Gateway needs billing verification or available credits. Check Vercel AI Gateway billing." });
