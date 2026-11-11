@@ -910,7 +910,12 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 }
 
 
-@media(max-width:900px){body.vybora-mode .main-area .topbar .menu-toggle{font-size:0!important}body.vybora-mode .main-area .topbar .menu-toggle::before{content:"⚙";font-size:25px!important;line-height:1}}
+@media(max-width:900px){body.vybora-mode .main-area .topbar .menu-toggle{font-size:0!important}body.vybora-mode .main-area .topbar .menu-toggle::before{content:"☰";font-size:25px!important;line-height:1}}
+/* Instagram-style VYBORA hamburger menu */
+body.vybora-mode #vybora .vy-menu-popover{position:fixed;top:62px;right:12px;z-index:2147483004;width:min(250px,calc(100vw - 24px));padding:8px;border:1px solid #34303c;border-radius:14px;background:#17151d;box-shadow:0 12px 34px #0009}
+body.vybora-mode #vybora .vy-menu-popover[hidden]{display:none!important}
+body.vybora-mode #vybora .vy-menu-popover button{display:block;width:100%;padding:13px 12px;border:0;border-radius:9px;background:transparent;color:#fff;text-align:left;font-size:15px}
+body.vybora-mode #vybora .vy-menu-popover button:active{background:#302b3b}
 /* VYBORA-specific settings page */
 body.vybora-mode #vybora .vy-settings-group{margin:14px 0;padding:14px;border:1px solid #302b3c;border-radius:14px;background:#111}
 body.vybora-mode #vybora .vy-settings-group h4{margin:0 0 8px;color:#f4eaff}
@@ -928,7 +933,6 @@ body.vybora-mode #vybora .vy-settings-row button{flex:0 0 auto}
    <button data-vy-page="inbox" onclick="vyNavigate('inbox',this)">✉ <span>Inbox</span></button>
    <button data-vy-page="notifications" onclick="vyNavigate('notifications',this)">♡ <span>Activity</span></button>
    <button data-vy-page="profile" onclick="vyNavigate('profile',this)">◉ <span>Profile</span></button>
-   <button data-vy-page="settings" onclick="vyNavigate('settings',this)">⚙ <span>Settings</span></button>
   </nav>
   <div id="vyPagePanel" class="vy-page-panel" hidden aria-live="polite"></div>
   <div class="vy-wrap">
@@ -1128,8 +1132,14 @@ window.closeMobileMenu=function(){
 window.toggleMobileMenu=function(){
  const menuButton=document.querySelector('.menu-toggle');
  if(document.body.classList.contains('vybora-mode')){
-  if(typeof window.vyNavigate==='function')window.vyNavigate('settings');
-  if(menuButton){menuButton.textContent='⚙';menuButton.setAttribute('aria-label','VYBORA Settings');menuButton.setAttribute('aria-expanded','false');}
+  let menu=document.getElementById('vyMenuPopover');
+  if(!menu){
+   menu=document.createElement('div');menu.id='vyMenuPopover';menu.className='vy-menu-popover';
+   menu.innerHTML="<button type='button' onclick=\"window.vyNavigate('settings');window.toggleMobileMenu()\">⚙️ Settings</button><button type='button' onclick=\"window.vyNavigate('profile');window.toggleMobileMenu()\">◉ Profile</button><button type='button' onclick=\"window.vyNavigate('notifications');window.toggleMobileMenu()\">♡ Activity</button>";
+   document.getElementById('vybora')?.appendChild(menu);
+  }
+  const opened=menu.hidden;menu.hidden=!opened;
+  if(menuButton){menuButton.setAttribute('aria-label','VYBORA menu');menuButton.setAttribute('aria-expanded',opened?'true':'false');}
   return;
  }
  const side=document.querySelector('.sidebar');
