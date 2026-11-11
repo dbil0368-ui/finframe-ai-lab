@@ -1,19 +1,14 @@
-const MODEL = process.env.AI_GATEWAY_MODEL || "openai/gpt-5-mini";
-const GATEWAY_URL = "https://ai-gateway.vercel.sh/v1/chat/completions";
+import { generateText } from "ai";
 
-module.exports = async function handler(req, res) {
+const MODEL = process.env.AI_GATEWAY_MODEL || "openai/gpt-5-mini";
+
+export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Use POST for Creator Studio." });
-  }
-
-  const token = process.env.AI_GATEWAY_API_KEY || req.headers["x-vercel-oidc-token"] || process.env.VERCEL_OIDC_TOKEN;
-  if (!token) {
-    return res.status(503).json({
-      error: "AI authentication is unavailable. Check the Vercel OIDC connection or configure AI_GATEWAY_API_KEY in Project Settings → Environment Variables."
-    });
   }
 
   const body = req.body || {};
@@ -21,6 +16,7 @@ module.exports = async function handler(req, res) {
   const format = typeof body.format === "string" ? body.format.slice(0, 60) : "Short video";
   const audience = typeof body.audience === "string" ? body.audience.trim().slice(0, 160) : "curious viewers";
   const language = typeof body.language === "string" ? body.language.slice(0, 40) : "Bengali";
+
   if (!topic) return res.status(400).json({ error: "Please enter a topic." });
 
   const prompt = [
@@ -34,40 +30,37 @@ module.exports = async function handler(req, res) {
   ].join("\n");
 
   try {
-    const upstream = await fetch(GATEWAY_URL, {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + token,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          { role: "system", content: "You are a helpful creative strategist. Be specific, fresh, safe, and concise." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1100
-      }),
-      signal: AbortSignal.timeout(45000)
+    // AI SDK automatically authenticates Vercel deployments with the deployment OIDC token.
+    // Do not manually forward x-vercel-oidc-token or expose credentials to the browser.
+    const { text, response } = await generateText({
+      model: MODEL,
+      system: "You are a helpful creative strategist. Be specific, fresh, safe, and concise.",
+      prompt,
+      temperature: 0.7,
+      maxOutputTokens: 1100,
+      abortSignal: AbortSignal.timeout(45000)
     });
-    const data = await upstream.json().catch(() => ({}));
-    if (!upstream.ok) {
-      const status = upstream.status === 401 || upstream.status === 403 ? 502 : upstream.status;
-      return res.status(status).json({
-        error: upstream.status === 401 || upstream.status === 403
-          ? "AI Gateway authentication failed. Check the Vercel AI Gateway connection or API key."
-          : upstream.status === 429
-            ? "AI usage limit reached. Please try again later."
-            : "AI service is temporarily unavailable. Please try again."
-      });
-    }
-    const result = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    if (typeof result !== "string" || !result.trim()) {
+
+    if (!text || !text.trim()) {
       return res.status(502).json({ error: "AI returned an empty brief. Please try again." });
     }
-    return res.status(200).json({ brief: result.trim(), model: data.model || MODEL });
+
+    return res.status(200).json({
+      brief: text.trim(),
+      model: response?.modelId || MODEL
+    });
   } catch (error) {
-    return res.status(504).json({ error: "AI request timed out or could not connect. Please try again." });
+    const message = String(error?.message || "");
+    const status = Number(error?.statusCode || error?.status || 0);
+    if (status === 401 || status === 403 || /unauthori[sz]ed|forbidden|authentication/i.test(message)) {
+      return res.status(502).json({ error: "Vercel AI Gateway authentication failed. Check this Preview deployment's OIDC access and AI Gateway team setup." });
+    }
+    if (status === 402 || /insufficient_funds|customer_verification_required|quota_for_entity_exceeded/i.test(message)) {
+      return res.status(402).json({ error: "AI Gateway needs billing verification or available credits. Check Vercel AI Gateway billing." });
+    }
+    if (status === 429) {
+      return res.status(429).json({ error: "AI usage limit reached. Please try again later." });
+    }
+    return res.status(502).json({ error: "AI service is temporarily unavailable. Please try again." });
   }
-};
+}
