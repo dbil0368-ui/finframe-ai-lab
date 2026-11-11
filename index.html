@@ -1653,6 +1653,20 @@ function resetPreferences(){
   const host=el('vyCloudFeed');if(!host)return;
   const r=await db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').order('created_at',{ascending:false}).limit(40);
   if(r.error){host.innerHTML='<div class="vy-empty">Could not load online Reels: '+esc(r.error.message)+'</div>';return;}
+  if(currentUser){
+   const [profileResult,postCount,followingCount,followerCount]=await Promise.all([
+    db.from('profiles').select('username,full_name').eq('id',currentUser.id).maybeSingle(),
+    db.from('posts').select('id',{count:'exact',head:true}).eq('user_id',currentUser.id),
+    db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',currentUser.id),
+    db.from('follows').select('follower_id',{count:'exact',head:true}).eq('following_id',currentUser.id)
+   ]);
+   const profile=profileResult.data||{},displayName=profile.username||profile.full_name||currentUser.email||'Creator';
+   if(el('vyProfileName'))el('vyProfileName').textContent=displayName;
+   if(el('vyProfileAvatar'))el('vyProfileAvatar').textContent=displayName.charAt(0).toUpperCase();
+   if(el('vyPostCount'))el('vyPostCount').textContent=String(postCount.count||0);
+   if(el('vyFollowingCount'))el('vyFollowingCount').textContent=String(followingCount.count||0);
+   if(el('vyFollowerCount'))el('vyFollowerCount').textContent=String(followerCount.count||0);
+  }
   if(!r.data.length){host.innerHTML='';return;}
   const ids=[...new Set(r.data.map(p=>p.user_id))];
   const pr=await db.from('profiles').select('id,username,full_name,avatar_url').in('id',ids);
