@@ -413,6 +413,23 @@ body.vybora-mode #vyCloudAuth{display:none!important}
  body.vybora-mode.menu-open .sidebar .side-btn{pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:2147483002!important}
  body.vybora-mode.menu-open::before{z-index:2147483000!important;pointer-events:none!important}
 }
+
+/* Final VYBORA hamburger alignment: pin the menu to the top-right corner */
+@media(max-width:900px){
+ body.vybora-mode .main-area .topbar{
+  display:flex!important;position:fixed!important;top:8px!important;right:8px!important;left:auto!important;
+  width:48px!important;height:48px!important;min-height:48px!important;padding:0!important;margin:0!important;
+  justify-content:center!important;align-items:center!important;border:0!important;background:transparent!important;
+  z-index:2147483002!important;backdrop-filter:none!important;
+ }
+ body.vybora-mode .main-area .topbar .top-title{display:none!important}
+ body.vybora-mode .main-area .topbar .menu-toggle{
+  display:inline-flex!important;position:static!important;left:auto!important;right:auto!important;top:auto!important;
+  transform:none!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;
+  margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+  z-index:2147483003!important;pointer-events:auto!important;touch-action:manipulation!important;
+ }
+}
 </style>
 </head>
 <body>
