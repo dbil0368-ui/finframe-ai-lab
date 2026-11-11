@@ -1133,17 +1133,17 @@ window.vyNavigate=function(page,button){
   const prefs=Object.assign({notifications:true,darkMode:true,privateAccount:false,autoplay:true},vyState().settings||{});
   panel.innerHTML='<div><h3>⚙ VYBORA Settings</h3><p class="small">Manage your VYBORA profile, privacy preferences, playback and appearance.</p></div>'+
   '<div class="vy-settings-group"><h4>👤 Account</h4><div class="vy-settings-row"><div><b>Creator profile</b><div class="small">Change the name shown on your VYBORA profile</div></div><button class="secondary-btn" onclick="vyEditProfile()">Edit profile</button></div><div class="vy-settings-row"><div><b>Sign out</b><div class="small">Log out of your VYBORA account on this device</div></div><button class="secondary-btn" onclick="vySignOut()">Log out</button></div></div>'+
-  '<div class="vy-settings-group"><h4>🔒 Privacy</h4><div class="vy-settings-row"><div><b>Private account preference</b><div class="small">Personal preference only; does not yet limit who can view posts</div></div><button class="secondary-btn" aria-pressed="'+(prefs.privateAccount?'true':'false')+'" onclick="vyToggleSetting(\'privateAccount\')">'+(prefs.privateAccount?'On':'Off')+'</button></div></div>'+
+  '<div class="vy-settings-group"><h4>🔒 Privacy</h4><div class="vy-settings-row"><div><b>Private account</b><div class="small">Only approved followers can view your posts</div></div><button class="secondary-btn" aria-pressed="'+(prefs.privateAccount?'true':'false')+'" onclick="vyToggleSetting(\'privateAccount\')">'+(prefs.privateAccount?'On':'Off')+'</button></div></div>'+
   '<div class="vy-settings-group"><h4>▶ Playback</h4><div class="vy-settings-row"><div><b>Autoplay Reels</b><div class="small">Automatically play the visible Reel while browsing</div></div><button class="secondary-btn" aria-pressed="'+(prefs.autoplay?'true':'false')+'" onclick="vyToggleSetting(\'autoplay\')">'+(prefs.autoplay?'On':'Off')+'</button></div></div>'+
   '<div class="vy-settings-group"><h4>🔔 Notifications</h4><div class="vy-settings-row"><div><b>Activity preference</b><div class="small">Saves your notification preference on this device; push alerts are not enabled</div></div><button class="secondary-btn" aria-pressed="'+(prefs.notifications?'true':'false')+'" onclick="vyToggleSetting(\'notifications\')">'+(prefs.notifications?'On':'Off')+'</button></div></div>'+
   '<div class="vy-settings-group"><h4>🎨 Appearance</h4><div class="vy-settings-row"><div><b>Dark appearance</b><div class="small">Switch the VYBORA screen between dark and light themes</div></div><button class="secondary-btn" aria-pressed="'+(prefs.darkMode?'true':'false')+'" onclick="vyToggleSetting(\'darkMode\')">'+(prefs.darkMode?'On':'Off')+'</button></div></div>'+
-  '<p class="small">Settings are saved in this browser. Account privacy enforcement and push notifications need additional server-side setup.</p>';
+  '<div class="vy-settings-group"><h4>👥 Follow requests</h4><button class="secondary-btn" onclick="vyShowFollowRequests()">View requests</button></div><div class="vy-settings-group"><h4>🔎 Find creators</h4><input id="vyCreatorSearch" placeholder="Search username" style="width:100%;margin:6px 0"><button class="secondary-btn" onclick="vySearchCreators()">Search</button><div id="vyCreatorResults" class="small" style="margin-top:10px"></div></div><p class="small">Your privacy and follow requests are managed securely by VYBORA.</p>';
  }else if(page==='profile'){
   const s=vyState(),name=s.profile||'your_profile',posts=document.querySelectorAll('#vyFeed [data-vy-id]').length;
   panel.innerHTML='<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div class="vy-avatar" style="width:64px;height:64px;font-size:24px">'+name.charAt(0).toUpperCase()+'</div><div><h3 style="margin:0">'+name.replace(/[&<>"]/g,'')+'</h3><p class="small">Your VYBORA creator profile</p></div><button class="secondary-btn" onclick="vyEditProfile()">✏️ Edit profile</button></div><div class="vy-tabs" style="margin-top:20px"><button>'+posts+' Reels</button><button>'+(s.follows||[]).length+' Following</button><button>'+(s.saved||[]).length+' Saved</button></div><p class="small">Your local profile details are saved on this device only.</p><button class="primary-btn" onclick="vyNavigate(\'create\')">＋ Create a Reel</button>';
  }
 };
-window.vyToggleSetting=function(key){const settings=Object.assign({notifications:true,darkMode:true,privateAccount:false,autoplay:true},vyState().settings||{});settings[key]=!settings[key];vySaveState({settings});document.body.classList.toggle('vy-light-mode',!settings.darkMode);if(key==='autoplay'&&window.vyInitReels)window.vyInitReels();window.vyNavigate('settings');};
+window.vyToggleSetting=function(key){if(key==='privateAccount'){if(window.vySetPrivateAccount)window.vySetPrivateAccount();return;}const settings=Object.assign({notifications:true,darkMode:true,privateAccount:false,autoplay:true},vyState().settings||{});settings[key]=!settings[key];vySaveState({settings});document.body.classList.toggle('vy-light-mode',!settings.darkMode);if(key==='autoplay'&&window.vyInitReels)window.vyInitReels();window.vyNavigate('settings');};
 function vyEscape(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 window.vySendMessage=function(){const input=$('vyMessageInput');if(!input||!input.value.trim())return;const chats=vyState().chats||{},list=chats['vybora.daily']||[];list.push({mine:true,text:input.value.trim(),at:Date.now()});chats['vybora.daily']=list;vySaveState({chats});vyNavigate('inbox');};
 window.vyAddActivity=function(title,detail,icon){const s=vyState(),activity=s.activity||[];activity.push({title,detail,icon,at:Date.now()});vySaveState({activity:activity.slice(-50)});};
@@ -1960,12 +1960,13 @@ function resetPreferences(){
   if(r.error){host.innerHTML='<div class="vy-empty">Could not load online Reels: '+esc(r.error.message)+'</div>';return;}
   if(currentUser){
    const [profileResult,postCount,followingCount,followerCount]=await Promise.all([
-    db.from('profiles').select('username,full_name,avatar_url').eq('id',currentUser.id).maybeSingle(),
+    db.from('profiles').select('username,full_name,avatar_url,is_private').eq('id',currentUser.id).maybeSingle(),
     db.from('posts').select('id',{count:'exact',head:true}).eq('user_id',currentUser.id),
     db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',currentUser.id),
     db.from('follows').select('follower_id',{count:'exact',head:true}).eq('following_id',currentUser.id)
    ]);
    const profile=profileResult.data||{},displayName=profile.username||profile.full_name||currentUser.email||'Creator';
+   const pref=Object.assign({},vyState().settings||{},{privateAccount:!!profile.is_private});vySaveState({settings:pref});
    if(el('vyProfileName'))el('vyProfileName').textContent=displayName;
    if(el('vyProfileAvatar')){el('vyProfileAvatar').textContent=displayName.charAt(0).toUpperCase();if(profile.avatar_url)el('vyProfileAvatar').innerHTML='<img src="'+esc(profile.avatar_url)+'" alt="Profile photo">';}
    if(el('vyPostCount'))el('vyPostCount').textContent=String(postCount.count||0);
@@ -2053,11 +2054,39 @@ function resetPreferences(){
   const r=exists?await db.from('likes').delete().eq('post_id',id).eq('user_id',currentUser.id):await db.from('likes').insert({post_id:id,user_id:currentUser.id});
   if(r.error){say(r.error.message);return;}await loadFeed();
  };
+ window.vySetPrivateAccount=async function(){
+  if(!currentUser){say('Log in first.');return;}
+  const old=await db.from('profiles').select('is_private').eq('id',currentUser.id).maybeSingle();if(old.error){say(old.error.message);return;}
+  const next=!(old.data&&old.data.is_private),saved=await db.from('profiles').update({is_private:next,updated_at:new Date().toISOString()}).eq('id',currentUser.id);
+  if(saved.error){say(saved.error.message);return;}const settings=Object.assign({},vyState().settings||{},{privateAccount:next});vySaveState({settings});
+  say(next?'Private account enabled.':'Private account disabled.');window.vyNavigate('settings');await loadFeed();
+ };
+ window.vySearchCreators=async function(){
+  const input=el('vyCreatorSearch'),host=el('vyCreatorResults'),term=(input&&input.value||'').trim();if(!host||!term)return;if(!currentUser){host.textContent='Log in first.';return;}
+  const r=await db.from('profiles').select('id,username,full_name,is_private').ilike('username','%'+term.replace(/[%_]/g,'')+'%').neq('id',currentUser.id).limit(15);
+  if(r.error){host.textContent=r.error.message;return;}if(!r.data.length){host.textContent='No creators found.';return;}
+  const [f,req]=await Promise.all([db.from('follows').select('following_id').eq('follower_id',currentUser.id),db.from('follow_requests').select('target_id,status').eq('requester_id',currentUser.id)]);
+  const following=(f.data||[]).map(x=>x.following_id),requests=req.data||[];
+  host.innerHTML=r.data.map(p=>{const n=p.username||p.full_name||'Creator',status=following.includes(p.id)?'Following':(requests.some(x=>x.target_id===p.id&&x.status==='pending')?'Requested':(p.is_private?'＋ Request':'＋ Follow'));return '<div class="vy-settings-row"><b>'+esc(n)+(p.is_private?' 🔒':'')+'</b><button class="secondary-btn" onclick="vyCloudFollow(\\''+esc(p.id)+'\\',this)">'+status+'</button></div>';}).join('');
+ };
+ window.vyShowFollowRequests=async function(){
+  const host=el('vyCreatorResults');if(!host)return;if(!currentUser){host.textContent='Log in first.';return;}
+  const r=await db.from('follow_requests').select('id,requester_id,created_at').eq('target_id',currentUser.id).eq('status','pending').order('created_at',{ascending:false});if(r.error){host.textContent=r.error.message;return;}
+  const ids=r.data.map(x=>x.requester_id),pr=ids.length?await db.from('profiles').select('id,username,full_name').in('id',ids):{data:[]},names={};(pr.data||[]).forEach(p=>names[p.id]=p.username||p.full_name||'Creator');
+  host.innerHTML=r.data.length?r.data.map(x=>'<div class="vy-settings-row"><b>'+esc(names[x.requester_id]||'Creator')+'</b><span><button class="secondary-btn" onclick="vyResolveFollowRequest(\\''+esc(x.id)+'\\',true)">Accept</button> <button class="secondary-btn" onclick="vyResolveFollowRequest(\\''+esc(x.id)+'\\',false)">Decline</button></span></div>').join(''):'No pending follow requests.';
+ };
+ window.vyResolveFollowRequest=async function(id,accept){
+  const r=accept?await db.rpc('accept_vybora_follow_request',{request_id:id}):await db.from('follow_requests').update({status:'rejected',updated_at:new Date().toISOString()}).eq('id',id).eq('target_id',currentUser.id);
+  if(r.error){say(r.error.message);return;}say(accept?'Follow request accepted.':'Follow request declined.');await window.vyShowFollowRequests();await loadFeed();
+ };
  window.vyCloudFollow=async function(id,btn){
-  if(!currentUser){say('Log in first to follow creators.');return;}
-  const is=btn.textContent.includes('Following');
-  const r=is?await db.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',id):await db.from('follows').insert({follower_id:currentUser.id,following_id:id});
-  if(r.error){say(r.error.message);return;}await loadFeed();
+  if(!currentUser){say('Log in first to follow creators.');return;}const is=btn.textContent.includes('Following');
+  if(is){const r=await db.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',id);if(r.error){say(r.error.message);return;}await loadFeed();return;}
+  const target=await db.from('profiles').select('is_private').eq('id',id).maybeSingle();if(target.error){say(target.error.message);return;}
+  if(target.data&&target.data.is_private){const prior=await db.from('follow_requests').select('id,status').eq('requester_id',currentUser.id).eq('target_id',id).maybeSingle();if(prior.error){say(prior.error.message);return;}if(prior.data&&prior.data.status==='pending'){say('Follow request already sent.');return;}
+   const r=prior.data?await db.from('follow_requests').update({status:'pending',updated_at:new Date().toISOString()}).eq('id',prior.data.id):await db.from('follow_requests').insert({requester_id:currentUser.id,target_id:id});
+   if(r.error){say(r.error.message);return;}say('Follow request sent.');await loadFeed();return;}
+  const r=await db.from('follows').insert({follower_id:currentUser.id,following_id:id});if(r.error){say(r.error.message);return;}await loadFeed();
  };
  window.vyCloudShowComments=async function(id,btn){
   const box=el('vyComments-'+id);if(!box)return;
