@@ -1128,7 +1128,7 @@ window.vyNavigate=function(page,button){
  }else if(page==='inbox'){
   panel.innerHTML='<h3>✉ Inbox</h3><p class="small">Search a VYBORA username to start a private conversation.</p><div style="display:flex;gap:8px"><input id="vyChatSearch" placeholder="Username" style="flex:1;min-width:0"><button class="secondary-btn" onclick="vyFindChatUser()">Find</button></div><div id="vyChatMatches" style="margin-top:10px"></div><div id="vyChatHeader" class="small" style="margin-top:14px">Choose a creator to open chat.</div><div id="vyChatLog" style="display:grid;gap:8px;max-height:42vh;overflow:auto;padding:12px 0"></div><div style="display:flex;gap:8px;align-items:center"><input id="vyMessageInput" type="text" placeholder="Write a message..." style="flex:1;min-width:0"><button class="primary-btn" onclick="vySendMessage()">Send</button></div>';
  }else if(page==='notifications'){
-  const items=vyState().activity||[];panel.innerHTML='<h3>♡ Activity</h3><p class="small">Your activity on this device.</p>'+(items.length?items.slice().reverse().map(function(a){return '<div class="vy-inbox-item"><div class="vy-avatar">'+vyEscape(a.icon||'♡')+'</div><div><b>'+vyEscape(a.title)+'</b><div class="small">'+vyEscape(a.detail||'')+'</div></div></div>';}).join(''):'<div class="vy-empty">No activity yet. Your local interactions will appear here.</div>');
+  panel.innerHTML='<h3>♡ Activity</h3><p class="small">Likes, comments and follows for your account.</p><div id="vyActivityList" class="small">Loading activity…</div>';if(window.vyLoadNotifications)window.vyLoadNotifications();
  }else if(page==='settings'){
   const prefs=Object.assign({notifications:true,darkMode:true,privateAccount:false,autoplay:true},vyState().settings||{});
   panel.innerHTML='<div><h3>⚙ VYBORA Settings</h3><p class="small">Manage your VYBORA profile, privacy preferences, playback and appearance.</p></div>'+
@@ -2053,6 +2053,14 @@ function resetPreferences(){
   const exists=btn.getAttribute('aria-pressed')==='true';
   const r=exists?await db.from('likes').delete().eq('post_id',id).eq('user_id',currentUser.id):await db.from('likes').insert({post_id:id,user_id:currentUser.id});
   if(r.error){say(r.error.message);return;}await loadFeed();
+ };
+ window.vyLoadNotifications=async function(){
+  const host=el('vyActivityList');if(!host||!currentUser)return;
+  const r=await db.from('notifications').select('id,actor_id,kind,post_id,created_at,read_at').eq('recipient_id',currentUser.id).order('created_at',{ascending:false}).limit(50);
+  if(r.error){host.textContent='Could not load activity: '+r.error.message;return;}
+  const ids=[...new Set(r.data.map(x=>x.actor_id).filter(Boolean))],pr=ids.length?await db.from('profiles').select('id,username,full_name').in('id',ids):{data:[]},names={};(pr.data||[]).forEach(p=>names[p.id]=p.username||p.full_name||'Someone');
+  host.innerHTML=r.data.length?r.data.map(n=>'<div class="vy-inbox-item" style="opacity:'+(n.read_at?'.7':'1')+'"><div class="vy-avatar">♡</div><div><b>'+esc(names[n.actor_id]||'VYBORA user')+'</b> '+esc(({like:'liked your post',comment:'commented on your post',follow:'started following you'}[n.kind]||'interacted with you'))+'<div class="small">'+new Date(n.created_at).toLocaleString()+'</div></div></div>').join(''):'<div class="vy-empty">No activity yet.</div>';
+  const unread=r.data.filter(n=>!n.read_at).map(n=>n.id);if(unread.length)await db.from('notifications').update({read_at:new Date().toISOString()}).in('id',unread);
  };
  window.vyFindChatUser=async function(){
   const input=el('vyChatSearch'),host=el('vyChatMatches'),term=(input&&input.value||'').trim();if(!host||!term)return;if(!currentUser){host.textContent='Log in first.';return;}
