@@ -304,6 +304,13 @@ body.hide-sidebar-note .sidebar-note{display:none}
 body.hide-tool-descriptions .tool-card span{display:none}
 
 
+/* Keep the mobile hamburger above the dim overlay so it remains tappable */
+@media(max-width:900px){
+ body:not(.vybora-mode) .topbar{position:sticky;top:0;z-index:45}
+ body:not(.vybora-mode) .topbar .menu-toggle{position:relative;z-index:60;pointer-events:auto;touch-action:manipulation}
+ body.menu-open .topbar .menu-toggle{z-index:60}
+ body.menu-open::before{pointer-events:none}
+}
 /* Respect the hidden attribute in VYBORA: app-mode display rules must not keep inactive screens visible */
 body.vybora-mode #vybora .vy-wrap[hidden],
 body.vybora-mode #vybora .vy-page-panel[hidden],
