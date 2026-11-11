@@ -1578,6 +1578,7 @@ function resetPreferences(){
  const el=id=>document.getElementById(id);
  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const say=t=>{if(el('vyCloudStatus'))el('vyCloudStatus').textContent=t;};
+ const withTimeout=(promise,ms,label)=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error(label+' timed out. Check your internet connection and try again.')),ms);Promise.resolve(promise).then(v=>{clearTimeout(timer);resolve(v);},e=>{clearTimeout(timer);reject(e);});});
  async function profileFor(user){
   const name=(user.user_metadata&&user.user_metadata.full_name)||((user.email||'creator').split('@')[0]);
   const uname=((user.email||'creator').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,20)||'creator')+'_'+user.id.slice(0,5); await db.from('profiles').upsert({id:user.id,full_name:name,username:uname},{onConflict:'id',ignoreDuplicates:true}); await db.from('profiles').update({username:uname}).eq('id',user.id).is('username',null);
@@ -1630,9 +1631,17 @@ function resetPreferences(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value;
   if(!email||!password){say('Enter your email and password first.');return;}
   say('Logging in…');
-  const r=await db.auth.signInWithPassword({email:email,password:password});
-  if(r.error){say(r.error.message);return;}
-  currentUser=r.data.user;await profileFor(currentUser);await signedIn();
+  try{
+   const r=await withTimeout(db.auth.signInWithPassword({email:email,password:password}),15000,'Login request');
+   if(r.error){say(r.error.message);return;}
+   currentUser=r.data.user;
+   say('Login successful. Loading your profile…');
+   await withTimeout(profileFor(currentUser),12000,'Profile setup');
+   await signedIn();
+  }catch(err){
+   say('Login could not finish: '+(err&&err.message?err.message:String(err)));
+   console.error('VYBORA login error:',err);
+  }
  };
  window.vySignOut=async function(){const r=await db.auth.signOut();if(r.error){say(r.error.message);return;}currentUser=null;await signedOut();};
  async function signedIn(){
