@@ -304,6 +304,12 @@ body.hide-sidebar-note .sidebar-note{display:none}
 body.hide-tool-descriptions .tool-card span{display:none}
 
 
+/* Respect the hidden attribute in VYBORA: app-mode display rules must not keep inactive screens visible */
+body.vybora-mode #vybora .vy-wrap[hidden],
+body.vybora-mode #vybora .vy-page-panel[hidden],
+body.vybora-mode #vybora #vyCloudFeed[hidden]{display:none!important}
+body.vybora-mode #vybora .vy-main-nav{pointer-events:auto;isolation:isolate}
+body.vybora-mode #vybora .vy-main-nav button{position:relative;z-index:1;pointer-events:auto;touch-action:manipulation}
 /* VYBORA standalone social-app presentation */
 body.vybora-mode{background:#080711}
 body.vybora-mode .sidebar,body.vybora-mode .topbar,body.vybora-mode .mobile-nav{display:none!important}
