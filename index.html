@@ -685,6 +685,12 @@ body.hide-tool-descriptions .tool-card span{display:none}
     <input id="vyAuthPassword" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
     <button class="primary-btn" type="button" onclick="vySignUp()">Create account</button>
     <button class="secondary-btn" type="button" onclick="vySignIn()">Log in</button>
+    <button class="secondary-btn" type="button" onclick="vyResetPassword()">Forgot password?</button>
+   </div>
+   <div id="vyRecoveryForm" hidden style="display:grid;gap:8px;margin-top:10px">
+    <p class="small">Set a new password for your VYBORA account.</p>
+    <input id="vyNewPassword" type="password" placeholder="New password (min. 6 characters)" autocomplete="new-password">
+    <button class="primary-btn" type="button" onclick="vySaveNewPassword()">Save new password</button>
    </div>
    <div id="vyAuthSignedIn" hidden style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
   </div>
@@ -1564,7 +1570,7 @@ function resetPreferences(){
  }
  const db=window.supabase.createClient(URL,KEY);
  window.vyClient=db;
- let currentUser=null, channel=null;
+ let currentUser=null, channel=null, recoveryMode=(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery');
  const el=id=>document.getElementById(id);
  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const say=t=>{if(el('vyCloudStatus'))el('vyCloudStatus').textContent=t;};
@@ -1582,6 +1588,33 @@ function resetPreferences(){
   if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
   else say('Account created. Check your email for the confirmation link, then log in here.');
  };
+ window.vyResetPassword=async function(){
+  const email=el('vyAuthEmail').value.trim();
+  if(!email){say('Enter your account email first, then tap Forgot password?');return;}
+  say('Sending password reset email…');
+  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://finframe-ai-lab.vercel.app/'});
+  if(r.error){say(r.error.message);return;}
+  say('Password reset email sent. Open the link in your inbox, then set a new password here.');
+ };
+ window.vySaveNewPassword=async function(){
+  const password=el('vyNewPassword').value;
+  if(password.length<6){say('Your new password must have at least 6 characters.');return;}
+  say('Updating your password…');
+  const r=await db.auth.updateUser({password:password});
+  if(r.error){say(r.error.message);return;}
+  recoveryMode=false;
+  const u=await db.auth.getUser();
+  if(u.data&&u.data.user){currentUser=u.data.user;await profileFor(currentUser);await signedIn();}
+  el('vyNewPassword').value='';
+  say('Your password has been updated successfully. You are now logged in.');
+ };
+ function showRecoveryForm(){
+  el('vyAuthForm').hidden=true;
+  el('vyAuthSignedIn').hidden=true;
+  el('vyRecoveryForm').hidden=false;
+  el('vyRecoveryForm').style.display='grid';
+  say('Enter a new password to finish recovering your VYBORA account.');
+ }
  window.vySignIn=async function(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value;
   if(!email||!password){say('Enter your email and password first.');return;}
@@ -1601,6 +1634,7 @@ function resetPreferences(){
   channel=db.channel('vybora-live-posts').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},()=>loadFeed()).subscribe();
  }
  async function signedOut(){
+  el('vyRecoveryForm').hidden=true;el('vyRecoveryForm').style.display='none';
   el('vyAuthForm').hidden=false;el('vyAuthSignedIn').hidden=true;
   el('vyAuthSignedIn').style.display='none';
   el('vyAuthUser').textContent='';
@@ -1676,11 +1710,13 @@ function resetPreferences(){
   await loadFeed();
  };
  db.auth.getSession().then(async r=>{
-  if(r.data&&r.data.session){currentUser=r.data.session.user;await profileFor(currentUser);await signedIn();}
+  if(recoveryMode){showRecoveryForm();}
+  else if(r.data&&r.data.session){currentUser=r.data.session.user;await profileFor(currentUser);await signedIn();}
   else{await signedOut();}
  });
  db.auth.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_IN'&&session){currentUser=session.user;profileFor(currentUser).then(signedIn);}
+  if(event==='PASSWORD_RECOVERY'){recoveryMode=true;showRecoveryForm();}
+  if(event==='SIGNED_IN'&&session&&!recoveryMode){currentUser=session.user;profileFor(currentUser).then(signedIn);}
   if(event==='SIGNED_OUT'){currentUser=null;signedOut();}
  });
 })();
