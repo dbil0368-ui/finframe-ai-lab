@@ -840,7 +840,44 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    #vybora .vy-comment{padding:7px 9px;border-radius:9px;background:var(--panel2);font-size:13px;overflow-wrap:anywhere}
    #vybora .vy-profile-name{overflow-wrap:anywhere}
    @media(max-width:760px){#vybora .vy-wrap{grid-template-columns:1fr}#vybora .vy-side{position:static;grid-row:1}#vybora .vy-video{height:66vh;min-height:420px}#vybora .vy-side .card{margin-bottom:10px}}
-  </style>
+  
+   /* VYBORA Instagram-inspired visual refresh */
+   body.vybora-mode #vybora{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;background:#000!important;color:#f5f5f5!important}
+   body.vybora-mode #vybora::before{content:"VYBORA";display:block;padding:15px 18px 14px 68px;color:#fff;font-size:21px;font-weight:850;letter-spacing:-.7px;border-bottom:1px solid #262626;background:#050505}
+   body.vybora-mode #vybora .vy-stories{background:#000!important;border:0!important;border-bottom:1px solid #262626!important;border-radius:0!important;padding:13px 12px 11px!important;margin:0!important;gap:13px!important}
+   body.vybora-mode #vybora .vy-story{flex-basis:68px!important;color:#f5f5f5!important}
+   body.vybora-mode #vybora .vy-story span{width:62px!important;height:62px!important;border:2px solid transparent!important;background:linear-gradient(#111,#111) padding-box,linear-gradient(135deg,#ffb347,#ed3e9d,#8a45ff) border-box!important;font-size:25px!important}
+   body.vybora-mode #vybora .vy-story.own span{background:linear-gradient(#111,#111) padding-box,linear-gradient(135deg,#555,#aaa) border-box!important}
+   body.vybora-mode #vybora .vy-story small{color:#f2f2f2!important;font-size:11px!important;margin-top:3px}
+   body.vybora-mode #vybora .vy-search{display:flex;gap:8px;padding:12px 14px!important;background:#000!important}
+   body.vybora-mode #vybora .vy-search input{background:#1b1b1b!important;border:0!important;border-radius:10px!important;color:#fff!important;padding:11px 13px!important}
+   body.vybora-mode #vybora .vy-search button{border-radius:10px!important}
+   body.vybora-mode #vybora .vy-tabs{display:flex;gap:7px;overflow-x:auto;padding:5px 13px 12px!important;background:#000!important}
+   body.vybora-mode #vybora .vy-tabs button{white-space:nowrap;border:1px solid #333!important;border-radius:20px!important;background:#171717!important;color:#eee!important;padding:8px 13px!important}
+   body.vybora-mode #vybora .vy-tabs button.active{background:#f5f5f5!important;color:#111!important;border-color:#f5f5f5!important}
+   body.vybora-mode #vybora .vy-card{background:#000!important;border:0!important;border-bottom:1px solid #262626!important;border-radius:0!important;margin:0 0 8px!important;padding:0 0 12px!important;box-shadow:none!important}
+   body.vybora-mode #vybora .vy-head{padding:11px 13px!important;gap:10px!important}
+   body.vybora-mode #vybora .vy-avatar{width:38px;height:38px;border-radius:50%;border:2px solid #e34d91!important;background:linear-gradient(135deg,#ff9b45,#d92e91,#7048e8)!important;color:#fff!important}
+   body.vybora-mode #vybora .vy-head strong{font-size:13px!important;color:#fff!important}
+   body.vybora-mode #vybora .vy-video{height:min(66svh,650px)!important;min-height:350px!important;border-radius:0!important;background:#171717!important}
+   body.vybora-mode #vybora .vy-actions{display:flex;gap:3px!important;padding:7px 9px 3px!important}
+   body.vybora-mode #vybora .vy-actions button{background:transparent!important;color:#f5f5f5!important;border:0!important;padding:8px 7px!important;font-size:13px!important}
+   body.vybora-mode #vybora .vy-caption{padding:5px 13px!important;color:#f4f4f4!important;font-size:13px!important;line-height:1.45}
+   body.vybora-mode #vybora .vy-comments{padding:0 13px!important}
+   body.vybora-mode #vybora .vy-page-panel{background:#000!important;border:0!important;border-radius:0!important;color:#fff!important}
+   body.vybora-mode #vybora .vy-page-panel button,body.vybora-mode #vybora .vy-page-panel input,body.vybora-mode #vybora .vy-page-panel textarea{border-radius:10px!important}
+   body.vybora-mode #vybora .vy-main-nav{background:rgba(0,0,0,.97)!important;border-top:1px solid #262626!important;border-radius:0!important;padding:7px 2px calc(7px + env(safe-area-inset-bottom))!important;backdrop-filter:blur(20px)!important}
+   body.vybora-mode #vybora .vy-main-nav button{color:#aaa!important;font-size:18px!important;font-weight:500!important;padding:6px 1px!important}
+   body.vybora-mode #vybora .vy-main-nav button span{font-size:9px!important;color:inherit!important}
+   body.vybora-mode #vybora .vy-main-nav button.active{color:#fff!important;background:transparent!important}
+   body.vybora-mode #vybora .vy-main-nav button.active span{font-weight:800!important}
+   body.vybora-mode #vybora .vy-empty{margin:14px;padding:22px;border:1px solid #292929;border-radius:14px;background:#111!important;color:#ddd}
+   @media(max-width:520px){
+    body.vybora-mode #vybora::before{padding-top:14px;padding-bottom:13px}
+    body.vybora-mode #vybora .vy-video{height:62svh!important;min-height:320px!important}
+    body.vybora-mode #vybora .vy-main-nav button{font-size:17px!important}
+   }
+</style>
   <nav class="vy-main-nav" aria-label="VYBORA main navigation">
    <button class="active" data-vy-page="home" onclick="vyNavigate('home',this)">⌂ <span>Home</span></button>
    <button data-vy-page="reels" onclick="vyNavigate('reels',this)">▶ <span>Reels</span></button>
