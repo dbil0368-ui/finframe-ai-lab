@@ -334,6 +334,9 @@ body.vybora-mode #vybora .vy-main-nav button{position:relative;z-index:1;pointer
 /* VYBORA standalone social-app presentation */
 body.vybora-mode{background:#080711}
 body.vybora-mode .sidebar,body.vybora-mode .topbar,body.vybora-mode .mobile-nav{display:none!important}
+/* Keep all FinFrame navigation completely hidden inside VYBORA, even if the mobile menu state is open */
+body.vybora-mode .sidebar,body.vybora-mode .topbar,body.vybora-mode .mobile-nav,body.vybora-mode.menu-open .sidebar,body.vybora-mode.menu-open .topbar{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.vybora-mode.menu-open::before{display:none!important;pointer-events:none!important}
 body.vybora-mode .main-area{margin:0;min-height:100dvh}
 body.vybora-mode .content{width:100%;max-width:none;margin:0;padding:0 0 82px}
 body.vybora-mode #vybora{min-height:100dvh;background:#080711;color:#fff}
