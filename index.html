@@ -1,3 +1,2271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090914">
+<meta name="description" content="FinFrame AI Lab — creative tools for building, designing and exploring ideas.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/finframe.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/finframe.svg">
+<title>FinFrame AI Lab</title>
+<style>
+:root{
+ --bg:#090914;
+ --panel:#151526;
+ --panel2:#202039;
+ --text:#f5f4ff;
+ --muted:#aaa9c3;
+ --accent:#9b70ff;
+ --accent2:#ef6bcb;
+ --border:#34334f;
+}
+*{box-sizing:border-box}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif;
+}
+.app{width:100%;max-width:100%;overflow-x:clip}
+.main-area{min-width:0;max-width:100%;}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.sidebar{
+ position:fixed;left:0;top:0;bottom:0;width:250px;
+ background:#101020;border-right:1px solid var(--border);
+ padding:20px 14px;display:flex;flex-direction:column;
+ z-index:20;
+}
+.brand{
+ display:flex;align-items:center;gap:10px;
+ padding:8px 10px 24px;font-size:19px;font-weight:bold;
+}
+.brand-icon{
+ width:38px;height:38px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+.side-btn{
+ width:100%;text-align:left;padding:13px;
+ border:1px solid transparent;border-radius:11px;
+ background:transparent;color:var(--text);
+ margin:3px 0;font-size:14px;
+}
+.side-btn:hover,.side-btn.active{
+ background:var(--panel2);border-color:var(--border);
+}
+.sidebar-bottom{margin-top:auto}
+.sidebar-note{
+ padding:14px;background:var(--panel);
+ border:1px solid var(--border);border-radius:12px;
+ color:var(--muted);font-size:12px;line-height:1.6;
+}
+.main-area{margin-left:250px;min-height:100vh}
+.topbar{
+ height:65px;display:flex;align-items:center;
+ justify-content:space-between;padding:0 25px;
+ border-bottom:1px solid var(--border);
+ background:rgba(9,9,20,.9);
+ position:sticky;top:0;z-index:10;
+ backdrop-filter:blur(12px);
+}
+.top-title{font-weight:bold;font-size:15px}
+.menu-toggle{display:none}
+@media(max-width:900px){.menu-toggle{display:inline-block!important;margin-right:9px}body.menu-open{overflow:hidden;overscroll-behavior:none}body.menu-open::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:40}.sidebar{display:flex;position:fixed;left:0;top:0;bottom:0;width:min(250px,85vw);max-width:85vw;overflow-y:auto;overscroll-behavior:contain;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}.sidebar.mobile-open{transform:translateX(0)}.topbar{justify-content:flex-start}.top-actions{margin-left:auto}.main-area{margin-left:0}}
+.top-actions{display:flex;gap:9px;align-items:center}
+.icon-btn{
+ background:var(--panel2);border:1px solid var(--border);
+ color:white;border-radius:10px;padding:9px 12px;
+}
+.content{max-width:1150px;margin:auto;padding:28px 25px 90px}
+section{display:none}
+section.active{display:block}
+.home-wrap{max-width:900px;margin:30px auto}
+.hero{text-align:center;padding:25px 10px 18px}
+.hero-logo{
+ width:62px;height:62px;border-radius:21px;
+ display:grid;place-items:center;margin:0 auto 20px;
+ font-size:29px;
+ background:linear-gradient(135deg,#9b70ff,#ef6bcb);
+ box-shadow:0 12px 40px #9b70ff33;
+}
+.hero h1{font-size:clamp(27px,5vw,42px);margin:0 0 12px}
+.hero p{color:var(--muted);line-height:1.6;margin:0}
+.prompt-box{
+ margin:28px auto 17px;max-width:760px;
+ background:var(--panel);border:1px solid #494467;
+ border-radius:19px;padding:14px;
+ box-shadow:0 15px 50px #0005;
+}
+.prompt-box textarea{
+ width:100%;min-height:90px;border:0;outline:0;
+ resize:vertical;background:transparent;color:white;
+ font-size:16px;padding:8px;
+}
+.prompt-bottom{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px;flex-wrap:wrap;
+}
+.prompt-hint{color:var(--muted);font-size:12px;padding-left:8px}
+.primary-btn{
+ border:0;border-radius:11px;padding:12px 18px;
+ color:white;font-weight:bold;
+ background:linear-gradient(120deg,var(--accent),var(--accent2));
+}
+.secondary-btn{
+ background:var(--panel2);color:white;
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 14px;
+}
+.suggestions{
+ display:flex;justify-content:center;gap:9px;
+ flex-wrap:wrap;margin:15px 0 35px;
+}
+.suggestion{
+ background:#17172a;border:1px solid var(--border);
+ color:#ddd8ff;border-radius:30px;padding:10px 14px;
+ font-size:13px;
+}
+.section-head{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:10px;margin:28px 0 15px;
+}
+.section-head h2{margin:0;font-size:20px}
+.search{
+ max-width:250px;padding:10px 12px;
+ border-radius:10px;border:1px solid var(--border);
+ background:#101020;color:white;
+}
+.tool-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:13px;
+}
+.tool-card{
+ text-align:left;color:white;background:var(--panel);
+ border:1px solid var(--border);border-radius:16px;
+ padding:18px;min-height:145px;
+ transition:.2s;
+}
+.tool-card:hover{
+ transform:translateY(-3px);
+ border-color:var(--accent);
+ background:#1b1a31;
+}
+.tool-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;font-size:22px;
+ background:#292342;margin-bottom:14px;
+}
+.tool-card strong{display:block;font-size:15px;margin-bottom:7px}
+.tool-card span{color:var(--muted);font-size:13px;line-height:1.5}
+.card{
+ background:var(--panel);border:1px solid var(--border);
+ border-radius:17px;padding:19px;margin-bottom:16px;
+}
+h2{font-size:21px;margin:0 0 14px}
+h3{font-size:16px;margin:15px 0 8px}
+p,.muted{color:var(--muted);line-height:1.55}
+label{display:block;margin:13px 0 6px;color:#dedafa;font-size:14px}
+input,textarea,select{
+ width:100%;padding:12px;border-radius:9px;
+ border:1px solid var(--border);background:#0e0e1c;
+ color:white;font-size:15px;
+}
+input[type=color]{height:45px;padding:4px}
+input[type=range]{padding:0}
+input[type=file]{font-size:13px}
+textarea{min-height:90px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.actions button{
+ border:0;border-radius:10px;padding:11px 15px;
+ background:linear-gradient(120deg,var(--accent),var(--accent2));
+ color:white;font-weight:bold;
+}
+.actions button.secondary-btn{background:var(--panel2);border:1px solid var(--border)}
+canvas{
+ display:block;max-width:100%;height:auto;
+ margin:15px auto;border-radius:10px;background:#29293c;
+}
+.preview{
+ background:#0d0d19;border:1px dashed #55516f;
+ border-radius:12px;padding:14px;min-height:65px;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.tryon-upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.tryon-upload-preview{background:#0d0d19;border:1px solid var(--border);border-radius:12px;padding:10px;min-width:0}
+.tryon-upload-preview img{display:block;width:100%;height:180px;object-fit:contain;border-radius:8px;background:#080811}
+.tryon-upload-preview small{display:block;color:var(--muted);margin-top:7px;overflow-wrap:anywhere}
+.tryon-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}
+.tryon-controls label{font-size:13px}
+#tryCanvas{width:100%;max-width:520px}
+@media(max-width:520px){.tryon-upload-grid,.tryon-controls{grid-template-columns:1fr}.tryon-upload-preview img{height:145px}}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tool{
+ background:var(--panel2);padding:15px;
+ border-radius:12px;border:1px solid var(--border);
+ cursor:pointer;text-align:left;color:white;
+}
+.tool strong{display:block;margin-bottom:6px}
+.recent-list{display:grid;gap:9px}
+.recent-item{
+ display:flex;align-items:center;gap:12px;
+ padding:13px;background:#101020;
+ border:1px solid var(--border);border-radius:12px;
+}
+.recent-icon{font-size:21px}
+.recent-item strong{font-size:14px}
+.recent-item small{display:block;color:var(--muted);margin-top:4px}
+.empty-recent{
+ color:var(--muted);padding:17px;border:1px dashed var(--border);
+ border-radius:12px;font-size:13px;
+}
+.page-title{margin:8px 0 22px}
+.page-title p{margin:6px 0}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+.mobile-nav{display:none}
+.small{font-size:12px}
+.hidden{display:none!important}
+@media(max-width:900px){
+ .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .sidebar{display:flex;left:0;width:250px;transform:translateX(-105%);transition:transform .25s ease;box-shadow:12px 0 35px #0008;z-index:50}
+ .sidebar.mobile-open{transform:translateX(0)}
+ .main-area{margin-left:0}
+ .topbar{padding:0 13px;height:58px}
+ .content{padding:17px 13px 28px}
+ .home-wrap{margin:10px auto}
+ .hero{padding:28px 5px 12px}
+ .hero h1{font-size:29px}
+ .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .tool-card{padding:13px;min-height:135px}
+ .tool-card strong{font-size:13px}
+ .tool-card span{font-size:11px}
+ .tool-icon{width:38px;height:38px;font-size:19px}
+ .search{max-width:145px}
+ .mobile-nav{
+  display:flex;position:fixed;bottom:0;left:0;right:0;
+  z-index:30;background:#111122;
+  border-top:1px solid var(--border);
+  justify-content:space-around;padding:8px 3px calc(8px + env(safe-area-inset-bottom));
+ }
+ .mobile-nav button{
+  background:transparent;color:var(--muted);
+  border:0;font-size:11px;padding:5px;
+ }
+ .mobile-nav button span{display:block;font-size:19px;margin-bottom:3px}
+ .card{padding:14px}
+}
+
+/* Project Builder workspace */
+.builder-workspace{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.builder-panel{background:#101020;border:1px solid var(--border);border-radius:13px;padding:13px;min-width:0}
+.builder-panel textarea{min-height:330px;font-family:ui-monospace,monospace;font-size:12px;line-height:1.5;white-space:pre;tab-size:2}
+.builder-frame{width:100%;height:390px;border:1px solid var(--border);border-radius:10px;background:white}
+.builder-note{font-size:12px;color:var(--muted);line-height:1.5}
+.builder-status{font-size:13px;color:#cdbaff;margin-top:9px;min-height:20px}
+@media(max-width:760px){.builder-workspace{grid-template-columns:1fr}.builder-panel textarea{min-height:260px}.builder-frame{height:340px}}
+body[data-theme="light"]{--bg:#f4f5fb;--panel:#fff;--panel2:#e9eaf4;--text:#202033;--muted:#62647a;--border:#d7d9e7;background:var(--bg);color:var(--text)}
+body[data-theme="light"] .sidebar{background:#fff}
+body[data-theme="light"] .topbar{background:rgba(255,255,255,.92)}
+body[data-theme="light"] .side-btn,body[data-theme="light"] .icon-btn,body[data-theme="light"] .secondary-btn{color:#292940}
+body[data-theme="light"] input,body[data-theme="light"] textarea,body[data-theme="light"] select{background:#fff;color:#202033;border-color:#d7d9e7}
+body[data-theme="light"] .prompt-box{background:#fff}
+body[data-theme="light"] .prompt-box textarea{color:#202033}
+body[data-theme="light"] .tool-card{color:#202033;background:#fff}
+body[data-theme="light"] .tool-card:hover{background:#f0edff}
+body[data-theme="light"] .tool{color:#202033}
+body[data-theme="light"] .recent-item{background:#fff}
+body[data-theme="light"] .preview,body[data-theme="light"] .builder-panel{background:#fff;color:#202033}
+body[data-theme="light"] .mobile-nav{background:#fff}
+body[data-theme="light"] .mobile-nav button{color:#55566b}
+body[data-theme="light"] label{color:#34344b}
+body[data-theme="light"] .search{background:#fff;color:#202033}
+body{font-size:var(--ui-font-size,16px)}
+body.compact-mode .content{padding-top:14px;padding-bottom:55px}
+body.compact-mode .card{padding:12px;margin-bottom:10px}
+body.compact-mode .tool-card{min-height:112px;padding:12px}
+body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+body.high-contrast{--muted:#dedcf2;--border:#77738f}
+body[data-theme="light"].high-contrast{--muted:#303044;--border:#77778b}
+body[data-theme="light"] .card{background:#fff}
+body[data-theme="light"] .tool-icon{background:#eeebfb}
+body[data-theme="light"] .brand{color:#202033}
+body[data-theme="light"] .sidebar-note{background:#f3f2fa;color:#45455c}
+body[data-theme="light"] .preview{border-color:#999}
+body{line-height:var(--ui-line-height,1.5);font-family:var(--ui-font-family,Arial,sans-serif)}
+.card{border-radius:var(--ui-card-radius,17px)}
+body.soft-card-shadows .card,body.soft-card-shadows .tool-card{box-shadow:0 8px 24px #0002}
+body.no-sticky-header .topbar{position:relative}
+body.hide-sidebar-note .sidebar-note{display:none}
+body.hide-tool-descriptions .tool-card span{display:none}
+
+
+/* Restore the FinFrame hamburger while VYBORA is in standalone mode */
+@media(max-width:900px){
+ body.vybora-mode .topbar{display:flex!important;position:fixed!important;top:8px!important;left:8px!important;right:auto!important;width:auto!important;height:auto!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;z-index:1300!important;backdrop-filter:none!important}
+ body.vybora-mode .topbar .top-title{display:none!important}
+ body.vybora-mode .topbar .menu-toggle{display:inline-flex!important;position:relative!important;z-index:1301!important;min-width:44px;min-height:44px;align-items:center;justify-content:center;border:1px solid #514565!important;border-radius:12px!important;background:rgba(18,16,30,.96)!important;color:#fff!important;box-shadow:0 3px 14px #0008;pointer-events:auto!important;touch-action:manipulation}
+ body.vybora-mode .sidebar{display:none!important}
+ body.vybora-mode.menu-open .sidebar{display:flex!important;position:fixed!important;z-index:1302!important;left:0!important;top:0!important;bottom:0!important;transform:translateX(0)!important}
+ body.vybora-mode.menu-open::before{z-index:1290!important;pointer-events:auto!important}
+ body.vybora-mode.menu-open .topbar{z-index:1303!important}
+}
+/* Keep the mobile hamburger above the dim overlay so it remains tappable */
+@media(max-width:900px){
+ body:not(.vybora-mode) .topbar{position:sticky;top:0;z-index:45}
+ body:not(.vybora-mode) .topbar .menu-toggle{position:relative;z-index:60;pointer-events:auto;touch-action:manipulation}
+ body.menu-open .topbar .menu-toggle{z-index:60}
+ body.menu-open::before{pointer-events:none}
+}
+/* Respect the hidden attribute in VYBORA: app-mode display rules must not keep inactive screens visible */
+body.vybora-mode #vybora .vy-wrap[hidden],
+body.vybora-mode #vybora .vy-page-panel[hidden],
+body.vybora-mode #vybora #vyCloudFeed[hidden]{display:none!important}
+body.vybora-mode #vybora .vy-main-nav{pointer-events:auto;isolation:isolate}
+body.vybora-mode #vybora .vy-main-nav button{position:relative;z-index:1;pointer-events:auto;touch-action:manipulation}
+/* VYBORA standalone social-app presentation */
+body.vybora-mode{background:#080711}
+body.vybora-mode .sidebar,body.vybora-mode .topbar,body.vybora-mode .mobile-nav{display:none!important}
+body.vybora-mode .main-area{margin:0;min-height:100dvh}
+body.vybora-mode .content{width:100%;max-width:none;margin:0;padding:0 0 82px}
+body.vybora-mode #vybora{min-height:100dvh;background:#080711;color:#fff}
+body.vybora-mode #vybora>.page-title{display:none}
+body.vybora-mode #vyCloudAuth{max-width:680px!important;margin:0 auto 10px!important;border-radius:0 0 16px 16px!important;background:#151323!important;border-top:0!important;padding:10px 14px!important}
+body.vybora-mode #vyCloudAuth h3{font-size:14px;margin:0 0 4px}
+body.vybora-mode #vyCloudStatus{font-size:12px;margin:2px 0}
+body.vybora-mode #vyAuthForm{grid-template-columns:1fr 1fr!important}
+body.vybora-mode #vyAuthForm input:first-child{display:none}
+body.vybora-mode #vyAuthForm input{min-width:0}
+body.vybora-mode #vyCloudFeed{max-width:680px!important;margin:0 auto!important}
+body.vybora-mode #vybora .vy-main-nav{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:1000;max-width:none;margin:0;padding:7px 3px calc(7px + env(safe-area-inset-bottom));border:0;border-top:1px solid #302842;border-radius:0;background:rgba(12,10,22,.97);backdrop-filter:blur(18px);gap:2px}
+body.vybora-mode #vybora .vy-main-nav button{padding:7px 2px;font-size:11px;color:#bcb5ce}
+body.vybora-mode #vybora .vy-main-nav button span{display:block;margin:3px 0 0;font-size:10px}
+body.vybora-mode #vybora .vy-main-nav button.active{background:transparent;color:#d7b7ff}
+body.vybora-mode #vybora .vy-main-nav button.active:first-letter{color:#c38cff}
+body.vybora-mode #vybora .vy-wrap{display:block;max-width:680px;margin:0 auto;padding:0 10px}
+body.vybora-mode #vybora .vy-side{display:none}
+body.vybora-mode #vybora .vy-stories{border:0;border-radius:0;background:#100e1b;margin:0 -10px 10px;padding:12px 14px}
+body.vybora-mode #vybora .vy-search{padding:0 2px}
+body.vybora-mode #vybora .vy-tabs{padding:0 2px}
+body.vybora-mode #vybora .vy-card{border-radius:13px;background:#12101e;border:1px solid #29243a;margin-bottom:14px}
+body.vybora-mode #vybora .vy-video{height:min(70svh,680px);min-height:420px;border-radius:0}
+body.vybora-mode #vybora .vy-actions{gap:6px}
+body.vybora-mode #vybora .vy-actions button{font-size:12px;padding:9px 10px}
+body.vybora-mode #vybora .vy-page-panel{max-width:680px;margin:10px auto 90px;border-radius:14px;background:#12101e;border-color:#29243a}
+@media(max-width:520px){
+ body.vybora-mode #vybora .vy-wrap{padding:0}
+ body.vybora-mode #vybora .vy-card{border-radius:0;border-left:0;border-right:0;margin-bottom:10px}
+ body.vybora-mode #vybora .vy-video{height:68svh;min-height:390px}
+ body.vybora-mode #vybora .vy-stories{margin-left:0;margin-right:0}
+ body.vybora-mode #vyCloudAuth{margin:0 0 8px!important;border-radius:0 0 14px 14px!important}
+ body.vybora-mode #vyCloudFeed{width:100%}
+ body.vybora-mode #vybora .vy-page-panel{margin:10px 10px 90px;padding:15px}
+}
+
+/* VYBORA Reels: immersive vertical snap feed */
+body.vybora-mode.vy-reels-mode #vybora .vy-wrap{display:none!important}
+body.vybora-mode.vy-reels-mode{overflow:hidden!important;height:100dvh}
+body.vybora-mode.vy-reels-mode .app,body.vybora-mode.vy-reels-mode .main-area,body.vybora-mode.vy-reels-mode .content,body.vybora-mode.vy-reels-mode #vybora{height:100dvh;min-height:0;overflow:hidden!important}
+body.vybora-mode.vy-reels-mode .content{padding:0!important}
+body.vybora-mode.vy-reels-mode #vyCloudFeed{position:fixed!important;z-index:2;top:0;left:50%;transform:translateX(-50%);bottom:calc(58px + env(safe-area-inset-bottom));max-width:680px!important;width:100%;height:calc(100dvh - 58px - env(safe-area-inset-bottom))!important;min-height:0!important;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:contain;scroll-snap-type:y mandatory;scrollbar-width:none;margin:0!important;padding:0!important}
+body.vybora-mode.vy-reels-mode #vyCloudFeed::-webkit-scrollbar{display:none}
+body.vybora-mode.vy-reels-mode #vyCloudFeed>.vy-card{height:calc(100dvh - 58px - env(safe-area-inset-bottom));min-height:calc(100dvh - 58px - env(safe-area-inset-bottom));box-sizing:border-box;margin:0;padding:0 0 12px;border:0;border-bottom:1px solid #332b43;border-radius:0;background:#080711;display:flex;flex-direction:column;justify-content:flex-start;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;touch-action:pan-y}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-head{flex:0 0 auto;padding:12px 14px}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-reel-media{display:block;width:100%;height:0;min-height:0;flex:1 1 auto;object-fit:cover;background:#000;touch-action:pan-y;pointer-events:none;user-select:none;-webkit-user-select:none}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-actions{flex:0 0 auto;padding:7px 10px;display:flex;gap:6px;flex-wrap:wrap}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-caption{flex:0 0 auto;padding:4px 14px 10px;max-height:76px;overflow:auto}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-comments{display:none}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-reel-empty{height:100%;display:grid;place-items:center;padding:25px;text-align:center}
+body.vybora-mode.vy-reels-mode #vybora .vy-main-nav{background:rgba(8,7,17,.98)}
+@media(max-width:520px){
+ body.vybora-mode.vy-reels-mode #vyCloudFeed{bottom:calc(58px + env(safe-area-inset-bottom))}
+ body.vybora-mode.vy-reels-mode #vyCloudFeed>.vy-card{height:100%;min-height:100%}
+ body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-head{padding:9px 12px}
+ body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-actions button{padding:7px 8px}
+}
+/* Fix the actual nested feed: cards are rendered inside #vyFeed, not direct children of #vyCloudFeed */
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%;min-height:100%;height:auto;gap:0;margin:0;padding:0}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card{box-sizing:border-box!important;display:flex!important;flex:0 0 calc(100dvh - 58px - env(safe-area-inset-bottom))!important;width:100%!important;height:calc(100dvh - 58px - env(safe-area-inset-bottom))!important;min-height:calc(100dvh - 58px - env(safe-area-inset-bottom))!important;max-height:calc(100dvh - 58px - env(safe-area-inset-bottom))!important;margin:0!important;border:0!important;border-bottom:1px solid #332b43!important;border-radius:0!important;overflow:hidden!important;scroll-snap-align:start!important;scroll-snap-stop:always!important;touch-action:pan-y!important}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card>.vy-video{height:auto!important;min-height:0!important;flex:1 1 auto!important;width:100%!important;overflow:hidden}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card>.vy-reel-media{height:auto!important;min-height:0!important;flex:1 1 auto!important;width:100%!important;object-fit:cover}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-head,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-actions,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-caption{flex-shrink:0!important}
+@media(max-width:520px){body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card{flex-basis:100%!important;height:100%!important;min-height:100%!important;max-height:100%!important}}
+body.vybora-mode.vy-account-connected #vyCloudAuth{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="sidebar">
+ <div class="brand">
+  <div class="brand-icon">✨</div>
+  <span>FinFrame AI Lab</span>
+ </div>
+ <button class="side-btn active" data-page="home" onclick="show('home')">🏠 &nbsp; Home</button>
+ <button class="side-btn" data-page="builder" onclick="show('builder')">🚀 &nbsp; Project Builder</button>
+ <button class="side-btn" data-page="photo" onclick="show('photo')">📸 &nbsp; Photo Studio</button>
+ <button class="side-btn" data-page="product" onclick="show('product')">💎 &nbsp; Product Studio</button>
+ <button class="side-btn" data-page="poster" onclick="show('poster')">🖼️ &nbsp; Poster Maker</button>
+ <button class="side-btn" data-page="creative" onclick="show('creative')">🎨 &nbsp; Creative Studio</button>
+ <button class="side-btn" data-page="vybora" onclick="show('vybora')">💜 &nbsp; VYBORA Social</button>
+ <button class="side-btn" data-page="game" onclick="show('game')">🎮 &nbsp; Game Studio</button>
+ <button class="side-btn" data-page="privacy" onclick="show('privacy')">🔐 &nbsp; Privacy & Security</button>
+ <button class="side-btn" data-page="brandkit" onclick="show('brandkit')">🎨 &nbsp; Brand Kit</button>
+ <button class="side-btn" data-page="prompts" onclick="show('prompts')">✨ &nbsp; Prompt Library</button>
+ <button class="side-btn" data-page="templates" onclick="show('templates')">🧩 &nbsp; Template Gallery</button>
+ <button class="side-btn" data-page="settings" onclick="show('settings')">⚙️ &nbsp; Settings & Backup</button>
+ <div class="sidebar-bottom">
+  <div class="sidebar-note">
+   <strong>✨ FinFrame Workspace</strong><br>
+   Your creative tools in one place.<br><br>
+   <span>Free browser-based prototype</span>
+  </div>
+ </div>
+</aside>
+
+<div class="main-area">
+ <div class="topbar">
+  <button class="icon-btn menu-toggle" aria-label="Open menu" onclick="toggleMobileMenu()">☰</button>
+  <div class="top-title" id="topTitle">✨ FinFrame AI Lab</div>
+
+ </div>
+
+ <main class="content">
+
+ <section id="home" class="active">
+  <div class="home-wrap">
+   <div class="hero">
+    <div class="hero-logo">✨</div>
+    <h1>What can I create for you?</h1>
+    <p>Welcome to FinFrame AI Lab.<br>Build, design, edit and explore your ideas.</p>
+   </div>
+
+   <div class="prompt-box">
+    <textarea id="homePrompt" placeholder="Describe what you want to create..."></textarea>
+    <div class="prompt-bottom">
+     <span class="prompt-hint">✨ Choose an idea or describe your project</span>
+     <button class="primary-btn" onclick="sendPrompt()">Create ↗</button>
+    </div>
+   </div>
+
+   <div class="suggestions">
+    <button class="suggestion" onclick="quickPrompt('Build a website')">🌐 Build a website</button>
+    <button class="suggestion" onclick="quickPrompt('Enhance my photo')">📸 Enhance photo</button>
+    <button class="suggestion" onclick="quickPrompt('Design a product poster')">🖼️ Design a poster</button>
+    <button class="suggestion" onclick="quickPrompt('Create a game')">🎮 Create a game</button>
+   </div>
+
+   <div class="section-head">
+    <h2>Explore your tools</h2>
+    <input class="search" id="toolSearch" placeholder="🔍 Search tools..." oninput="filterTools()">
+   </div>
+
+   <div class="tool-grid" id="homeToolGrid">
+    <button class="tool-card" data-search="builder project website app game" onclick="openTool('builder')">
+     <div class="tool-icon">🚀</div><strong>AI Project Builder</strong>
+     <span>Create website, app and game project previews.</span>
+    </button>
+    <button class="tool-card" data-search="photo image enhancer edit brightness" onclick="openTool('photo')">
+     <div class="tool-icon">📸</div><strong>Photo Enhancer</strong>
+     <span>Adjust brightness, contrast and saturation.</span>
+    </button>
+    <button class="tool-card" data-search="product visual design image" onclick="openTool('product')">
+     <div class="tool-icon">💎</div><strong>Product Studio</strong>
+     <span>Create stylish product image designs.</span>
+    </button>
+    <button class="tool-card" data-search="poster maker design image" onclick="openTool('poster')">
+     <div class="tool-icon">🖼️</div><strong>Poster Maker</strong>
+     <span>Design custom posters with your own text.</span>
+    </button>
+    <button class="tool-card" data-search="creative caption voice video tryon" onclick="openTool('creative')">
+     <div class="tool-icon">🎨</div><strong>Creative Studio</strong>
+     <span>Explore captions, voiceover, videos and more.</span>
+    </button>
+    <button class="tool-card" data-search="game play tap challenge" onclick="openTool('game')">
+     <div class="tool-icon">🎮</div><strong>Game Studio</strong>
+     <span>Play the Tap Challenge mini game.</span>
+    </button>
+    <button class="tool-card" data-search="caption writing social media" onclick="openTool('caption')">
+     <div class="tool-icon">✍️</div><strong>Caption Generator</strong>
+     <span>Create caption ideas for your posts.</span>
+    </button>
+    <button class="tool-card" data-search="voice audio speech voiceover" onclick="openTool('voice')">
+     <div class="tool-icon">🎙️</div><strong>Voiceover Studio</strong>
+     <span>Read your text aloud using browser voices.</span>
+    </button>
+    <button class="tool-card" data-search="video promo animation" onclick="openTool('video')">
+     <div class="tool-icon">🎬</div><strong>Promo Video Maker</strong>
+     <span>Create a simple animated video from an image.</span>
+    </button>
+    <button class="tool-card" data-search="virtual try on clothes fashion" onclick="openTool('tryon')">
+     <div class="tool-icon">👗</div><strong>Virtual Try-On Preview</strong>
+     <span>Combine portrait and clothing images.</span>
+    </button>
+   </div>
+
+   <div class="section-head"><h2>🕘 Recent Projects</h2></div>
+   <div class="recent-list" id="recentList">
+    <div class="empty-recent">Your recent project previews will appear here.</div>
+   </div>
+
+   <div class="card" style="margin-top:25px">
+    <h2>✨ About FinFrame AI Lab</h2>
+    <p>FinFrame AI Lab is a browser-based creative toolkit. You can use its image tools directly in your browser.</p>
+    <p class="small">This prototype does not connect to a real AI generation service. Some features depend on browser and device support.</p>
+   </div>
+  </div>
+ </section>
+
+
+ <section id="privacy">
+  <div class="page-title"><h2>🔐 Privacy & Security</h2><p>Your privacy matters. Here is what this browser-based prototype does and does not store.</p></div>
+  <div class="card">
+   <h3>What this version stores</h3>
+   <p>FinFrame AI Lab currently saves a short list of recently opened tool names and timestamps in this browser's local storage. It does not save your prompts, uploaded images, generated files, passwords or payment details there.</p>
+   <p>Uploaded images are processed in your browser for the selected tool. This static version does not send them to a FinFrame server.</p>
+   <h3>What this version does not provide</h3>
+   <p>This prototype has no user accounts, cloud sync, server-side encryption, or payment processing. Your browser/device and any browser extensions remain outside our control. Do not enter sensitive personal, financial, medical or confidential information.</p>
+   <h3>Control your recent activity</h3>
+   <p>You can clear the recent-tool history saved by this site on this browser. This does not clear your browser history, downloads, or other website data.</p>
+   <button class="secondary-btn" onclick="clearRecentHistory()">🗑️ Clear Recent Activity</button>
+   <p id="privacyStatus" class="small" role="status" aria-live="polite">No account or personal profile is required in this prototype.</p>
+  </div>
+  <div class="card">
+   <h3>Privacy-first promise</h3>
+   <p>We aim to collect only what is needed. Before adding accounts, analytics, cloud storage or AI services, we will explain what data is involved and provide appropriate controls. Never place private API keys in this public website.</p>
+   <p class="small">This is an informational privacy notice for the current prototype, not a guarantee of absolute security or a substitute for a legally reviewed privacy policy.</p>
+  </div>
+ </section>
+
+ <section id="builder">
+  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Describe a website, generate starter code, edit it and preview it live.</p></div>
+  <div class="card">
+   <label>Choose project type</label>
+   <select id="projectType"><option>Website</option><option>Android App (HTML prototype)</option><option>Game (HTML prototype)</option></select>
+   <label>Project name</label>
+   <input id="projectName" placeholder="My Creative Project">
+   <label>Describe your project idea</label>
+   <textarea id="projectIdea" placeholder="Example: Make a beautiful shopping website with product cards, search and an add-to-cart button..."></textarea>
+   <div class="actions">
+    <button onclick="buildProject()">✨ Generate Starter Code</button>
+    <button class="secondary-btn" onclick="clearProject()">Clear</button>
+   </div>
+   <p class="builder-note">This first version creates editable browser-based starter code from your description. It is not connected to a cloud AI model yet, so it cannot understand arbitrary prompts or rewrite code conversationally. Never put private API keys in this public website.</p>
+   <div class="builder-workspace">
+    <div class="builder-panel">
+     <h3>🧩 Source Code</h3>
+     <textarea id="projectCode" spellcheck="false" placeholder="Generated HTML code will appear here..."></textarea>
+     <div class="actions">
+      <button onclick="refreshProjectPreview()">▶ Update Preview</button>
+      <button class="secondary-btn" onclick="downloadProjectCode()">⬇ Download HTML</button>
+     </div>
+    </div>
+    <div class="builder-panel">
+     <h3>🌐 Live Preview</h3>
+     <iframe class="builder-frame" id="projectFrame" title="Generated website preview" sandbox="allow-scripts"></iframe>
+     <div class="builder-status" id="projectStatus">Describe a project and tap Generate Starter Code.</div>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section id="photo">
+  <div class="card">
+   <h2>📸 Photo Enhancer</h2><p>Upload a photo and adjust its appearance.</p>
+   <label>Choose photo</label><input type="file" id="photoFile" accept="image/*">
+   <label>Brightness: <span id="brightVal">100</span>%</label><input type="range" id="bright" min="0" max="200" value="100">
+   <label>Contrast: <span id="contrastVal">100</span>%</label><input type="range" id="contrast" min="0" max="200" value="100">
+   <label>Saturation: <span id="satVal">100</span>%</label><input type="range" id="sat" min="0" max="200" value="100">
+   <canvas id="photoCanvas" width="900" height="650"></canvas>
+   <div class="actions">
+    <button class="secondary-btn" onclick="resetPhoto()">↩ Reset</button>
+    <button onclick="downloadCanvas('photoCanvas','finframe-enhanced-photo.png')">⬇ Download Photo</button>
+   </div>
+   <p id="photoStatus">Upload a photo to begin.</p>
+  </div>
+ </section>
+
+ <section id="product">
+  <div class="card">
+   <h2>💎 Product Visuals Studio</h2><p>Create product designs with custom text and shadow.</p>
+   <label>Upload Product Photo</label><input type="file" id="productFile" accept="image/*">
+   <label>Product Name</label><input id="productNameInput" placeholder="Enter product name">
+   <label>Tagline</label><input id="productTagline" placeholder="Example: Premium Quality">
+   <label>Background Color</label><input type="color" id="productBg" value="#17152d">
+   <label>Text Color</label><input type="color" id="productText" value="#ffffff">
+   <label>Shadow Strength: <span id="shadowVal">20</span></label><input type="range" id="shadow" min="0" max="50" value="20">
+   <canvas id="productCanvas" width="1000" height="1000"></canvas>
+   <div class="actions">
+    <button onclick="createProduct()">✨ Create Design</button>
+    <button class="secondary-btn" onclick="downloadCanvas('productCanvas','finframe-product-design.png')">⬇ Download Design</button>
+   </div>
+   <p id="productStatus">Upload a product photo to begin.</p>
+  </div>
+ </section>
+
+ <section id="poster">
+  <div class="card">
+   <h2>🖼️ Poster Maker Studio</h2><p>Create your own custom poster.</p>
+   <label>Upload Poster Image</label><input type="file" id="posterFile" accept="image/*">
+   <label>Poster Title</label><input id="posterTitle" placeholder="Enter poster title">
+   <label>Subtitle</label><input id="posterSubtitle" placeholder="Enter subtitle">
+   <label>Background Color</label><input type="color" id="posterBg" value="#17152d">
+   <label>Text Color</label><input type="color" id="posterText" value="#ffffff">
+   <canvas id="posterCanvas" width="1000" height="1200"></canvas>
+   <div class="actions">
+    <button onclick="createPoster()">✨ Create Poster</button>
+    <button class="secondary-btn" onclick="downloadCanvas('posterCanvas','finframe-poster.png')">⬇ Download Poster</button>
+   </div>
+   <p id="posterStatus">Upload an image to begin.</p>
+  </div>
+ </section>
+
+ <section id="creative">
+  <div class="card">
+   <h2>🎨 Creative Studio</h2><p>Explore your creative tools.</p>
+   <div class="tool-grid">
+    <button class="tool-card" onclick="openTool('tryon')"><div class="tool-icon">👗</div><strong>Virtual Try-On</strong><span>Image composition tool</span></button>
+    <button class="tool-card" onclick="openTool('product')"><div class="tool-icon">💎</div><strong>Product Visuals</strong><span>Product design tool</span></button>
+    <button class="tool-card" onclick="openTool('video')"><div class="tool-icon">🎬</div><strong>Promo Videos</strong><span>Simple video maker</span></button>
+    <button class="tool-card" onclick="openTool('poster')"><div class="tool-icon">🖼️</div><strong>Posters</strong><span>Poster design</span></button>
+    <button class="tool-card" onclick="openTool('caption')"><div class="tool-icon">✍️</div><strong>Captions</strong><span>Caption ideas</span></button>
+    <button class="tool-card" onclick="openTool('voice')"><div class="tool-icon">🎙️</div><strong>Voiceover</strong><span>Browser text-to-speech</span></button>
+    <button class="tool-card" onclick="openTool('game')"><div class="tool-icon">🎮</div><strong>Game Studio</strong><span>Play a mini game</span></button>
+   </div>
+  </div>
+ </section>
+
+ <section id="caption">
+  <div class="card">
+   <h2>✍️ Caption Generator</h2>
+   <label>What is your post about?</label><input id="captionTopic" placeholder="Example: New product launch">
+   <label>Choose style</label>
+   <select id="captionStyle"><option>Professional</option><option>Funny</option><option>Inspirational</option><option>Promotional</option><option>Short and simple</option></select>
+   <div class="actions"><button onclick="makeCaption()">✨ Generate Caption</button></div>
+   <div class="preview" id="captionOutput">Your caption will appear here.</div>
+   <div class="actions"><button class="secondary-btn" onclick="copyText('captionOutput')">📋 Copy Caption</button></div>
+  </div>
+ </section>
+
+ <section id="voice">
+  <div class="card">
+   <h2>🎙️ Voiceover Studio</h2><p>Use your browser's built-in speech engine.</p>
+   <label>Enter your script</label><textarea id="voiceText" placeholder="Write something to speak..."></textarea>
+   <label>Voice</label><select id="voiceSelect"><option value="">Default voice</option></select>
+   <label>Speed</label><input type="range" id="voiceRate" min="0.5" max="2" step="0.1" value="1">
+   <div class="actions"><button onclick="speakText()">▶ Speak</button><button class="secondary-btn" onclick="stopSpeak()">■ Stop</button></div>
+   <p id="voiceStatus">Voice availability depends on your browser and device.</p>
+  </div>
+ </section>
+
+ <section id="video">
+  <div class="card">
+   <h2>🎬 Promo Video Maker</h2><p>Create a simple animated video from an image and text.</p>
+   <label>Upload image</label><input type="file" id="videoFile" accept="image/*">
+   <label>Video title</label><input id="videoTitle" placeholder="Your promotion title">
+   <label>Subtitle</label><input id="videoSubtitle" placeholder="Your message">
+   <label>Hindi voiceover script (Hindi or Roman Hindi)</label><textarea id="videoHindiScript" placeholder="Example: Wah! Yeh saree bahut hi sundar hai. Iska rang aur design bahut pyara hai.">Wah! Yeh saree bahut hi sundar hai. Iska rang aur design bahut pyara hai. Ise pehenkar aap bahut sundar lagengi.</textarea>
+   <p class="small">You can type Hindi using English letters (Roman Hindi) or Devanagari. The browser will try to speak it with a Hindi voice; pronunciation depends on the Hindi voice installed on the device.</p>
+   <div class="actions">
+    <button class="secondary-btn" onclick="speakHindiAd()">🔊 Preview Hindi Voice</button>
+    <button class="secondary-btn" onclick="stopHindiAd()">■ Stop Voice</button>
+   </div>
+   <p class="small">Hindi speech is played by your browser as a preview. It is not embedded in the downloaded video. A real AI model wearing the uploaded sari and a narrated video need a secure AI backend.</p>
+   <canvas id="videoCanvas" width="720" height="900"></canvas>
+   <div class="actions"><button onclick="makeVideo()">🎬 Create 15-Second Video</button></div>
+   <p id="videoVoiceStatus" class="small" role="status" aria-live="polite">Ready for Roman Hindi or Devanagari. Pronunciation depends on your browser's Hindi voice.</p>
+   <p id="videoStatus">Upload an image to begin.</p>
+   <a id="videoDownload" style="display:none;color:#d9c4ff" download="finframe-promo.webm">⬇ Download Promo Video</a>
+  </div>
+ </section>
+
+ <section id="tryon">
+  <div class="card">
+   <h2>👗 Virtual Try-On Preview</h2>
+   <p>Upload a person's photo and a separate clothing photo. The AI service can create a realistic try-on after a secure backend is connected. Until then, the manual preview below remains available.</p>
+   <div class="card" style="background:#101020;border-color:#65528f">
+    <h3>✨ AI Virtual Try-On</h3>
+    <p>Use the two uploads below, then generate an AI outfit preview. Your images are sent only when you press Generate; the AI provider and its privacy terms will apply once a backend is configured.</p>
+    <button class="primary-btn" id="aiTryonButton" type="button" onclick="generateAiTryon()">✨ Generate AI Try-On</button>
+    <p id="aiTryonStatus" role="status" aria-live="polite">AI service is not connected yet. The secure backend setup is being prepared.</p>
+    <div id="aiTryonResultWrap" class="hidden">
+     <img id="aiTryonResult" alt="AI virtual try-on result" style="display:block;max-width:100%;max-height:650px;margin:12px auto;border-radius:12px">
+     <a id="aiTryonDownload" class="secondary-btn" download="finframe-ai-tryon.png">⬇ Save AI result</a>
+    </div>
+   </div>
+   <label>1. Upload portrait image</label><input type="file" id="personFile" accept="image/*">
+   <label>2. Upload clothing image (a transparent PNG works best)</label><input type="file" id="clothFile" accept="image/*">
+   <div class="tryon-upload-grid">
+    <div class="tryon-upload-preview"><img id="personPreview" alt="Portrait preview"><small>Portrait preview</small></div>
+    <div class="tryon-upload-preview"><img id="clothPreview" alt="Clothing preview"><small>Clothing preview</small></div>
+   </div>
+   <h3>3. Adjust clothing position</h3>
+   <div class="tryon-controls">
+    <div><label>Horizontal position: <span id="tryXVal">50</span>%</label><input type="range" id="tryX" min="0" max="100" value="50"></div>
+    <div><label>Vertical position: <span id="tryYVal">55</span>%</label><input type="range" id="tryY" min="0" max="100" value="55"></div>
+    <div><label>Clothing width: <span id="tryWVal">55</span>%</label><input type="range" id="tryW" min="10" max="100" value="55"></div>
+    <div><label>Clothing height: <span id="tryHVal">55</span>%</label><input type="range" id="tryH" min="10" max="100" value="55"></div>
+    <div><label>Opacity: <span id="tryOpacityVal">85</span>%</label><input type="range" id="tryOpacity" min="10" max="100" value="85"></div>
+   </div>
+   <canvas id="tryCanvas" width="800" height="900"></canvas>
+   <div class="actions">
+    <button onclick="createTryon()">✨ Update Preview</button>
+    <button class="secondary-btn" onclick="resetTryon()">↩ Reset Position</button>
+    <button class="secondary-btn" onclick="downloadTryon()">⬇ Download PNG</button>
+   </div>
+   <p id="tryStatus" role="status" aria-live="polite">Upload both images to start. Adjust the sliders, then update the preview.</p>
+  </div>
+ </section>
+
+ <section id="game">
+  <div class="card">
+   <h2>🎮 Game Studio — Tap Challenge</h2>
+   <p>Tap the button as many times as you can!</p>
+   <h3>Score: <span id="score">0</span></h3>
+   <button style="width:100%;padding:25px;font-size:22px" onclick="tapGame()">🎯 TAP ME!</button>
+   <div class="actions"><button class="secondary-btn" onclick="resetGame()">↩ Reset Game</button></div>
+   <p id="gameMessage">Ready? Start tapping!</p>
+  </div>
+ </section>
+
+ 
+ <section id="brandkit">
+  <div class="page-title"><h2>🎨 Brand Kit</h2><p>Save your brand name, tagline and colors on this device.</p></div>
+  <div class="card">
+   <label>Brand name</label><input id="brandName" placeholder="My Brand">
+   <label>Tagline</label><input id="brandTagline" placeholder="A short line that describes your brand">
+   <div class="grid"><div><label>Primary color</label><input id="brandPrimary" type="color" value="#9b70ff"></div><div><label>Accent color</label><input id="brandAccent" type="color" value="#ef6bcb"></div></div>
+   <div class="actions"><button onclick="saveBrandKit()">💾 Save Brand Kit</button><button class="secondary-btn" onclick="loadBrandKit()">Load Saved</button><button class="secondary-btn" onclick="exportBrandKit()">⬇ Export JSON</button></div>
+   <p id="brandStatus" class="small" role="status">Your brand kit is stored only in this browser.</p>
+  </div>
+  <div class="card"><h3>Live preview</h3><div id="brandPreview" class="preview"><strong>Your Brand</strong><br>A short brand tagline</div></div>
+ </section>
+ <section id="prompts">
+  <div class="page-title"><h2>✨ Prompt Library</h2><p>Choose a starter prompt to send it to the home workspace.</p></div>
+  <div class="tool-grid">
+   <button class="tool-card" onclick="usePrompt('Build a modern responsive portfolio website with an about section, project gallery and contact form.')"><div class="tool-icon">🌐</div><strong>Portfolio Website</strong><span>Start a personal portfolio concept.</span></button>
+   <button class="tool-card" onclick="usePrompt('Design a premium product launch poster with a bold headline, product benefits and a clear call to action.')"><div class="tool-icon">🖼️</div><strong>Product Poster</strong><span>Plan a polished product promotion.</span></button>
+   <button class="tool-card" onclick="usePrompt('Create a simple mobile-friendly tapping game with a score counter, start button and reset button.')"><div class="tool-icon">🎮</div><strong>Mini Game</strong><span>Start a small game idea.</span></button>
+   <button class="tool-card" onclick="usePrompt('Create a clean online store layout with product cards, search, prices and a shopping cart preview.')"><div class="tool-icon">🛍️</div><strong>Online Store</strong><span>Sketch an e-commerce experience.</span></button>
+   <button class="tool-card" onclick="usePrompt('Write five engaging social media captions for a new brand launch in a friendly, confident tone.')"><div class="tool-icon">✍️</div><strong>Social Captions</strong><span>Generate caption ideas.</span></button>
+   <button class="tool-card" onclick="usePrompt('Create a landing page for a creative studio with a hero section, services, testimonials and contact details.')"><div class="tool-icon">🚀</div><strong>Studio Landing Page</strong><span>Outline a creative business site.</span></button>
+  </div>
+ </section>
+ <section id="templates">
+  <div class="page-title"><h2>🧩 Template Gallery</h2><p>Load a starter idea into Project Builder, then edit it.</p></div>
+  <div class="tool-grid">
+   <button class="tool-card" onclick="useTemplate('Personal Portfolio','A responsive portfolio with an introduction, skills, project cards and contact section.')"><div class="tool-icon">👤</div><strong>Personal Portfolio</strong><span>Showcase your work and skills.</span></button>
+   <button class="tool-card" onclick="useTemplate('Small Business Website','A business website with services, opening information, customer reviews and contact details.')"><div class="tool-icon">🏪</div><strong>Small Business</strong><span>Introduce a local business.</span></button>
+   <button class="tool-card" onclick="useTemplate('Online Store','A simple online store with product cards, prices, search and a cart demo.')"><div class="tool-icon">🛒</div><strong>Online Store</strong><span>Start a storefront prototype.</span></button>
+   <button class="tool-card" onclick="useTemplate('Restaurant Website','A restaurant website with menu highlights, opening hours, location and reservation contact.')"><div class="tool-icon">🍽️</div><strong>Restaurant</strong><span>Present a restaurant online.</span></button>
+   <button class="tool-card" onclick="useTemplate('Mini Browser Game','A small browser game with a start button, score display, challenge instructions and reset control.')"><div class="tool-icon">🎯</div><strong>Mini Game</strong><span>Build a simple game starter.</span></button>
+   <button class="tool-card" onclick="useTemplate('Creative Agency','A creative agency landing page with a hero banner, services, portfolio and contact section.')"><div class="tool-icon">🎨</div><strong>Creative Agency</strong><span>Showcase a design studio.</span></button>
+  </div>
+ </section>
+ <section id="vybora">
+  <div class="page-title"><h2>💜 VYBORA</h2><p>Watch. Create. Connect. — your short-video community.</p></div>
+  <div class="card" id="vyCloudAuth" style="max-width:980px;margin:0 auto 16px;padding:16px;border:1px solid var(--border);border-radius:16px">
+   <h3 style="margin-top:0">🔐 VYBORA Account</h3>
+   <p class="small" id="vyCloudStatus">Connect with an email account to publish Reels and connect with other creators.</p>
+   <div id="vyAuthForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px">
+    <input id="vyAuthName" type="text" placeholder="Your name (for sign up)" autocomplete="name">
+    <input id="vyAuthEmail" type="email" placeholder="Email address" autocomplete="email">
+    <input id="vyAuthPassword" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
+    <button class="primary-btn" type="button" onclick="vySignUp()">Create account</button>
+    <button class="secondary-btn" type="button" onclick="vySignIn()">Log in</button>
+    <button class="secondary-btn" type="button" onclick="vyResetPassword()">Forgot password?</button>
+   </div>
+   <div id="vyRecoveryForm" hidden style="display:grid;gap:8px;margin-top:10px">
+    <p class="small">Set a new password for your VYBORA account.</p>
+    <input id="vyNewPassword" type="password" placeholder="New password (min. 6 characters)" autocomplete="new-password">
+    <button class="primary-btn" type="button" onclick="vySaveNewPassword()">Save new password</button>
+   </div>
+   <div id="vyAuthSignedIn" hidden style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
+  </div>
+  <div id="vyCloudFeed" style="max-width:980px;margin:0 auto"></div>
+  <style>
+   #vybora .vy-stories{display:flex;gap:14px;overflow-x:auto;padding:12px;margin:0 0 14px;background:var(--panel);border:1px solid var(--border);border-radius:16px}#vybora .vy-story{flex:0 0 64px;text-align:center;cursor:pointer}#vybora .vy-story span{width:54px;height:54px;margin:auto auto 5px;border-radius:50%;display:grid;place-items:center;font-size:25px;background:linear-gradient(135deg,#9b70ff,#ef6bcb);border:2px solid #d8a7ff}#vybora .vy-story.own span{background:var(--panel2);border:2px dashed var(--accent)}#vybora .vy-story small{display:block;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
+   #vybora .vy-main-nav{display:flex;justify-content:space-around;gap:6px;max-width:980px;margin:0 auto 18px;padding:8px;background:var(--panel);border:1px solid var(--border);border-radius:15px;position:sticky;top:8px;z-index:5}
+   #vybora .vy-main-nav button{flex:1;min-width:0;border:0;border-radius:10px;padding:11px 7px;background:transparent;color:var(--muted);font-weight:650;cursor:pointer}
+   #vybora .vy-main-nav button.active{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff}
+   #vybora .vy-main-nav button span{margin-left:4px}
+   #vybora .vy-page-panel{max-width:980px;margin:0 auto 18px;padding:20px;background:var(--panel);border:1px solid var(--border);border-radius:18px;min-height:220px}
+   #vybora .vy-page-panel h3{margin-top:0}
+   #vybora .vy-inbox-item{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--border)}
+   #vybora .vy-inbox-item:last-child{border-bottom:0}
+   #vybora .vy-explore-tags{display:flex;gap:9px;flex-wrap:wrap}
+   #vybora .vy-explore-tags button{border:1px solid var(--border);border-radius:999px;padding:10px 14px;background:var(--panel2);color:var(--text)}
+   @media(max-width:520px){#vybora .vy-main-nav{gap:2px;padding:5px}#vybora .vy-main-nav button{padding:10px 2px;font-size:12px}#vybora .vy-main-nav button span{display:block;margin:3px 0 0}}
+   #vybora .vy-wrap{max-width:980px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px}
+   #vybora .vy-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px}
+   #vybora .vy-head{display:flex;align-items:center;gap:10px;padding:13px;min-width:0}
+   #vybora .vy-avatar{width:40px;height:40px;flex:0 0 40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#9b70ff,#ef6bcb);font-weight:bold;color:white;overflow:hidden}#vybora .vy-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+   #vybora .vy-video{height:min(68vh,620px);min-height:390px;background:linear-gradient(145deg,#291b52,#9b3c89 55%,#f08b9b);display:flex;align-items:end;justify-content:center;position:relative;color:white;text-align:center;padding:24px;overflow:hidden}
+   #vybora .vy-video.alt{background:linear-gradient(145deg,#123b52,#187f83 55%,#a3c66b)}
+   #vybora .vy-video.third{background:linear-gradient(145deg,#422044,#a34f5b 55%,#edb16b)}
+   #vybora .vy-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+   #vybora .vy-overlay{position:relative;z-index:1;text-shadow:0 2px 12px #000}
+   #vybora .vy-actions{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
+   #vybora .vy-actions button,#vybora .vy-side button,#vybora .vy-tabs button{border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--panel2);color:var(--text)}
+   #vybora .vy-actions button[aria-pressed=true]{color:#ff6b9a;border-color:#ff6b9a}
+   #vybora .vy-caption{padding:0 13px 14px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+   #vybora .vy-side{position:sticky;top:85px;align-self:start}
+   #vybora .vy-side .card{margin-bottom:14px}
+   #vybora input[type=text],#vybora textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);margin:7px 0}
+   #vybora .vy-upload{border:1px dashed #8e70db;border-radius:14px;padding:15px;margin-top:10px}
+   #vybora .vy-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+   #vybora .vy-tabs button.active{background:linear-gradient(120deg,var(--accent),var(--accent2));color:white;border-color:transparent}
+   #vybora .vy-search{display:flex;gap:8px;margin-bottom:12px}
+   #vybora .vy-search input{min-width:0}
+   #vybora .vy-empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:14px}
+   #vybora .vy-comments{padding:0 13px 12px;display:grid;gap:5px}
+   #vybora .vy-comment{padding:7px 9px;border-radius:9px;background:var(--panel2);font-size:13px;overflow-wrap:anywhere}
+   #vybora .vy-profile-name{overflow-wrap:anywhere}
+   @media(max-width:760px){#vybora .vy-wrap{grid-template-columns:1fr}#vybora .vy-side{position:static;grid-row:1}#vybora .vy-video{height:66vh;min-height:420px}#vybora .vy-side .card{margin-bottom:10px}}
+  </style>
+  <nav class="vy-main-nav" aria-label="VYBORA main navigation">
+   <button class="active" data-vy-page="home" onclick="vyNavigate('home',this)">⌂ <span>Home</span></button>
+   <button data-vy-page="reels" onclick="vyNavigate('reels',this)">▶ <span>Reels</span></button>
+   <button data-vy-page="explore" onclick="vyNavigate('explore',this)">⌕ <span>Explore</span></button>
+   <button data-vy-page="create" onclick="vyNavigate('create',this)">＋ <span>Create</span></button>
+   <button data-vy-page="inbox" onclick="vyNavigate('inbox',this)">✉ <span>Inbox</span></button>
+   <button data-vy-page="notifications" onclick="vyNavigate('notifications',this)">♡ <span>Activity</span></button>
+   <button data-vy-page="profile" onclick="vyNavigate('profile',this)">◉ <span>Profile</span></button>
+  </nav>
+  <div id="vyPagePanel" class="vy-page-panel" hidden aria-live="polite"></div>
+  <div class="vy-wrap">
+   <div>
+    <div class="vy-stories" id="vyStoriesCloud" aria-label="Stories"><button class="vy-story own" type="button" onclick="vyAddStory()"><span>＋</span><small>Your story</small></button><span class="small">Loading stories…</span></div>
+    <div class="vy-search"><input id="vySearchInput" type="text" placeholder="🔎 Search captions or #hashtags" oninput="vyRenderFeed();if(window.vyReloadFeed)window.vyReloadFeed()"><button class="secondary-btn" onclick="document.getElementById('vySearchInput').value='';vyRenderFeed()">Clear</button></div>
+    <div class="vy-tabs" aria-label="Reels feed filters">
+     <button class="active" data-vy-filter="for-you" onclick="vySetFilter('for-you',this)">✨ For You</button>
+     <button data-vy-filter="following" onclick="vySetFilter('following',this)">👥 Following</button>
+     <button data-vy-filter="saved" onclick="vySetFilter('saved',this)">🔖 Saved</button>
+    </div>
+    <div id="vyFeed">
+     <article class="vy-card" data-vy-id="sample-1" data-vy-user="vybora.daily">
+      <div class="vy-head"><div class="vy-avatar">V</div><div><strong>vybora.daily</strong><div class="small">Suggested creator</div></div><button class="secondary-btn" style="margin-left:auto" onclick="vyFollow(this)" data-user="vybora.daily">＋ Follow</button></div>
+      <div class="vy-video"><div class="vy-overlay"><div style="font-size:46px">🌅</div><h2>Little moments, big memories</h2><p>VYBORA • Sample Reel</p></div></div>
+      <div class="vy-actions"><button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>128</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button></div>
+      <div class="vy-caption"><strong>vybora.daily</strong> A little inspiration for your day ✨ <span class="small">#VYBORA #DailyReels</span></div><div class="vy-comments" aria-live="polite"></div>
+     </article>
+     <article class="vy-card" data-vy-id="sample-2" data-vy-user="motion.maker">
+      <div class="vy-head"><div class="vy-avatar">M</div><div><strong>motion.maker</strong><div class="small">Trending creator</div></div><button class="secondary-btn" style="margin-left:auto" onclick="vyFollow(this)" data-user="motion.maker">＋ Follow</button></div>
+      <div class="vy-video alt"><div class="vy-overlay"><div style="font-size:46px">🌿</div><h2>Find your own rhythm</h2><p>VYBORA • Sample Reel</p></div></div>
+      <div class="vy-actions"><button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>86</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button></div>
+      <div class="vy-caption"><strong>motion.maker</strong> Slow down and enjoy the view 🌱 <span class="small">#Nature #VYBORA</span></div><div class="vy-comments" aria-live="polite"></div>
+     </article>
+    </div>
+   </div>
+   <aside class="vy-side">
+    <div class="card"><h3>👤 Your VYBORA profile</h3><div class="vy-head" style="padding:8px 0"><div class="vy-avatar" id="vyProfileAvatar">Y</div><div><strong class="vy-profile-name" id="vyProfileName">your_profile</strong><div class="small">Creator profile</div></div></div><p class="small"><b id="vyPostCount">0</b> Reels · <b id="vyFollowingCount">0</b> Following · <b id="vyFollowerCount">0</b> Followers</p><button class="secondary-btn" onclick="vyEditProfile()">✏️ Edit profile</button></div>
+    <div class="card"><h3>＋ Create a Reel</h3><p class="small">Choose a video from your phone and add a caption.</p><div class="vy-upload"><input id="vyVideoFile" type="file" accept="image/*,video/*"><textarea id="vyCaptionInput" rows="3" maxlength="500" placeholder="Write a caption... Add #hashtags"></textarea><button class="primary-btn" onclick="vyUpload()">＋ Publish photo / video</button><p class="small" id="vyUploadStatus" aria-live="polite">Choose a photo or video to publish to VYBORA.</p></div></div>
+    <div class="card"><h3>🔖 Your activity</h3><p class="small" id="vySavedCount">0 saved Reels</p><button class="secondary-btn" onclick="vySetFilter('saved')">View saved Reels</button></div>
+    <div class="card"><h3>✨ Explore trends</h3><p class="small">Tap a tag to find matching Reels.</p><div class="actions"><button class="secondary-btn" onclick="vySearchTag('VYBORA')">#VYBORA</button><button class="secondary-btn" onclick="vySearchTag('Travel')">#Travel</button><button class="secondary-btn" onclick="vySearchTag('Music')">#Music</button><button class="secondary-btn" onclick="vySearchTag('Nature')">#Nature</button><button class="secondary-btn" onclick="vySearchTag('Creators')">#Creators</button></div></div>
+   </aside>
+  </div>
+ </section>
+ <section id="settings">
+  <div class="page-title"><h2>⚙️ Settings & Backup</h2><p>Personalize FinFrame and keep a copy of your workspace data.</p></div>
+  <div class="card"><h3>🎨 Appearance</h3><p>Switch between dark and light mode. Your choice is saved on this device.</p><div class="actions"><button onclick="setTheme('dark')">🌙 Dark Mode</button><button class="secondary-btn" onclick="setTheme('light')">☀️ Light Mode</button></div><p id="themeStatus" class="small" role="status">Choose the look you prefer.</p></div>
+  <div class="card"><h3>🖌️ Accent Color</h3><p>Choose the highlight color used by buttons and creative tools.</p><div class="grid"><div><label for="accentColor">Custom color</label><input id="accentColor" type="color" value="#9b70ff" onchange="savePreferences()"></div><div><label for="accentPreset">Quick presets</label><select id="accentPreset" onchange="applyAccentPreset(this.value)"><option value="">Choose a preset</option><option value="#9b70ff">Violet</option><option value="#2585ff">Ocean Blue</option><option value="#16a085">Emerald</option><option value="#e67e22">Sunset Orange</option><option value="#e84393">Pink</option></select></div></div></div>
+  <div class="card"><h3>📐 Interface Preferences</h3><label for="textScale">Text size: <strong id="textScaleValue">16px</strong></label><input id="textScale" type="range" min="14" max="19" step="1" value="16" oninput="previewTextScale(this.value)" onchange="savePreferences()"><label><input id="compactMode" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Compact layout (more content on screen)</label><label><input id="reduceMotion" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Reduce animations</label><label><input id="highContrast" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> High contrast text</label><div class="actions"><button class="secondary-btn" onclick="resetPreferences()">↩️ Reset Appearance</button></div><p id="preferencesStatus" class="small" role="status">Your preferences are saved in this browser.</p></div>
+  <div class="card"><h3>🧰 15 More Workspace Controls</h3><p>Extra controls for layout, convenience and managing data stored on this device.</p>
+<label for="fontFamily">1. Font family</label><select id="fontFamily" onchange="saveExtraSettings()"><option value="Arial,sans-serif">Arial</option><option value="system-ui,sans-serif">System default</option><option value="Georgia,serif">Georgia</option><option value="monospace">Monospace</option></select>
+<label for="lineSpacing">2. Line spacing: <strong id="lineSpacingValue">1.5</strong></label><input id="lineSpacing" type="range" min="1.2" max="2" step=".1" value="1.5" oninput="previewExtraSettings()" onchange="saveExtraSettings()">
+<label for="cornerRadius">3. Card corner roundness: <strong id="cornerRadiusValue">17px</strong></label><input id="cornerRadius" type="range" min="6" max="28" step="1" value="17" oninput="previewExtraSettings()" onchange="saveExtraSettings()">
+<label><input id="cardShadow" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">4. Soft card shadows</label>
+<label><input id="stickyHeader" type="checkbox" style="width:auto;margin-right:8px" checked onchange="saveExtraSettings()">5. Keep top bar sticky</label>
+<label><input id="hideSidebarNote" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">6. Hide sidebar information panel</label>
+<label><input id="hideToolDescriptions" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">7. Hide tool descriptions on Home</label>
+<label><input id="autoSaveDraft" type="checkbox" style="width:auto;margin-right:8px" onchange="saveExtraSettings()">8. Auto-save Project Builder draft on this device</label>
+<div class="actions"><button class="secondary-btn" onclick="restoreBuilderDraft()">9. Restore saved Builder draft</button><button class="secondary-btn" onclick="clearBuilderDraft()">10. Delete saved Builder draft</button></div>
+<label for="startPage">11. Preferred start page (saved for next visit)</label><select id="startPage" onchange="saveExtraSettings()"><option value="home">Home</option><option value="builder">Project Builder</option><option value="photo">Photo Studio</option><option value="settings">Settings</option></select>
+<div class="actions"><button class="secondary-btn" onclick="clearRecentActivity()">12. Clear recent activity</button><button class="secondary-btn" onclick="exportPreferencesOnly()">13. Export settings only</button><button class="secondary-btn" onclick="updateStorageUsage()">14. Check local storage usage</button></div>
+<p id="storageUsage" class="small" role="status">Storage estimate has not been checked yet.</p>
+<div class="actions"><button class="secondary-btn" onclick="resetAllLocalData()">15. Reset all local workspace data</button></div>
+<p id="extraSettingsStatus" class="small" role="status">These options only affect this browser on this device.</p></div>
+<div class="card"><h3>📦 Workspace Backup</h3><p>Export your saved Brand Kit, recent activity and appearance setting into one JSON backup file.</p><div class="actions"><button onclick="exportWorkspaceBackup()">⬇️ Download Backup</button></div><label for="workspaceBackupFile">Restore a backup file</label><input id="workspaceBackupFile" type="file" accept=".json,application/json"><div class="actions"><button class="secondary-btn" onclick="importWorkspaceBackup()">↩️ Restore Backup</button></div><p id="backupStatus" class="small" role="status">Your backup stays on your device unless you choose to share it.</p></div>
+  <div class="card"><h3>ℹ️ About this prototype</h3><p>FinFrame AI Lab is a free browser-based prototype. Your saved data is stored locally in this browser; clearing browser site data may remove it.</p></div>
+ </section>
+ </main>
+ <footer>FinFrame AI Lab • Free Browser Prototype • Made with ❤️</footer>
+</div>
+</div>
+
+
+<script>
+const $=id=>document.getElementById(id);
+
+const pageNames={
+ home:'✨ FinFrame AI Lab',
+ builder:'🚀 Project Builder',
+ photo:'📸 Photo Enhancer',
+ product:'💎 Product Studio',
+ poster:'🖼️ Poster Maker',
+ creative:'🎨 Creative Studio',
+ game:'🎮 Game Studio',
+ caption:'✍️ Caption Generator',
+ voice:'🎙️ Voiceover Studio',
+ video:'🎬 Promo Video Maker',
+ tryon:'👗 Virtual Try-On',
+ privacy:'🔐 Privacy & Security',
+ brandkit:'🎨 Brand Kit',
+ prompts:'✨ Prompt Library',
+ templates:'🧩 Template Gallery',
+ settings:'⚙️ Settings & Backup',
+ vybora:'💜 VYBORA Social'
+};
+
+const VY_KEY='vyboraLocalStateV2';
+function vyState(){try{return JSON.parse(localStorage.getItem(VY_KEY)||'{}')}catch(e){return {}}}
+function vySaveState(patch){const s=Object.assign(vyState(),patch);try{localStorage.setItem(VY_KEY,JSON.stringify(s))}catch(e){}return s}
+function vyProfile(){return vyState().profile||'your_profile'}
+function vyCardId(btn){return btn.closest('[data-vy-id]')?.dataset.vyId||'unknown'}
+function vyRenderFeed(){
+ const feed=$('vyFeed');if(!feed)return;const q=($('vySearchInput')?.value||'').trim().toLowerCase();const filter=window.vyFilter||'for-you';let count=0;
+ Array.from(feed.children).forEach(card=>{const s=vyState(),id=card.dataset.vyId,user=card.dataset.vyUser||'';const text=card.innerText.toLowerCase();const show=(!q||text.includes(q))&&(filter==='for-you'||(filter==='following'&&(s.follows||[]).includes(user))||(filter==='saved'&&(s.saved||[]).includes(id)));card.style.display=show?'':'none';if(show)count++;});
+ let empty=$('vyEmpty');if(!count){if(!empty){empty=document.createElement('div');empty.id='vyEmpty';empty.className='vy-empty';feed.appendChild(empty)}empty.textContent=filter==='saved'?'No saved Reels yet. Tap Save on a Reel to keep it here.':filter==='following'?'You are not following any creators yet. Follow someone to build your feed.':'No Reels match your search.';}else if(empty)empty.remove();
+ const s=vyState();$('vySavedCount').textContent=(s.saved||[]).length+' saved Reels';$('vyFollowingCount').textContent=(s.follows||[]).length;
+}
+window.vySetFilter=function(filter,btn){window.vyFilter=filter;document.querySelectorAll('#vybora .vy-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.vyFilter===filter));if($('vySearchInput')&&filter!=='saved'){}vyRenderFeed();};
+window.vySearchTag=function(tag){$('vySearchInput').value='#'+tag;window.vyFilter='for-you';document.querySelectorAll('#vybora .vy-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.vyFilter==='for-you'));vyRenderFeed();};
+window.vyLike=function(btn){const card=btn.closest('[data-vy-id]'),id=vyCardId(btn),s=vyState(),likes=s.likes||{},liked=!!likes[id];likes[id]=!liked;vySaveState({likes});const b=btn.querySelector('b'),base=Number(btn.dataset.baseLikes||b.textContent)||0;if(!btn.dataset.baseLikes)btn.dataset.baseLikes=String(base);b.textContent=String(base+(liked?-1:1));btn.querySelector('span').textContent=liked?'Like':'Liked';btn.setAttribute('aria-pressed',liked?'false':'true');};
+window.vyFollow=function(btn){const user=btn.dataset.user;if(!user)return;const s=vyState(),follows=new Set(s.follows||[]),on=follows.has(user);if(on)follows.delete(user);else follows.add(user);vySaveState({follows:Array.from(follows)});btn.textContent=on?'＋ Follow':'✓ Following';vyRenderFeed();};
+window.vySave=function(btn){const id=vyCardId(btn),s=vyState(),saved=new Set(s.saved||[]),on=saved.has(id);if(on)saved.delete(id);else saved.add(id);vySaveState({saved:Array.from(saved)});btn.textContent=on?'🔖 Save':'✓ Saved';btn.setAttribute('aria-pressed',on?'false':'true');vyRenderFeed();};
+window.vyShare=function(btn){const card=btn?.closest('[data-vy-id]'),title=card?.querySelector('.vy-caption')?.innerText||'Watch. Create. Connect.';const shareData={title:'VYBORA',text:title,url:location.href.split('#')[0]+'#vybora'};if(navigator.share){navigator.share(shareData).catch(()=>{});}else if(navigator.clipboard){navigator.clipboard.writeText(shareData.url).then(()=>{if(btn)btn.textContent='✓ Link copied';}).catch(()=>alert('Copy the page link from your browser to share VYBORA.'));}else{alert(shareData.url);}};
+window.vyComment=function(btn){const card=btn.closest('[data-vy-id]'),box=card.querySelector('.vy-comments');const comment=prompt('Write a comment');if(comment&&comment.trim()){const line=document.createElement('div');line.className='vy-comment';line.textContent=vyProfile()+': '+comment.trim();box.appendChild(line);const s=vyState(),comments=s.comments||{};comments[card.dataset.vyId]=comments[card.dataset.vyId]||[];comments[card.dataset.vyId].push(comment.trim());vySaveState({comments});}};
+window.vyUpload=function(){const file=$('vyVideoFile').files[0],caption=$('vyCaptionInput').value.trim(),status=$('vyUploadStatus');if(!file){status.textContent='Please choose a video from your phone first.';return;}if(!file.type.startsWith('video/')){status.textContent='Please select a video file.';return;}if(file.size>100*1024*1024){status.textContent='Choose a video smaller than 100 MB for this browser preview.';return;}const url=URL.createObjectURL(file),id='local-'+Date.now(),card=document.createElement('article');card.className='vy-card';card.dataset.vyId=id;card.dataset.vyUser=vyProfile();const head=document.createElement('div');head.className='vy-head';const avatar=document.createElement('div');avatar.className='vy-avatar';avatar.textContent=vyProfile().charAt(0).toUpperCase();const name=document.createElement('strong');name.textContent=vyProfile()+' · just now';head.append(avatar,name);const video=document.createElement('video');video.controls=true;video.playsInline=true;video.preload='metadata';video.src=url;video.style.cssText='display:block;width:100%;max-height:620px;background:#000';const cap=document.createElement('div');cap.className='vy-caption';cap.textContent=caption||'My first VYBORA Reel ✨';const comments=document.createElement('div');comments.className='vy-comments';const actions=document.createElement('div');actions.className='vy-actions';actions.innerHTML='<button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>0</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button>';card.append(head,video,actions,cap,comments);$('vyFeed').prepend(card);$('vyPostCount').textContent=String((Number($('vyPostCount').textContent)||0)+1);$('vyCaptionInput').value='';status.textContent='Your Reel preview has been added. It is available only in this open browser session—not uploaded for other users.';window.vyFilter='for-you';document.querySelectorAll('#vybora .vy-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.vyFilter==='for-you'));vyRenderFeed();};
+window.vyEditProfile=function(){const name=prompt('Choose your VYBORA profile name',vyProfile());if(name&&name.trim()){const clean=name.trim().replace(/^@/,'').slice(0,24);vySaveState({profile:clean});$('vyProfileName').textContent=clean;$('vyProfileAvatar').textContent=clean.charAt(0).toUpperCase();}};
+window.vyInitReels=function(){
+ const host=$('vyCloudFeed');if(!host)return;
+ if(window.vyReelObserver)window.vyReelObserver.disconnect();
+ const videos=[...host.querySelectorAll('video.vy-reel-media')];
+ videos.forEach(v=>{
+  v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.controls=false;
+ });
+ if(!host.dataset.vyReelTapBound){
+  host.addEventListener('click',event=>{
+   if(event.target.closest('button,a,input,textarea'))return;
+   const card=event.target.closest('.vy-card');
+   const video=card&&card.querySelector('video.vy-reel-media');
+   if(video)video.muted=!video.muted;
+  });
+  host.dataset.vyReelTapBound='1';
+ }
+ if(!host.dataset.vyReelSwipeBound){
+  let startY=0,startTop=0,tracking=false;
+  host.addEventListener('touchstart',event=>{
+   const t=event.touches&&event.touches[0];
+   tracking=!!t&&!event.target.closest('button,a,input,textarea,select');
+   if(tracking){startY=t.clientY;startTop=host.scrollTop;}
+  },{passive:true});
+  host.addEventListener('touchend',event=>{
+   if(!tracking)return;tracking=false;
+   const t=event.changedTouches&&event.changedTouches[0];if(!t)return;
+   const delta=startY-t.clientY;
+   if(Math.abs(delta)<48||Math.abs(host.scrollTop-startTop)>24)return;
+   const cards=[...host.querySelectorAll('.vy-card')].filter(card=>getComputedStyle(card).display!=='none');
+   if(cards.length<2)return;
+   const top=host.getBoundingClientRect().top;
+   let current=0,best=Infinity;
+   cards.forEach((card,index)=>{const distance=Math.abs(card.getBoundingClientRect().top-top);if(distance<best){best=distance;current=index;}});
+   const next=Math.max(0,Math.min(cards.length-1,current+(delta>0?1:-1)));
+   if(next!==current){const target=cards[next],targetTop=target.getBoundingClientRect().top-top+host.scrollTop;host.scrollTo({top:targetTop,behavior:'smooth'});}
+  },{passive:true});
+  host.addEventListener('touchcancel',()=>{tracking=false;},{passive:true});
+  host.dataset.vyReelSwipeBound='1';
+ }
+ if(!('IntersectionObserver'in window)){
+  videos.forEach(v=>{if(v.closest('.vy-card')?.getBoundingClientRect().top>=0)v.play().catch(()=>{});else v.pause();});
+  return;
+ }
+ const visibility=new Map(videos.map(v=>[v,0]));
+ window.vyReelObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>visibility.set(entry.target,entry.isIntersecting?entry.intersectionRatio:0));
+  let active=null,best=.65;
+  visibility.forEach((ratio,v)=>{if(ratio>=best){best=ratio;active=v;}});
+  videos.forEach(v=>{
+   if(v===active){if(v.paused)v.play().catch(()=>{});}
+   else if(!v.paused)v.pause();
+  });
+ },{root:host,threshold:[0,.2,.45,.65,.85,1]});
+ videos.forEach(v=>window.vyReelObserver.observe(v));
+};
+window.vyNavigate=function(page,button){
+ document.body.classList.toggle('vy-reels-mode',page==='reels');
+ document.querySelectorAll('#vybora .vy-main-nav button').forEach(function(b){b.classList.toggle('active',b.dataset.vyPage===page);});
+ const panel=$('vyPagePanel'),wrap=document.querySelector('#vybora .vy-wrap');
+ if(!panel||!wrap)return;
+ if(page==='home'||page==='reels'){panel.hidden=true;wrap.hidden=false;window.vyFilter=page==='reels'?'for-you':(window.vyFilter||'for-you');document.querySelectorAll('#vybora .vy-tabs button').forEach(function(b){b.classList.toggle('active',b.dataset.vyFilter===window.vyFilter);});vyRenderFeed();if(page==='reels'){if(window.vyInitReels)window.vyInitReels();$('vyCloudFeed')?.scrollTo({top:0,behavior:'instant'});$('vyCloudFeed')?.scrollIntoView({behavior:'smooth',block:'start'});}return;}
+ wrap.hidden=true;panel.hidden=false;
+ if(page==='explore'){
+  panel.innerHTML='<h3>⌕ Explore VYBORA</h3><p class="small">Discover topics and find creators. Choose a hashtag to filter the Reels feed.</p><div class="vy-explore-tags"><button onclick="vySearchTag(\'VYBORA\');vyNavigate(\'reels\')">#VYBORA</button><button onclick="vySearchTag(\'Travel\');vyNavigate(\'reels\')">#Travel</button><button onclick="vySearchTag(\'Music\');vyNavigate(\'reels\')">#Music</button><button onclick="vySearchTag(\'Nature\');vyNavigate(\'reels\')">#Nature</button><button onclick="vySearchTag(\'Creators\');vyNavigate(\'reels\')">#Creators</button></div><h3 style="margin-top:24px">Suggested creators</h3><div class="vy-inbox-item"><div class="vy-avatar">V</div><div style="flex:1"><b>vybora.daily</b><div class="small">Daily inspiration</div></div><button class="secondary-btn" onclick="vyFollow(this)" data-user="vybora.daily">＋ Follow</button></div><div class="vy-inbox-item"><div class="vy-avatar">M</div><div style="flex:1"><b>motion.maker</b><div class="small">Creative videos</div></div><button class="secondary-btn" onclick="vyFollow(this)" data-user="motion.maker">＋ Follow</button></div>';
+ }else if(page==='create'){
+  panel.hidden=true;wrap.hidden=false;const creator=document.querySelector('#vybora .vy-upload');if(creator)creator.scrollIntoView({behavior:'smooth',block:'center'});return;
+ }else if(page==='inbox'){
+  const chats=vyState().chats||{};const chat=chats['vybora.daily']||[];panel.innerHTML='<h3>✉ Inbox</h3><p class="small">Local demo chat · messages stay on this device and are not sent to another person.</p><div class="vy-inbox-item"><div class="vy-avatar">V</div><div style="flex:1"><b>vybora.daily</b><div class="small">VYBORA community demo</div></div><span class="small">Demo</span></div><div id="vyChatLog" style="display:grid;gap:8px;max-height:280px;overflow:auto;padding:12px 0">'+(chat.length?chat.map(function(m){return '<div style="justify-self:'+(m.mine?'end':'start')+';max-width:85%;padding:9px 12px;border-radius:12px;background:var(--panel2)">'+vyEscape(m.text)+'</div>';}).join(''):'<div class="vy-empty">Start a local demo conversation below.</div>')+'</div><div style="display:flex;gap:8px;align-items:center"><input id="vyMessageInput" type="text" placeholder="Write a message..." style="flex:1;min-width:0"><button class="primary-btn" onclick="vySendMessage()">Send</button></div><p class="small">Real person-to-person messaging needs user accounts and a shared backend.</p>';
+ }else if(page==='notifications'){
+  const items=vyState().activity||[];panel.innerHTML='<h3>♡ Activity</h3><p class="small">Your activity on this device.</p>'+(items.length?items.slice().reverse().map(function(a){return '<div class="vy-inbox-item"><div class="vy-avatar">'+vyEscape(a.icon||'♡')+'</div><div><b>'+vyEscape(a.title)+'</b><div class="small">'+vyEscape(a.detail||'')+'</div></div></div>';}).join(''):'<div class="vy-empty">No activity yet. Your local interactions will appear here.</div>');
+ }else if(page==='profile'){
+  const s=vyState(),name=s.profile||'your_profile',posts=document.querySelectorAll('#vyFeed [data-vy-id]').length;
+  panel.innerHTML='<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div class="vy-avatar" style="width:64px;height:64px;font-size:24px">'+name.charAt(0).toUpperCase()+'</div><div><h3 style="margin:0">'+name.replace(/[&<>"]/g,'')+'</h3><p class="small">Your VYBORA creator profile</p></div><button class="secondary-btn" onclick="vyEditProfile()">✏️ Edit profile</button></div><div class="vy-tabs" style="margin-top:20px"><button>'+posts+' Reels</button><button>'+(s.follows||[]).length+' Following</button><button>'+(s.saved||[]).length+' Saved</button></div><p class="small">Your local profile details are saved on this device only.</p><button class="primary-btn" onclick="vyNavigate(\'create\')">＋ Create a Reel</button>';
+ }
+};
+function vyEscape(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+window.vySendMessage=function(){const input=$('vyMessageInput');if(!input||!input.value.trim())return;const chats=vyState().chats||{},list=chats['vybora.daily']||[];list.push({mine:true,text:input.value.trim(),at:Date.now()});chats['vybora.daily']=list;vySaveState({chats});vyNavigate('inbox');};
+window.vyAddActivity=function(title,detail,icon){const s=vyState(),activity=s.activity||[];activity.push({title,detail,icon,at:Date.now()});vySaveState({activity:activity.slice(-50)});};
+function vyRestoreLocalState(){const s=vyState();if($('vyProfileName')){$('vyProfileName').textContent=s.profile||'your_profile';$('vyProfileAvatar').textContent=(s.profile||'Y').charAt(0).toUpperCase();}document.querySelectorAll('#vyFeed [data-vy-id]').forEach(card=>{const id=card.dataset.vyId,user=card.dataset.vyUser||'',btn=card.querySelector('.vy-head button');if(btn&&(s.follows||[]).includes(user))btn.textContent='✓ Following';const like=card.querySelector('.vy-actions button[onclick^="vyLike"]');if(like&&(s.likes||{})[id]){like.querySelector('span').textContent='Liked';like.setAttribute('aria-pressed','true');like.style.color='#ff6b9a';}const save=card.querySelector('.vy-actions button[onclick^="vySave"]');if(save&&(s.saved||[]).includes(id)){save.textContent='✓ Saved';save.setAttribute('aria-pressed','true');}((s.comments||{})[id]||[]).forEach(comment=>{const line=document.createElement('div');line.className='vy-comment';line.textContent=(s.profile||'you')+': '+comment;card.querySelector('.vy-comments')?.appendChild(line);});});vyRenderFeed();}
+window.addEventListener('DOMContentLoaded',vyRestoreLocalState);
+window.closeMobileMenu=function(){
+ const side=document.querySelector('.sidebar');
+ const menuButton=document.querySelector('.menu-toggle');
+ if(side)side.classList.remove('mobile-open');
+ document.body.classList.remove('menu-open');
+ if(menuButton)menuButton.setAttribute('aria-expanded','false');
+};
+window.toggleMobileMenu=function(){
+ const side=document.querySelector('.sidebar');
+ if(!side)return;
+ const opened=side.classList.toggle('mobile-open');
+ document.body.classList.toggle('menu-open',opened);
+ const menuButton=document.querySelector('.menu-toggle');
+ if(menuButton)menuButton.setAttribute('aria-expanded',opened?'true':'false');
+};
+document.addEventListener('click',function(event){
+ const side=document.querySelector('.sidebar');
+ const menuButton=document.querySelector('.menu-toggle');
+ if(!side||!side.classList.contains('mobile-open'))return;
+ if(side.contains(event.target)||(menuButton&&menuButton.contains(event.target)))return;
+ window.closeMobileMenu();
+});
+
+window.show=function(id){
+ const target=document.getElementById(id);
+ if(!target)return;
+ document.body.classList.toggle('vybora-mode',id==='vybora');
+ document.querySelectorAll('main section').forEach(section=>section.classList.remove('active'));
+ target.classList.add('active');
+ document.querySelectorAll('.side-btn').forEach(button=>{
+  button.classList.toggle('active',button.dataset.page===id);
+ });
+ const title=document.getElementById('topTitle');
+ if(title)title.textContent=pageNames[id]||'FinFrame AI Lab';
+ if(document.body.classList.contains('menu-open'))window.closeMobileMenu();
+ window.scrollTo({top:0,behavior:'auto'});
+};
+function openTool(id){
+ show(id);
+ saveRecent(id);
+}
+
+function usePrompt(prompt){
+ const box=$('homePrompt');if(box)box.value=prompt;
+ show('home');if(box)box.focus();
+}
+function useTemplate(name,idea){
+ $('projectName').value=name;$('projectIdea').value=idea;show('builder');
+}
+function currentBrandKit(){
+ return {name:$('brandName').value.trim(),tagline:$('brandTagline').value.trim(),primary:$('brandPrimary').value,accent:$('brandAccent').value};
+}
+function renderBrandKit(kit){
+ const p=/^#[0-9a-f]{6}$/i.test(kit.primary)?kit.primary:'#9b70ff';
+ const a=/^#[0-9a-f]{6}$/i.test(kit.accent)?kit.accent:'#ef6bcb';
+ $('brandPreview').innerHTML='<strong>'+escapeHTML(kit.name||'Your Brand')+'</strong><br>'+escapeHTML(kit.tagline||'A short brand tagline')+'<div style="display:flex;gap:8px;margin-top:12px"><span style="background:'+p+';width:55px;height:24px;border-radius:6px"></span><span style="background:'+a+';width:55px;height:24px;border-radius:6px"></span></div>';
+}
+function saveBrandKit(){
+ const kit=currentBrandKit();
+ try{localStorage.setItem('finframeBrandKit',JSON.stringify(kit));renderBrandKit(kit);$('brandStatus').textContent='Brand Kit saved on this device.';}
+ catch(e){$('brandStatus').textContent='Could not save. Check browser storage settings.';}
+}
+function loadBrandKit(){
+ try{
+  const kit=JSON.parse(localStorage.getItem('finframeBrandKit')||'null');
+  if(!kit){$('brandStatus').textContent='No saved Brand Kit found yet.';return;}
+  $('brandName').value=kit.name||'';$('brandTagline').value=kit.tagline||'';
+  $('brandPrimary').value=/^#[0-9a-f]{6}$/i.test(kit.primary)?kit.primary:'#9b70ff';
+  $('brandAccent').value=/^#[0-9a-f]{6}$/i.test(kit.accent)?kit.accent:'#ef6bcb';
+  renderBrandKit(kit);$('brandStatus').textContent='Saved Brand Kit loaded.';
+ }catch(e){$('brandStatus').textContent='Could not load saved Brand Kit.';}
+}
+function exportBrandKit(){
+ const kit=currentBrandKit();const blob=new Blob([JSON.stringify(kit,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='finframe-brand-kit.json';
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
+function quickPrompt(text){
+ $('homePrompt').value=text;
+ $('homePrompt').focus();
+}
+function sendPrompt(){
+ const text=$('homePrompt').value.trim();
+ if(!text){alert('Please describe what you want to create.');return}
+ const t=text.toLowerCase();
+ let destination='builder';
+ if(t.includes('photo')||t.includes('image')||t.includes('enhance'))destination='photo';
+ else if(t.includes('product'))destination='product';
+ else if(t.includes('poster'))destination='poster';
+ else if(t.includes('caption'))destination='caption';
+ else if(t.includes('video'))destination='video';
+ else if(t.includes('voice'))destination='voice';
+ else if(t.includes('game'))destination='game';
+ else if(t.includes('try on')||t.includes('clothing'))destination='tryon';
+ if(destination==='builder'){
+  $('projectIdea').value=text;
+  $('projectName').value='My New Project';
+ }
+ if(destination==='caption')$('captionTopic').value=text;
+ show(destination);
+ saveRecent(destination);
+}
+function filterTools(){
+ const q=$('toolSearch').value.toLowerCase();
+ document.querySelectorAll('#homeToolGrid .tool-card').forEach(card=>{
+  card.style.display=card.dataset.search.includes(q)?'':'none';
+ });
+}
+function saveRecent(id){
+ try{
+  let list=JSON.parse(localStorage.getItem('finframeRecent')||'[]');
+  list=list.filter(x=>x.id!==id);
+  list.unshift({id,time:new Date().toLocaleString()});
+  list=list.slice(0,5);
+  localStorage.setItem('finframeRecent',JSON.stringify(list));
+  renderRecent();
+loadTheme();
+ }catch(e){}
+}
+function clearRecentHistory(){
+ try{
+  localStorage.removeItem('finframeRecent');
+  renderRecent();
+  const status=$('privacyStatus');
+  if(status)status.textContent='Recent activity for this site has been cleared from this browser.';
+ }catch(e){
+  const status=$('privacyStatus');
+  if(status)status.textContent='Could not clear local history. Please clear this site data in your browser settings.';
+ }
+}
+function renderRecent(){
+ const box=$('recentList');
+ if(!box)return;
+ let list=[];
+ try{list=JSON.parse(localStorage.getItem('finframeRecent')||'[]')}catch(e){}
+ if(!list.length){
+  box.innerHTML='<div class="empty-recent">Your recent project previews will appear here.</div>';
+  return;
+ }
+ box.innerHTML='';
+ list.forEach(item=>{
+  const name=pageNames[item.id]||item.id;
+  const div=document.createElement('div');
+  div.className='recent-item';
+  const icon=document.createElement('div');
+  icon.className='recent-icon';
+  icon.textContent=name.split(' ')[0];
+  const detail=document.createElement('div');
+  const strong=document.createElement('strong');
+  strong.textContent=name;
+  const small=document.createElement('small');
+  small.textContent='Recently opened';
+  detail.append(strong,small);
+  div.append(icon,detail);
+  div.onclick=()=>show(item.id);
+  div.style.cursor='pointer';
+  box.appendChild(div);
+ });
+}
+
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function makeStarterWebsite(name,idea,type){
+ const safeName=escapeHTML(name);
+ const safeIdea=escapeHTML(idea||'A fresh project made with FinFrame AI Lab.');
+ const isGame=type.toLowerCase().includes('game');
+ const isApp=type.toLowerCase().includes('app');
+ const isShop=/shop|store|shopping|flipkart|ecommerce|e-commerce|cart|product/i.test(name+' '+idea);
+ if(isShop){
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeName}</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f3f6;color:#212121}.top{background:#2874f0;color:#fff;padding:13px 5%;display:flex;gap:20px;align-items:center;flex-wrap:wrap}.brand{font-size:23px;font-weight:bold;font-style:italic}.search{flex:1;min-width:180px;display:flex}.search input{width:100%;padding:11px;border:0;border-radius:3px;font-size:15px}.cart{background:#fff;color:#2874f0;border:0;padding:10px 16px;border-radius:3px;font-weight:bold}.hero{margin:14px auto;max-width:1200px;background:linear-gradient(110deg,#dceaff,#fff);padding:30px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px}.hero h1{font-size:clamp(25px,4vw,42px);margin:0 0 8px;color:#172b4d}.hero p{margin:0;color:#555}.hero .tag{font-size:54px}.wrap{max-width:1200px;margin:14px auto;padding:0 14px}.heading{background:#fff;padding:18px 20px;font-size:21px;font-weight:bold}.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;background:#fff;padding:16px}.product{border:1px solid #eee;border-radius:5px;padding:15px;text-align:center;background:#fff}.photo{height:125px;display:grid;place-items:center;background:#f7f9fc;font-size:58px;border-radius:4px}.product h3{font-size:16px;margin:12px 0 6px}.price{font-weight:bold;color:#188038;font-size:18px;margin:7px}.product button{background:#ff9f00;color:#fff;border:0;border-radius:3px;padding:10px 14px;font-weight:bold;cursor:pointer}.empty{padding:18px;color:#666}.foot{text-align:center;padding:25px;color:#666}.cartbox{background:#fff;margin-top:14px;padding:18px;display:none}.cartbox h2{margin-top:0}.cartrow{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:9px 0;gap:12px}@media(max-width:550px){.top{gap:10px}.hero{padding:24px 18px}.hero .tag{font-size:38px}}
+</style></head><body>
+<header class="top"><div class="brand">${safeName}</div><div class="search"><input id="search" type="search" placeholder="Search for products, brands and more"></div><button class="cart" onclick="showCart()">🛒 Cart (<span id="count">0</span>)</button></header>
+<section class="hero"><div><h1>Big savings. Great finds.</h1><p>${safeIdea}</p></div><div class="tag">🛍️</div></section>
+<main class="wrap"><div class="heading">Best picks for you</div><section class="products" id="products">
+<article class="product" data-name="wireless headphones"><div class="photo">🎧</div><h3>Wireless Headphones</h3><p>Clear sound · Comfortable fit</p><div class="price">₹1,499</div><button onclick="addToCart('Wireless Headphones',1499)">Add to Cart</button></article>
+<article class="product" data-name="smart watch"><div class="photo">⌚</div><h3>Smart Watch</h3><p>Fitness · Notifications</p><div class="price">₹2,299</div><button onclick="addToCart('Smart Watch',2299)">Add to Cart</button></article>
+<article class="product" data-name="running shoes"><div class="photo">👟</div><h3>Running Shoes</h3><p>Lightweight · Everyday comfort</p><div class="price">₹1,899</div><button onclick="addToCart('Running Shoes',1899)">Add to Cart</button></article>
+<article class="product" data-name="backpack"><div class="photo">🎒</div><h3>Everyday Backpack</h3><p>Spacious · Durable design</p><div class="price">₹999</div><button onclick="addToCart('Everyday Backpack',999)">Add to Cart</button></article>
+<article class="product" data-name="camera"><div class="photo">📷</div><h3>Digital Camera</h3><p>Capture your best moments</p><div class="price">₹5,499</div><button onclick="addToCart('Digital Camera',5499)">Add to Cart</button></article>
+<article class="product" data-name="coffee maker"><div class="photo">☕</div><h3>Coffee Maker</h3><p>Fresh coffee at home</p><div class="price">₹1,299</div><button onclick="addToCart('Coffee Maker',1299)">Add to Cart</button></article>
+</section><section class="cartbox" id="cartbox"><h2>Your Cart</h2><div id="cartitems"></div><p><b>Total: ₹<span id="total">0</span></b></p><button onclick="clearCart()" style="background:#2874f0;color:white;border:0;padding:10px 15px">Clear Cart</button></section></main>
+<footer class="foot">Demo storefront · Made with FinFrame AI Lab</footer>
+<script>
+const cart=[];function addToCart(name,price){cart.push({name,price});document.getElementById('count').textContent=cart.length;renderCart()}
+function renderCart(){document.getElementById('cartitems').innerHTML=cart.length?cart.map(x=>'<div class="cartrow"><span>'+x.name+'</span><b>₹'+x.price.toLocaleString('en-IN')+'</b></div>').join(''):'<p class="empty">Your cart is empty.</p>';document.getElementById('total').textContent=cart.reduce((s,x)=>s+x.price,0).toLocaleString('en-IN')}
+function showCart(){const el=document.getElementById('cartbox');el.style.display=el.style.display==='block'?'none':'block';renderCart()}
+function clearCart(){cart.length=0;document.getElementById('count').textContent='0';renderCart()}
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.product').forEach(p=>p.style.display=p.dataset.name.includes(q)?'block':'none')});
+<\/script><script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+<\/script>
+
+
+
+<script>
+/* Reliable mobile bottom-navigation dispatcher: handle taps before legacy inline handlers. */
+(function(){
+ if(window.__vyBottomNavReady)return;
+ window.__vyBottomNavReady=true;
+ document.addEventListener('click',function(event){
+  const button=event.target&&event.target.closest&&event.target.closest('#vybora .vy-main-nav button[data-vy-page]');
+  if(!button)return;
+  const page=button.dataset.vyPage;
+  if(!page||typeof window.vyNavigate!=='function')return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  document.body.classList.toggle('vy-reels-mode',page==='reels');
+  document.querySelectorAll('#vybora .vy-main-nav button').forEach(function(item){
+   item.classList.toggle('active',item===button);
+  });
+  try{window.vyNavigate(page,button);}
+  catch(error){console.error('VYBORA navigation error:',error);const panel=document.getElementById('vyPagePanel');if(panel){panel.hidden=false;panel.textContent='এই পেজটি খুলতে সমস্যা হচ্ছে। আবার চেষ্টা করো।';}}
+ },true);
+})();
+</script>
+</body></html>`;
+ }
+ const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
+ const action=isGame?'Start playing':(isApp?'Get started':'Explore products');
+ const cards=isGame
+ ? '<article class="card"><h2>🎯 Quick Challenge</h2><p>Tap the button and see your score grow.</p><button id="play">Tap to score: <b id="score">0</b></button></article>'
+ : '<article class="card"><div class="emoji">✨</div><h2>Beautifully simple</h2><p>Make your idea easy to explore.</p></article><article class="card"><div class="emoji">🚀</div><h2>Made for your goals</h2><p>Customize this starter to fit your project.</p></article><article class="card"><div class="emoji">💜</div><h2>Ready to grow</h2><p>Add your own content, pages and features.</p></article>';
+  return [
+   '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FF_SAFE_NAME_TOKEN</title>',
+   '<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#211b35}.nav{display:flex;justify-content:space-between;align-items:center;padding:18px max(5%,calc((100% - 1050px)/2));background:#fff}.nav b{font-size:20px}.nav a{color:#6841c6;text-decoration:none}.hero{padding:75px 20px;text-align:center;background:linear-gradient(135deg,#6d49ce,#e66ac1);color:white}.hero h1{font-size:clamp(32px,6vw,58px);margin:0 0 15px}.hero p{max-width:650px;margin:0 auto 25px;line-height:1.6}.btn,button{display:inline-block;background:#fff;color:#5732b0;border:0;border-radius:12px;padding:13px 20px;font-weight:bold;text-decoration:none;cursor:pointer}.wrap{max-width:1050px;margin:35px auto;padding:0 18px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;padding:24px;border-radius:18px;box-shadow:0 8px 30px #35205c12}.emoji{font-size:30px}footer{text-align:center;padding:30px;color:#746b88}
+/* Final mobile hamburger override: keep it visible above VYBORA and FinFrame layers */
+@media(max-width:900px){
+ body.vybora-mode .main-area .topbar{display:flex!important;position:fixed!important;top:8px!important;left:8px!important;right:auto!important;width:52px!important;height:52px!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;z-index:2147483000!important;backdrop-filter:none!important}
+ body.vybora-mode .main-area .topbar .top-title{display:none!important}
+ body.vybora-mode .main-area .topbar .menu-toggle{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147483001!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;align-items:center!important;justify-content:center!important;background:#211b31!important;color:#fff!important;border:1px solid #76658f!important;border-radius:12px!important;pointer-events:auto!important;touch-action:manipulation!important}
+ body.vybora-mode .sidebar{display:flex!important;visibility:hidden!important;pointer-events:none!important;transform:translateX(-110%)!important}
+ body.vybora-mode.menu-open .sidebar{display:flex!important;visibility:visible!important;pointer-events:auto!important;position:fixed!important;left:0!important;top:0!important;bottom:0!important;width:min(270px,85vw)!important;z-index:2147482999!important;transform:translateX(0)!important}
+ body.vybora-mode.menu-open .main-area .topbar{z-index:2147483000!important}
+ body.vybora-mode.menu-open::before{z-index:2147482998!important;pointer-events:none!important}
+}
+
+/* Final mobile menu fix: keep the hamburger visible and open the real sidebar in VYBORA mode. */
+@media(max-width:900px){
+ body.vybora-mode .main-area .topbar{display:flex!important;visibility:visible!important;opacity:1!important;position:fixed!important;top:8px!important;left:8px!important;right:auto!important;width:52px!important;height:52px!important;min-height:52px!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;z-index:2147483001!important}
+ body.vybora-mode .main-area .topbar .menu-toggle{display:flex!important;visibility:visible!important;opacity:1!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;position:relative!important;z-index:2147483002!important;align-items:center!important;justify-content:center!important;background:#211b31!important;color:#fff!important;border:1px solid #76658f!important;border-radius:12px!important;pointer-events:auto!important;touch-action:manipulation!important}
+ body.vybora-mode .sidebar{display:flex!important;visibility:hidden!important;pointer-events:none!important;position:fixed!important;left:0!important;top:0!important;bottom:0!important;width:min(270px,85vw)!important;z-index:2147483000!important;transform:translateX(-110%)!important;transition:transform .25s ease!important}
+ body.vybora-mode.menu-open .sidebar{visibility:visible!important;pointer-events:auto!important;transform:translateX(0)!important}
+ body.vybora-mode.menu-open .main-area .topbar{z-index:2147483002!important}
+ body.vybora-mode.menu-open::before{z-index:2147482999!important;pointer-events:none!important}
+}
+</style></head><body>',
+   '<nav class="nav"><b>FF_SAFE_NAME_TOKEN</b><a href="#about">About</a></nav>',
+   '<header class="hero"><h1>FF_TITLE_TOKEN</h1><p>FF_SAFE_IDEA_TOKEN</p><a class="btn" href="#features">FF_ACTION_TOKEN</a></header>',
+   '<main class="wrap" id="features"><div class="cards">FF_CARDS_TOKEN</div><section class="card" id="about" style="margin-top:18px"><h2>About this project</h2><p>Built with an editable FinFrame AI Lab starter template.</p></section></main>',
+   '<footer>Made with care · FF_SAFE_NAME_TOKEN</footer>',
+   '<script>const playButton=document.getElementById("play");if(playButton){playButton.addEventListener("click",()=>{const score=document.getElementById("score");score.textContent=String(Number(score.textContent)+1);});}<\/script>',
+   '</body></html>'
+  ].join('').replaceAll('FF_SAFE_NAME_TOKEN',safeName).replaceAll('FF_SAFE_IDEA_TOKEN',safeIdea).replaceAll('FF_TITLE_TOKEN',title).replaceAll('FF_ACTION_TOKEN',action).replaceAll('FF_CARDS_TOKEN',cards);
+}
+function buildProject(){
+ const type=$('projectType').value;
+ const name=$('projectName').value.trim()||'My Project';
+ const idea=$('projectIdea').value.trim();
+ $('projectCode').value=makeStarterWebsite(name,idea,type);
+ refreshProjectPreview();
+ $('projectStatus').textContent='Starter code generated. Edit the code and tap Update Preview.';
+ saveRecent('builder');
+}
+function refreshProjectPreview(){
+ const code=$('projectCode').value;
+ if(!code.trim()){$('projectStatus').textContent='Generate or paste HTML code first.';return}
+ $('projectFrame').srcdoc=code;
+ $('projectStatus').textContent='Preview updated from the current source code.';
+}
+function downloadProjectCode(){
+ const code=$('projectCode').value;
+ if(!code.trim()){$('projectStatus').textContent='Generate code before downloading.';return}
+ const blob=new Blob([code],{type:'text/html;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;a.download=(($('projectName').value.trim()||'finframe-project').replace(/[^a-z0-9-_]+/gi,'-'))+'.html';
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ $('projectStatus').textContent='HTML file download started.';
+}
+function clearProject(){
+ $('projectName').value='';
+ $('projectIdea').value='';
+ $('projectCode').value='';
+ $('projectFrame').srcdoc='';
+ $('projectStatus').textContent='Describe a project and tap Generate Starter Code.';
+}
+
+function loadImage(file,callback){
+ if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  const img=new Image();
+  img.onload=()=>callback(img);
+  img.onerror=()=>alert('Could not load this image.');
+  img.src=e.target.result;
+ };
+ reader.readAsDataURL(file);
+}
+function fitImage(ctx,img,x,y,w,h){
+ const scale=Math.min(w/img.width,h/img.height);
+ const sw=img.width*scale,sh=img.height*scale;
+ ctx.drawImage(img,x+(w-sw)/2,y+(h-sh)/2,sw,sh);
+}
+function downloadCanvas(id,name){
+ const c=$(id);
+ if(!c)return;
+ const a=document.createElement('a');
+ a.download=name;
+ a.href=c.toDataURL('image/png');
+ a.click();
+}
+
+let photoImg=null;
+$('photoFile').addEventListener('change',e=>{
+ loadImage(e.target.files[0],img=>{
+  photoImg=img;
+  drawPhoto();
+  $('photoStatus').textContent='Photo loaded successfully.';
+ });
+});
+['bright','contrast','sat'].forEach(id=>{
+ $(id).addEventListener('input',()=>{
+  $(id+'Val').textContent=$(id).value;
+  drawPhoto();
+ });
+});
+function drawPhoto(){
+ if(!photoImg)return;
+ const c=$('photoCanvas'),ctx=c.getContext('2d');
+ ctx.clearRect(0,0,c.width,c.height);
+ ctx.filter='brightness('+ $('bright').value+'%) contrast('+ $('contrast').value+'%) saturate('+ $('sat').value+'%)';
+ fitImage(ctx,photoImg,0,0,c.width,c.height);
+ ctx.filter='none';
+}
+function resetPhoto(){
+ $('bright').value=100;$('contrast').value=100;$('sat').value=100;
+ $('brightVal').textContent=100;
+ $('contrastVal').textContent=100;
+ $('satVal').textContent=100;
+ drawPhoto();
+}
+
+let productImg=null;
+$('productFile').addEventListener('change',e=>{
+ loadImage(e.target.files[0],img=>{
+  productImg=img;
+  $('productStatus').textContent='Product photo loaded. Press Create Design.';
+ });
+});
+$('shadow').addEventListener('input',()=>$('shadowVal').textContent=$('shadow').value);
+function createProduct(){
+ if(!productImg){$('productStatus').textContent='Please upload a product photo first.';return}
+ const c=$('productCanvas'),ctx=c.getContext('2d');
+ ctx.fillStyle=$('productBg').value;ctx.fillRect(0,0,1000,1000);
+ ctx.save();
+ ctx.shadowColor='rgba(0,0,0,.7)';
+ ctx.shadowBlur=Number($('shadow').value)*2;
+ ctx.fillStyle='#ffffff';ctx.fillRect(100,80,800,680);
+ ctx.restore();
+ fitImage(ctx,productImg,130,100,740,710);
+ ctx.fillStyle=$('productText').value;
+ ctx.textAlign='center';ctx.font='bold 58px Arial';
+ ctx.fillText($('productNameInput').value||'Premium Product',500,860,900);
+ ctx.font='30px Arial';
+ ctx.fillText($('productTagline').value||'Quality • Style • Excellence',500,925,900);
+ $('productStatus').textContent='Your product design is ready to download.';
+ saveRecent('product');
+}
+
+let posterImg=null;
+$('posterFile').addEventListener('change',e=>{
+ loadImage(e.target.files[0],img=>{
+  posterImg=img;
+  $('posterStatus').textContent='Image loaded successfully.';
+ });
+});
+function createPoster(){
+ if(!posterImg){$('posterStatus').textContent='Please upload an image first.';return}
+ const c=$('posterCanvas'),ctx=c.getContext('2d');
+ ctx.fillStyle=$('posterBg').value;ctx.fillRect(0,0,1000,1200);
+ fitImage(ctx,posterImg,55,50,890,850);
+ ctx.fillStyle=$('posterText').value;ctx.textAlign='center';
+ ctx.font='bold 65px Arial';
+ ctx.fillText($('posterTitle').value||'YOUR TITLE',500,1010,920);
+ ctx.font='32px Arial';
+ ctx.fillText($('posterSubtitle').value||'Your subtitle goes here',500,1080,920);
+ $('posterStatus').textContent='Poster created successfully!';
+ saveRecent('poster');
+}
+
+function makeCaption(){
+ const topic=$('captionTopic').value.trim()||'our latest creation';
+ const style=$('captionStyle').value;
+ const samples={
+ Professional:'Introducing '+topic+'. Thoughtfully created with quality and care. Discover more today. #Quality #Innovation',
+ Funny:'We tried to keep '+topic+' a secret… but it is too good! 😄✨ #Fun',
+ Inspirational:'Dream big, create boldly and celebrate '+topic+'. Every great idea starts somewhere. ✨',
+ Promotional:'✨ SPECIAL UPDATE! Discover '+topic+'. Do not miss out—explore it today! #NewLaunch',
+ 'Short and simple':'✨ '+topic+' — Made with love. ❤️'
+ };
+ $('captionOutput').textContent=samples[style];
+ saveRecent('caption');
+}
+function copyText(id){
+ const text=$(id).textContent;
+ if(navigator.clipboard){
+  navigator.clipboard.writeText(text).then(()=>alert('Copied!')).catch(()=>alert(text));
+ }else alert(text);
+}
+
+function getVoices(){
+ if(!('speechSynthesis' in window))return;
+ const voices=speechSynthesis.getVoices();
+ $('voiceSelect').innerHTML='<option value="">Default voice</option>';
+ voices.forEach((v,i)=>{
+  const o=document.createElement('option');
+  o.value=i;o.textContent=v.name+' ('+v.lang+')';
+  $('voiceSelect').appendChild(o);
+ });
+}
+if('speechSynthesis' in window){
+ getVoices();
+ speechSynthesis.onvoiceschanged=getVoices;
+}
+function speakText(){
+ if(!('speechSynthesis' in window)){
+  $('voiceStatus').textContent='Speech is not supported in this browser.';return;
+ }
+ const text=$('voiceText').value.trim();
+ if(!text){$('voiceStatus').textContent='Please enter some text.';return}
+ speechSynthesis.cancel();
+ const utter=new SpeechSynthesisUtterance(text);
+ const voices=speechSynthesis.getVoices();
+ const selected=$('voiceSelect').value;
+ if(selected!==''&&voices[selected])utter.voice=voices[selected];
+ utter.rate=Number($('voiceRate').value);
+ utter.onend=()=>$('voiceStatus').textContent='Speech finished.';
+ speechSynthesis.speak(utter);
+ $('voiceStatus').textContent='Speaking...';
+ saveRecent('voice');
+}
+function stopSpeak(){
+ if('speechSynthesis' in window)speechSynthesis.cancel();
+ $('voiceStatus').textContent='Speech stopped.';
+}
+
+function speakHindiAd(){
+ if(!('speechSynthesis' in window)){
+  $('videoVoiceStatus').textContent='Hindi speech is not supported in this browser.';return;
+ }
+ const text=$('videoHindiScript').value.trim();
+ if(!text){$('videoVoiceStatus').textContent='Please enter a Hindi ad script.';return}
+ speechSynthesis.cancel();
+ const utter=new SpeechSynthesisUtterance(text);
+ utter.lang='hi-IN';
+ const voices=speechSynthesis.getVoices();
+ const hindiVoice=voices.find(v=>/^hi(-|_)/i.test(v.lang));
+ if(hindiVoice)utter.voice=hindiVoice;
+ utter.rate=0.95;
+ utter.onend=()=>$('videoVoiceStatus').textContent='Hindi voice preview finished.';
+ utter.onerror=()=>$('videoVoiceStatus').textContent='Could not play Hindi speech. Check Hindi voice support on your device.';
+ speechSynthesis.speak(utter);
+ $('videoVoiceStatus').textContent=hindiVoice?'Playing Hindi voice preview.':'Asking your browser for a Hindi voice; if none is installed, install/enable Hindi speech voices in Android settings.';
+}
+function stopHindiAd(){
+ if('speechSynthesis' in window)speechSynthesis.cancel();
+ $('videoVoiceStatus').textContent='Hindi voice preview stopped.';
+}
+
+let videoImg=null;
+$('videoFile').addEventListener('change',e=>{
+ loadImage(e.target.files[0],img=>{
+  videoImg=img;
+  $('videoStatus').textContent='Image loaded.';
+ });
+});
+async function makeVideo(){
+ if(!videoImg){$('videoStatus').textContent='Please upload an image first.';return}
+ const c=$('videoCanvas'),ctx=c.getContext('2d');
+ if(!c.captureStream||!window.MediaRecorder){
+  $('videoStatus').textContent='Video recording is not supported by this browser.';
+  return;
+ }
+ $('videoStatus').textContent='Creating video... Please wait.';
+ const stream=c.captureStream(24);
+ let recorder;
+ try{
+  const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
+  recorder=new MediaRecorder(stream,{mimeType:mime});
+ }catch(e){
+  $('videoStatus').textContent='Video format is not supported on this device.';
+  stream.getTracks().forEach(t=>t.stop());
+  return;
+ }
+ const chunks=[];
+ recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+ recorder.onstop=()=>{
+  const blob=new Blob(chunks,{type:'video/webm'});
+  const url=URL.createObjectURL(blob);
+  $('videoDownload').href=url;
+  $('videoDownload').style.display='block';
+  $('videoStatus').textContent='Video ready! Tap Download Promo Video.';
+  stream.getTracks().forEach(t=>t.stop());
+ };
+ recorder.start();
+ let frame=0;
+ const title=$('videoTitle').value||'SPECIAL OFFER';
+ const subtitle=$('videoSubtitle').value||'Discover something amazing';
+ function drawFrame(){
+  ctx.fillStyle='#17152d';ctx.fillRect(0,0,c.width,c.height);
+  fitImage(ctx,videoImg,20,20,680,650);
+  ctx.fillStyle='#ffffff';ctx.textAlign='center';
+  ctx.font='bold 48px Arial';ctx.fillText(title,360,750,680);
+  ctx.font='28px Arial';ctx.fillText(subtitle,360,815,680);
+  ctx.fillStyle='#b58cff';ctx.fillRect(0,870,c.width,30);
+  ctx.fillStyle='#ffffff';ctx.font='20px Arial';
+  ctx.fillText('FinFrame AI Lab',360,890);
+ }
+ drawFrame();
+ const interval=setInterval(()=>{
+  frame++;drawFrame();
+  if(frame>=360){clearInterval(interval);recorder.stop()}
+ },1000/24);
+ saveRecent('video');
+}
+
+let personImg=null,clothImg=null,personPreviewUrl=null,clothPreviewUrl=null;
+function updateTryonPreview(file,img,type){
+ const preview=$(type==='person'?'personPreview':'clothPreview');
+ const oldUrl=type==='person'?personPreviewUrl:clothPreviewUrl;
+ if(oldUrl)URL.revokeObjectURL(oldUrl);
+ const url=URL.createObjectURL(file);
+ if(type==='person')personPreviewUrl=url;else clothPreviewUrl=url;
+ preview.src=url;
+}
+$('personFile').addEventListener('change',e=>{
+ const file=e.target.files[0];
+ loadImage(file,img=>{
+  personImg=img;updateTryonPreview(file,img,'person');
+  $('tryStatus').textContent='Portrait loaded. Now upload a clothing image.';
+  createTryon();
+ });
+});
+$('clothFile').addEventListener('change',e=>{
+ const file=e.target.files[0];
+ loadImage(file,img=>{
+  clothImg=img;updateTryonPreview(file,img,'cloth');
+  $('tryStatus').textContent='Clothing image loaded. Adjust its position and size.';
+  createTryon();
+ });
+});
+['tryX','tryY','tryW','tryH','tryOpacity'].forEach(id=>{
+ $(id).addEventListener('input',()=>{
+  $(id+'Val').textContent=$(id).value;
+  if(personImg&&clothImg)createTryon();
+ });
+});
+async function generateAiTryon(){
+ const person=$('personFile').files[0], garment=$('clothFile').files[0];
+ const status=$('aiTryonStatus'), button=$('aiTryonButton'), wrap=$('aiTryonResultWrap');
+ if(!person||!garment){status.textContent="Please choose both a person's photo and a separate clothing photo first.";return;}
+ if(!person.type.startsWith('image/')||!garment.type.startsWith('image/')){status.textContent='Please select image files only.';return;}
+ if(person.size>10*1024*1024||garment.size>10*1024*1024){status.textContent='Each image must be 10 MB or smaller.';return;}
+ const form=new FormData();form.append('person',person);form.append('garment',garment);
+ button.disabled=true;button.textContent='Generating…';status.textContent='Sending images securely to the configured AI service…';wrap.classList.add('hidden');
+ try{
+  const response=await fetch('./api/tryon',{method:'POST',body:form});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'AI service is not configured yet. Please connect a compatible provider on the secure backend.');
+  let image=data.imageUrl||data.image_url||data.imageBase64||data.image_base64||data.output;
+  if(Array.isArray(image))image=image[0];
+  if(typeof image==='string'&&!image.startsWith('data:')&&!/^https?:\/\//i.test(image)&&!image.startsWith('/'))image='data:image/png;base64,'+image;
+  if(!image){throw new Error('The AI provider responded, but did not return an image in imageUrl, imageBase64, or output.');}
+  const img=$('aiTryonResult');img.src=image;$('aiTryonDownload').href=image;wrap.classList.remove('hidden');
+  status.textContent='AI try-on image generated. Check the result before saving.';saveRecent('AI Virtual Try-On');
+ }catch(error){status.textContent=error.message||'Could not generate the AI try-on. Please try again.';}
+ finally{button.disabled=false;button.textContent='✨ Generate AI Try-On';}
+}
+
+function createTryon(){
+ if(!personImg||!clothImg){
+  $('tryStatus').textContent='Please upload both a portrait and a clothing image.';return;
+ }
+ const c=$('tryCanvas'),ctx=c.getContext('2d');
+ ctx.clearRect(0,0,c.width,c.height);
+ ctx.fillStyle='#111020';ctx.fillRect(0,0,c.width,c.height);
+ fitImage(ctx,personImg,0,0,c.width,c.height);
+ const w=c.width*Number($('tryW').value)/100;
+ const h=c.height*Number($('tryH').value)/100;
+ const centerX=c.width*Number($('tryX').value)/100;
+ const centerY=c.height*Number($('tryY').value)/100;
+ ctx.save();
+ ctx.globalAlpha=Number($('tryOpacity').value)/100;
+ fitImage(ctx,clothImg,centerX-w/2,centerY-h/2,w,h);
+ ctx.restore();
+ $('tryStatus').textContent='Preview updated. This is a manual overlay, not automatic AI clothing fitting. Transparent clothing PNGs usually look cleaner.';
+ saveRecent('tryon');
+}
+function resetTryon(){
+ $('tryX').value=50;$('tryY').value=55;$('tryW').value=55;$('tryH').value=55;$('tryOpacity').value=85;
+ ['tryX','tryY','tryW','tryH','tryOpacity'].forEach(id=>$(id+'Val').textContent=$(id).value);
+ if(personImg&&clothImg)createTryon();
+ else $('tryStatus').textContent='Position reset. Upload both images to continue.';
+}
+function downloadTryon(){
+ if(!personImg||!clothImg){$('tryStatus').textContent='Upload both images before downloading.';return}
+ downloadCanvas('tryCanvas','finframe-tryon-preview.png');
+}
+
+let score=0;
+function tapGame(){
+ score++;
+ $('score').textContent=score;
+ $('gameMessage').textContent='Great! Keep going! 🎉';
+}
+function resetGame(){
+ score=0;
+ $('score').textContent=0;
+ $('gameMessage').textContent='Ready? Start tapping!';
+}
+
+renderRecent();
+function setTheme(theme){
+ if(theme!=='dark'&&theme!=='light')return;
+ document.body.dataset.theme=theme;
+ try{localStorage.setItem('finframeTheme',theme)}catch(e){}
+ const status=$('themeStatus');
+ if(status)status.textContent=theme==='light'?'Light mode is active.':'Dark mode is active.';
+}
+function loadTheme(){
+ let theme='dark';try{theme=localStorage.getItem('finframeTheme')||'dark'}catch(e){}
+ setTheme(theme);
+ if($('accentColor')){loadPreferences();loadExtraSettings();}
+}
+function exportWorkspaceBackup(){
+ let brand=null,recent=[];try{brand=JSON.parse(localStorage.getItem('finframeBrandKit')||'null');recent=JSON.parse(localStorage.getItem('finframeRecent')||'[]')}catch(e){}
+ const backup={app:'FinFrame AI Lab',version:1,exportedAt:new Date().toISOString(),theme:document.body.dataset.theme||'dark',preferences:JSON.parse(localStorage.getItem('finframePreferences')||'{}'),extraSettings:JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}'),builderDraft:JSON.parse(localStorage.getItem('finframeBuilderDraft')||'null'),brandKit:brand,recentActivity:recent};
+ const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='finframe-workspace-backup.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ $('backupStatus').textContent='Workspace backup downloaded.';
+}
+function importWorkspaceBackup(){
+ const file=$('workspaceBackupFile').files[0];if(!file){$('backupStatus').textContent='Please choose a backup JSON file first.';return}
+ const reader=new FileReader();reader.onload=function(){
+  try{
+   const backup=JSON.parse(reader.result);if(!backup||backup.app!=='FinFrame AI Lab'||backup.version!==1)throw new Error('Invalid backup');
+   if(backup.brandKit&&typeof backup.brandKit==='object')localStorage.setItem('finframeBrandKit',JSON.stringify(backup.brandKit));
+   if(Array.isArray(backup.recentActivity))localStorage.setItem('finframeRecent',JSON.stringify(backup.recentActivity.slice(0,5)));
+   if(backup.theme==='light'||backup.theme==='dark')setTheme(backup.theme);if(backup.preferences&&typeof backup.preferences==='object')localStorage.setItem('finframePreferences',JSON.stringify(backup.preferences));if(backup.extraSettings&&typeof backup.extraSettings==='object')localStorage.setItem('finframeExtraSettings',JSON.stringify(backup.extraSettings));if(backup.builderDraft&&typeof backup.builderDraft==='object')localStorage.setItem('finframeBuilderDraft',JSON.stringify(backup.builderDraft));if($('accentColor')){loadPreferences();loadExtraSettings();}renderRecent();loadBrandKit();$('backupStatus').textContent='Backup restored successfully on this device.';
+  }catch(e){$('backupStatus').textContent='This backup file is invalid or could not be restored.'}
+ };reader.onerror=function(){$("backupStatus").textContent="Could not read that file."};reader.readAsText(file);
+}
+function applyAccentColor(color){
+ if(!/^#[0-9a-f]{6}$/i.test(color))return;
+ document.documentElement.style.setProperty('--accent',color);
+ const input=$('accentColor');if(input)input.value=color;
+}
+function applyAccentPreset(color){applyAccentColor(color);savePreferences();}
+function previewTextScale(value){
+ const n=Math.min(19,Math.max(14,Number(value)||16));document.documentElement.style.setProperty('--ui-font-size',n+'px');
+ const label=$('textScaleValue');if(label)label.textContent=n+'px';
+}
+function savePreferences(){
+ const prefs={accent:$('accentColor')?.value||'#9b70ff',textScale:Number($('textScale')?.value||16),compact:!!$('compactMode')?.checked,reduceMotion:!!$('reduceMotion')?.checked,highContrast:!!$('highContrast')?.checked};
+ try{localStorage.setItem('finframePreferences',JSON.stringify(prefs))}catch(e){}
+ applyAccentColor(prefs.accent);previewTextScale(prefs.textScale);
+ document.body.classList.toggle('compact-mode',prefs.compact);document.body.classList.toggle('reduce-motion',prefs.reduceMotion);document.body.classList.toggle('high-contrast',prefs.highContrast);
+ const status=$('preferencesStatus');if(status)status.textContent='Preferences saved on this device.';
+}
+function loadPreferences(){
+ let p={};try{p=JSON.parse(localStorage.getItem('finframePreferences')||'{}')||{}}catch(e){}
+ const accent=/^#[0-9a-f]{6}$/i.test(p.accent||'')?p.accent:'#9b70ff';
+ const scale=Math.min(19,Math.max(14,Number(p.textScale)||16));
+ $('accentColor').value=accent;$('textScale').value=scale;$('compactMode').checked=!!p.compact;$('reduceMotion').checked=!!p.reduceMotion;$('highContrast').checked=!!p.highContrast;
+ applyAccentColor(accent);previewTextScale(scale);document.body.classList.toggle('compact-mode',!!p.compact);document.body.classList.toggle('reduce-motion',!!p.reduceMotion);document.body.classList.toggle('high-contrast',!!p.highContrast);
+}
+function previewExtraSettings(){
+ const line=Number($('lineSpacing').value||1.5),radius=Number($('cornerRadius').value||17);
+ document.documentElement.style.setProperty('--ui-line-height',line);
+ document.documentElement.style.setProperty('--ui-card-radius',radius+'px');
+ $('lineSpacingValue').textContent=line.toFixed(1);$('cornerRadiusValue').textContent=radius+'px';
+}
+function saveExtraSettings(){
+ const p={font:$('fontFamily').value,line:Number($('lineSpacing').value),radius:Number($('cornerRadius').value),shadow:$('cardShadow').checked,sticky:$('stickyHeader').checked,hideNote:$('hideSidebarNote').checked,hideDescriptions:$('hideToolDescriptions').checked,autoDraft:$('autoSaveDraft').checked,startPage:$('startPage').value};
+ try{localStorage.setItem('finframeExtraSettings',JSON.stringify(p))}catch(e){}
+ applyExtraSettings(p);$('extraSettingsStatus').textContent='Extra settings saved on this device.';
+}
+function applyExtraSettings(p){
+ document.documentElement.style.setProperty('--ui-font-family',p.font||'Arial,sans-serif');
+ $('fontFamily').value=p.font||'Arial,sans-serif';$('lineSpacing').value=p.line||1.5;$('cornerRadius').value=p.radius||17;
+ $('cardShadow').checked=!!p.shadow;$('stickyHeader').checked=p.sticky!==false;$('hideSidebarNote').checked=!!p.hideNote;$('hideToolDescriptions').checked=!!p.hideDescriptions;$('autoSaveDraft').checked=!!p.autoDraft;$('startPage').value=p.startPage||'home';
+ previewExtraSettings();
+ document.body.classList.toggle('soft-card-shadows',!!p.shadow);document.body.classList.toggle('no-sticky-header',p.sticky===false);document.body.classList.toggle('hide-sidebar-note',!!p.hideNote);document.body.classList.toggle('hide-tool-descriptions',!!p.hideDescriptions);
+}
+function loadExtraSettings(){let p={};try{p=JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}')||{}}catch(e){}applyExtraSettings(p);['projectName','projectIdea','projectType','projectCode'].forEach(id=>{const el=$(id);if(el)el.oninput=saveBuilderDraft;});}
+function saveBuilderDraft(){
+ if(!$('autoSaveDraft')||!$('autoSaveDraft').checked)return;
+ try{localStorage.setItem('finframeBuilderDraft',JSON.stringify({name:$('projectName').value,idea:$('projectIdea').value,type:$('projectType').value,code:$('projectCode').value}))}catch(e){}
+}
+function restoreBuilderDraft(){
+ try{const p=JSON.parse(localStorage.getItem('finframeBuilderDraft')||'null');if(!p){$('extraSettingsStatus').textContent='No saved Builder draft found.';return}
+ $('projectName').value=p.name||'';$('projectIdea').value=p.idea||'';$('projectType').value=p.type||'website';$('projectCode').value=p.code||'';refreshProjectPreview();show('builder');}catch(e){$('extraSettingsStatus').textContent='Could not restore the draft.'}
+}
+function clearBuilderDraft(){try{localStorage.removeItem('finframeBuilderDraft')}catch(e){}$('extraSettingsStatus').textContent='Saved Builder draft deleted.';}
+function clearRecentActivity(){try{localStorage.removeItem('finframeRecent')}catch(e){}if(typeof renderRecent==='function')renderRecent();$('extraSettingsStatus').textContent='Recent activity cleared on this device.';}
+function exportPreferencesOnly(){
+ let data={};try{data={appearance:JSON.parse(localStorage.getItem('finframePreferences')||'{}'),extra:JSON.parse(localStorage.getItem('finframeExtraSettings')||'{}'),theme:localStorage.getItem('finframeTheme')||'dark'}}catch(e){}
+ const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.href=url;a.download='finframe-settings.json';a.click();URL.revokeObjectURL(url);$('extraSettingsStatus').textContent='Settings file download started.';
+}
+function updateStorageUsage(){
+ let bytes=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);bytes+=new Blob([k,localStorage.getItem(k)||'']).size}}catch(e){}
+ $('storageUsage').textContent='Approximate FinFrame local storage used: '+(bytes<1024?bytes+' bytes':(bytes/1024).toFixed(1)+' KB')+'. Browser-wide storage limits vary.';
+}
+function resetAllLocalData(){
+ if(!confirm('Reset all FinFrame data saved in this browser? This cannot be undone.'))return;
+ ['finframeTheme','finframePreferences','finframeExtraSettings','finframeBrandKit','finframeRecent','finframeBuilderDraft'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+ location.reload();
+}
+function resetPreferences(){
+ try{localStorage.removeItem('finframePreferences')}catch(e){}
+ $('accentColor').value='#9b70ff';$('textScale').value=16;$('compactMode').checked=false;$('reduceMotion').checked=false;$('highContrast').checked=false;loadPreferences();
+ const status=$('preferencesStatus');if(status)status.textContent='Appearance preferences reset to defaults.';
+}
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+<script>
+
+
+(function(){
+ const URL='https://pxgoaygwtxrrqkftluut.supabase.co';
+ const KEY='sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh';
+ if(!window.supabase || !window.supabase.createClient){
+  const s=document.getElementById('vyCloudStatus'); if(s)s.textContent='The VYBORA connection library did not load. Refresh the page and try again.'; return;
+ }
+ const db=window.supabase.createClient(URL,KEY);
+ window.vyClient=db;
+ let currentUser=null, channel=null, recoveryMode=(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery');
+ const el=id=>document.getElementById(id);
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const say=t=>{if(el('vyCloudStatus'))el('vyCloudStatus').textContent=t;};
+ const withTimeout=(promise,ms,label)=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error(label+' timed out. Check your internet connection and try again.')),ms);Promise.resolve(promise).then(v=>{clearTimeout(timer);resolve(v);},e=>{clearTimeout(timer);reject(e);});});
+ async function profileFor(user){
+  const name=(user.user_metadata&&user.user_metadata.full_name)||((user.email||'creator').split('@')[0]);
+  const uname=((user.email||'creator').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,20)||'creator')+'_'+user.id.slice(0,5); await db.from('profiles').upsert({id:user.id,full_name:name,username:uname},{onConflict:'id',ignoreDuplicates:true}); await db.from('profiles').update({username:uname}).eq('id',user.id).is('username',null);
+  return name;
+ }
+ window.vySignUp=async function(){
+  const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
+  if(!email||password.length<6){say('Enter a valid email and a password with at least 6 characters.');return;}
+  say('Creating your account…');
+  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://finframe-ai-lab.vercel.app/'}});
+  if(r.error){say(r.error.message);return;}
+  if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
+  else say('Account created. Check your email for the confirmation link, then log in here.');
+ };
+ window.vyResetPassword=async function(){
+  const email=el('vyAuthEmail').value.trim();
+  if(!email){say('Enter your account email first, then tap Forgot password?');return;}
+  say('Sending password reset email…');
+  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://finframe-ai-lab.vercel.app/'});
+  if(r.error){say(r.error.message);return;}
+  say('Password reset email sent. Open the link in your inbox, then set a new password here.');
+ };
+ window.vySaveNewPassword=async function(){
+  const password=el('vyNewPassword').value;
+  const btn=el('vyRecoveryForm').querySelector('button');
+  if(password.length<6){say('Your new password must have at least 6 characters.');return;}
+  if(btn)btn.disabled=true;
+  say('Checking your password-reset session…');
+  try{
+   const sessionResult=await Promise.race([db.auth.getSession(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Recovery session check timed out. Reopen the newest password-reset email link.')),12000))]);
+   if(sessionResult.error)throw sessionResult.error;
+   if(!sessionResult.data||!sessionResult.data.session)throw new Error('Password-reset session missing or expired. Open the newest reset email link again, then return here.');
+   say('Updating your password…');
+   const result=await Promise.race([db.auth.updateUser({password:password}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Password update timed out. Check your connection, then reopen the reset email link and try again.')),20000))]);
+   if(result.error)throw result.error;
+   recoveryMode=false;el('vyNewPassword').value='';
+   el('vyRecoveryForm').hidden=true;el('vyRecoveryForm').style.display='none';el('vyAuthForm').hidden=false;
+   say('Password updated successfully. You can now log in with your new password.');
+  }catch(error){say('Could not update password: '+(error&&error.message?error.message:'Please reopen the latest reset email link and try again.'));}
+  finally{if(btn)btn.disabled=false;}
+ };
+ function showRecoveryForm(){
+  el('vyAuthForm').hidden=true;
+  el('vyAuthSignedIn').hidden=true;
+  el('vyRecoveryForm').hidden=false;
+  el('vyRecoveryForm').style.display='grid';
+  say('Enter a new password to finish recovering your VYBORA account.');
+ }
+ window.vySignIn=async function(){
+  const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value;
+  if(!email||!password){say('Enter your email and password first.');return;}
+  say('Logging in…');
+  try{
+   const r=await withTimeout(db.auth.signInWithPassword({email:email,password:password}),15000,'Login request');
+   if(r.error){say(r.error.message);return;}
+   currentUser=r.data.user;
+   say('Login successful. Connecting your VYBORA account…');
+   await signedIn();
+   withTimeout(profileFor(currentUser),12000,'Profile setup').then(()=>say('You are logged in. Your profile is ready.')).catch(err=>{console.warn('VYBORA profile setup:',err);say('You are logged in, but your profile could not sync yet. Check your internet and try Edit profile later.');});
+  }catch(err){
+   say('Login could not finish: '+(err&&err.message?err.message:String(err)));
+   console.error('VYBORA login error:',err);
+  }
+ };
+ window.vySignOut=async function(){const r=await db.auth.signOut();if(r.error){say(r.error.message);return;}currentUser=null;await signedOut();};
+ async function signedIn(){
+  document.body.classList.add('vy-account-connected');
+  el('vyAuthForm').hidden=true;el('vyAuthSignedIn').hidden=false;
+  el('vyAuthSignedIn').style.display='flex';
+  el('vyAuthUser').textContent=(currentUser.email||'')+' · Signed in';
+  say('Your account is connected. Reels you publish are saved online for other VYBORA users.');
+  loadFeed().catch(err=>console.warn('VYBORA feed load:',err));if(window.vyLoadStories)Promise.resolve(window.vyLoadStories()).catch(err=>console.warn('VYBORA stories load:',err));
+  if(channel)db.removeChannel(channel);
+  channel=db.channel('vybora-live-posts').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},()=>loadFeed()).subscribe();
+ }
+ async function signedOut(){
+  document.body.classList.remove('vy-account-connected');
+  el('vyRecoveryForm').hidden=true;el('vyRecoveryForm').style.display='none';
+  el('vyAuthForm').hidden=false;el('vyAuthSignedIn').hidden=true;
+  el('vyAuthSignedIn').style.display='none';
+  el('vyAuthUser').textContent='';
+  say('Logged out. Log in to publish, like, comment or follow creators.');
+  if(channel){db.removeChannel(channel);channel=null;}
+  await loadFeed();
+ }
+ async function loadFeed(){
+  window.vyReloadFeed=loadFeed;
+  const host=el('vyCloudFeed');if(!host)return;
+  if(currentUser&&typeof window.vyLoadStories==='function')window.vyLoadStories();
+  const r=await db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').order('created_at',{ascending:false}).limit(40);
+  if(r.error){host.innerHTML='<div class="vy-empty">Could not load online Reels: '+esc(r.error.message)+'</div>';return;}
+  if(currentUser){
+   const [profileResult,postCount,followingCount,followerCount]=await Promise.all([
+    db.from('profiles').select('username,full_name,avatar_url').eq('id',currentUser.id).maybeSingle(),
+    db.from('posts').select('id',{count:'exact',head:true}).eq('user_id',currentUser.id),
+    db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',currentUser.id),
+    db.from('follows').select('follower_id',{count:'exact',head:true}).eq('following_id',currentUser.id)
+   ]);
+   const profile=profileResult.data||{},displayName=profile.username||profile.full_name||currentUser.email||'Creator';
+   if(el('vyProfileName'))el('vyProfileName').textContent=displayName;
+   if(el('vyProfileAvatar')){el('vyProfileAvatar').textContent=displayName.charAt(0).toUpperCase();if(profile.avatar_url)el('vyProfileAvatar').innerHTML='<img src="'+esc(profile.avatar_url)+'" alt="Profile photo">';}
+   if(el('vyPostCount'))el('vyPostCount').textContent=String(postCount.count||0);
+   if(el('vyFollowingCount'))el('vyFollowingCount').textContent=String(followingCount.count||0);
+   if(el('vyFollowerCount'))el('vyFollowerCount').textContent=String(followerCount.count||0);
+  }
+  if(!r.data.length){host.innerHTML='<div class="vy-empty">No Reels yet. Be the first to publish a photo or video!</div>';return;}
+  const ids=[...new Set(r.data.map(p=>p.user_id))];
+  const pr=await db.from('profiles').select('id,username,full_name,avatar_url').in('id',ids);
+  const profiles={};(pr.data||[]).forEach(p=>profiles[p.id]=p);
+  const postIds=r.data.map(p=>p.id);
+  const [lr,cr,mr,br]=await Promise.all([
+   db.from('likes').select('post_id,user_id').in('post_id',postIds),
+   db.from('comments').select('post_id').in('post_id',postIds),
+   currentUser?db.from('follows').select('following_id').eq('follower_id',currentUser.id):Promise.resolve({data:[]}),
+   currentUser?db.from('bookmarks').select('post_id').eq('user_id',currentUser.id):Promise.resolve({data:[]})
+  ]);
+  const likes=lr.data||[],comments=cr.data||[],following=(mr.data||[]).map(x=>x.following_id),savedIds=(br.data||[]).map(x=>x.post_id);
+  let visiblePosts=r.data;
+  if(window.vyFilter==='following')visiblePosts=visiblePosts.filter(p=>following.includes(p.user_id));
+  if(window.vyFilter==='saved')visiblePosts=visiblePosts.filter(p=>savedIds.includes(p.id));
+  const searchText=(el('vySearchInput')?.value||'').trim().toLowerCase();
+  if(searchText)visiblePosts=visiblePosts.filter(p=>(p.caption||'').toLowerCase().includes(searchText));
+  if(!visiblePosts.length){host.innerHTML='<div class="vy-empty">'+(window.vyFilter==='saved'?'No saved Reels yet. Tap Save on a post to keep it here.':window.vyFilter==='following'?'No Reels from followed creators yet.':'No Reels match your search. Try another word or hashtag.')+'</div>';return;}
+  host.innerHTML=visiblePosts.map(p=>{
+   const user=profiles[p.user_id]||{},name=user.username||user.full_name||'VYBORA creator';
+   const count=likes.filter(x=>x.post_id===p.id).length,liked=!!(currentUser&&likes.some(x=>x.post_id===p.id&&x.user_id===currentUser.id));
+   const commentCount=comments.filter(x=>x.post_id===p.id).length;
+   const media=p.media_type==='image'?'<img class="vy-reel-media" src="'+esc(p.media_url)+'" alt="VYBORA post" loading="lazy">':'<video class="vy-reel-media" src="'+esc(p.media_url)+'" playsinline muted loop autoplay preload="metadata"></video>';
+   return '<article class="vy-card" data-vy-cloud-id="'+esc(p.id)+'"><div class="vy-head"><div class="vy-avatar">'+esc(name.slice(0,1).toUpperCase())+'</div><div><strong>'+esc(name)+'</strong><div class="small">VYBORA creator</div></div>'+(currentUser&&p.user_id!==currentUser.id?'<button class="secondary-btn" style="margin-left:auto" onclick="vyCloudFollow(\''+esc(p.user_id)+'\',this)">'+(following.includes(p.user_id)?'Following':'＋ Follow')+'</button>':'')+'</div>'+media+'<div class="vy-actions"><button aria-pressed="'+liked+'" onclick="vyCloudLike(\''+esc(p.id)+'\',this)">'+(liked?'♥':'♡')+' Like <b>'+count+'</b></button><button onclick="vyCloudShowComments(\''+esc(p.id)+'\',this)">💬 Comments ('+commentCount+')</button><button aria-pressed="'+savedIds.includes(p.id)+'" onclick="vyCloudBookmark(\''+esc(p.id)+'\',this)">'+(savedIds.includes(p.id)?'✓ Saved':'🔖 Save')+'</button><button onclick="vyCloudShare(\''+esc(p.id)+'\')">↗ Share</button></div><div class="vy-caption"><strong>'+esc(name)+'</strong> '+esc(p.caption)+'<div class="small">'+new Date(p.created_at).toLocaleString()+'</div></div><div class="vy-comments" id="vyComments-'+esc(p.id)+'"></div></article>';
+  }).join('');
+  if(document.body.classList.contains('vy-reels-mode'))window.vyInitReels();
+ }
+
+ window.vyEditBio=async function(){
+  const user=await me();if(!user){alert('Please log in first.');return;}
+  const current=await db.from('profiles').select('bio').eq('id',user.id).maybeSingle();
+  if(current.error){alert(current.error.message);return;}
+  const bio=prompt('Write a short bio (up to 160 characters)',current.data&&current.data.bio||'');
+  if(bio===null)return;if(bio.length>160){alert('Bio must be 160 characters or fewer.');return;}
+  const saved=await db.from('profiles').update({bio:bio.trim(),updated_at:new Date().toISOString()}).eq('id',user.id);
+  if(saved.error){alert(saved.error.message);return;}await profile();
+ };
+ window.vyLoadStories=async function(){
+  const host=el('vyStoriesCloud');if(!host)return;
+  const user=await me();
+  const add='<button class="vy-story own" type="button" onclick="vyAddStory()"><span>＋</span><small>Your story</small></button>';
+  const q=await db.from('stories').select('id,user_id,media_url,media_type,created_at,profiles(username,avatar_url)').gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(40);
+  if(q.error){host.innerHTML=add+'<span class="small">Stories unavailable: '+esc(q.error.message)+'</span>';return;}
+  const seen=new Set();
+  const cards=(q.data||[]).filter(s=>{if(seen.has(s.user_id))return false;seen.add(s.user_id);return true;}).map(s=>{
+   const p=s.profiles||{},n=p.username||'VYBORA creator';
+   return '<button class="vy-story" type="button" onclick="vyViewStory(\''+esc(s.id)+'\',\''+esc(s.media_type)+'\',\''+esc(s.media_url)+'\',\''+esc(n)+'\')"><span>'+(p.avatar_url?'<img src="'+esc(p.avatar_url)+'" alt="" style="width:54px;height:54px;border-radius:50%;object-fit:cover">':esc(n.slice(0,1).toUpperCase()))+'</span><small>'+esc(n)+'</small></button>';
+  }).join('');
+  host.innerHTML=add+(cards||'<span class="small">No active stories yet. Add the first one!</span>');
+ };
+ window.vyAddStory=function(){
+  const picker=document.createElement('input');picker.type='file';picker.accept='image/*,video/*';picker.style.position='fixed';picker.style.left='-9999px';document.body.appendChild(picker);
+  picker.onchange=async function(){
+   const file=picker.files&&picker.files[0];picker.remove();if(!file)return;
+   const user=await me();if(!user){say('Log in to add a story.');return;}
+   if(!file.type.startsWith('image/')&&!file.type.startsWith('video/')){alert('Choose a photo or video.');return;}
+   if(file.size>50*1024*1024){alert('Story must be smaller than 50 MB.');return;}
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg',path=user.id+'/story-'+Date.now()+'.'+ext;
+   say('Uploading your story…');
+   const up=await db.storage.from('vybora-media').upload(path,file,{contentType:file.type,upsert:false});
+   if(up.error){say('Story upload failed: '+up.error.message);return;}
+   const url=db.storage.from('vybora-media').getPublicUrl(path).data.publicUrl;
+   const saved=await db.from('stories').insert({user_id:user.id,media_url:url,media_type:file.type.startsWith('image/')?'image':'video'});
+   if(saved.error){say('Story could not be saved: '+saved.error.message);return;}
+   say('Your story is live for 24 hours!');await window.vyLoadStories();
+  };
+  picker.click();
+ };
+ window.vyViewStory=function(id,type,url,name){
+  const old=el('vyStoryViewer');if(old)old.remove();
+  const viewer=document.createElement('div');viewer.id='vyStoryViewer';viewer.style.cssText='position:fixed;inset:0;background:#05050af2;z-index:99999;display:grid;place-items:center;padding:18px';
+  const media=type==='image'?'<img src="'+esc(url)+'" alt="Story by '+esc(name)+'" style="max-width:100%;max-height:80vh;object-fit:contain">':'<video src="'+esc(url)+'" controls autoplay playsinline style="max-width:100%;max-height:80vh"></video>';
+  viewer.innerHTML='<div style="width:min(520px,100%);text-align:center"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b>'+esc(name)+' · Story</b><button class="secondary-btn" onclick="document.getElementById(\'vyStoryViewer\').remove()">✕ Close</button></div>'+media+'</div>';
+  viewer.addEventListener('click',e=>{if(e.target===viewer)viewer.remove();});document.body.appendChild(viewer);
+ };
+ window.vyCloudLike=async function(id,btn){
+  if(!currentUser){say('Log in first to like a Reel.');return;}
+  const exists=btn.getAttribute('aria-pressed')==='true';
+  const r=exists?await db.from('likes').delete().eq('post_id',id).eq('user_id',currentUser.id):await db.from('likes').insert({post_id:id,user_id:currentUser.id});
+  if(r.error){say(r.error.message);return;}await loadFeed();
+ };
+ window.vyCloudFollow=async function(id,btn){
+  if(!currentUser){say('Log in first to follow creators.');return;}
+  const is=btn.textContent.includes('Following');
+  const r=is?await db.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',id):await db.from('follows').insert({follower_id:currentUser.id,following_id:id});
+  if(r.error){say(r.error.message);return;}await loadFeed();
+ };
+ window.vyCloudShowComments=async function(id,btn){
+  const box=el('vyComments-'+id);if(!box)return;
+  if(!currentUser){say('Log in to view and add comments.');return;}
+  const r=await db.from('comments').select('body,user_id,created_at,profiles(username)').eq('post_id',id).order('created_at',{ascending:true}).limit(30);
+  if(r.error){say(r.error.message);return;}
+  box.innerHTML=(r.data||[]).map(c=>'<div class="vy-comment"><b>'+esc(c.profiles&&c.profiles.username||'creator')+'</b> '+esc(c.body)+'</div>').join('')+
+   '<div style="display:flex;gap:6px"><input id="vyCommentInput-'+id+'" type="text" maxlength="2000" placeholder="Write a comment…"><button class="secondary-btn" onclick="vyCloudComment(\''+id+'\')">Send</button></div>';
+ };
+ window.vyCloudComment=async function(id){
+  if(!currentUser){say('Log in first.');return;}
+  const input=el('vyCommentInput-'+id),body=input&&input.value.trim();if(!body)return;
+  const r=await db.from('comments').insert({post_id:id,user_id:currentUser.id,body:body});
+  if(r.error){say(r.error.message);return;}await window.vyCloudShowComments(id);await loadFeed();
+ };
+ window.vyUpload=async function(){
+  const status=el('vyUploadStatus');
+  try{
+   if(!currentUser){status.textContent='Log in before publishing a Reel.';return;}
+   const file=el('vyVideoFile').files[0],caption=el('vyCaptionInput').value.trim();const mediaType=file&&file.type.startsWith('image/')?'image':'video';
+   if(!file){status.textContent='Choose a video file first.';return;}
+   if(file.size>100*1024*1024){status.textContent='Please choose a video smaller than 100 MB.';return;}
+   if(!file.type.startsWith('video/')&&!file.type.startsWith('image/')){status.textContent='Please choose a photo or video file.';return;}
+   status.textContent='Uploading video to VYBORA…';
+   const ext=(file.name.split('.').pop()||'mp4').toLowerCase().replace(/[^a-z0-9]/g,'')||'mp4';
+   const path=currentUser.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
+   const up=await db.storage.from('vybora-media').upload(path,file,{contentType:file.type,upsert:false});
+   if(up.error){status.textContent='Video upload failed: '+up.error.message;return;}
+   const pub=db.storage.from('vybora-media').getPublicUrl(path).data.publicUrl;
+   const post=await db.from('posts').insert({user_id:currentUser.id,caption:caption,media_url:pub,media_type:mediaType});
+   if(post.error){status.textContent='Video uploaded, but Reel save failed: '+post.error.message;return;}
+   status.textContent=mediaType==='image'?'Your photo post is now published online!':'Your Reel is now published online!';
+   el('vyVideoFile').value='';el('vyCaptionInput').value='';
+   await loadFeed();
+  }catch(err){
+   status.textContent='Upload stopped: '+(err&&err.message?err.message:String(err))+' — please try again.';
+   console.error('VYBORA upload error:',err);
+  }
+ };
+ db.auth.getSession().then(async r=>{
+  if(recoveryMode){showRecoveryForm();}
+  else if(r.data&&r.data.session){currentUser=r.data.session.user;await profileFor(currentUser);await signedIn();}
+  else{await signedOut();}
+ });
+ db.auth.onAuthStateChange((event,session)=>{
+  if(event==='PASSWORD_RECOVERY'){recoveryMode=true;showRecoveryForm();}
+  if(event==='SIGNED_IN'&&session&&!recoveryMode){currentUser=session.user;profileFor(currentUser).then(signedIn);}
+  if(event==='SIGNED_OUT'){currentUser=null;signedOut();}
+ });
+})();
+
+
+</script>
+<script>
+
+
+(function(){
+ const db=window.vyClient;if(!db)return;
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function me(){const r=await db.auth.getUser();return r.data&&r.data.user||null;}
+ function shell(title,sub){const p=$('vyPagePanel'),w=document.querySelector('#vybora .vy-wrap');if(!p||!w)return null;w.hidden=true;p.hidden=false;p.innerHTML='<h3>'+title+'</h3><p class="small">'+sub+'</p><div id="vyCloudPanelBody">Loading…</div>';return $('vyCloudPanelBody');}
+ window.vyLoadConversation=async function(other){
+  const user=await me(),body=$('vyCloudMessages');if(!user||!other||!body)return;
+  body.innerHTML='Loading messages…';
+  const filter='and(sender_id.eq.'+user.id+',receiver_id.eq.'+other+'),and(sender_id.eq.'+other+',receiver_id.eq.'+user.id+')';
+  const r=await db.from('messages').select('id,sender_id,receiver_id,body,created_at').or(filter).order('created_at',{ascending:true}).limit(100);
+  if(r.error){body.textContent=r.error.message;return;}
+  body.innerHTML=(r.data||[]).map(m=>'<div style="justify-self:'+(m.sender_id===user.id?'end':'start')+';max-width:85%;padding:10px 13px;border-radius:13px;background:var(--panel2);overflow-wrap:anywhere"><div>'+esc(m.body)+'</div><small class="small">'+new Date(m.created_at).toLocaleString()+'</small></div>').join('')||'<div class="vy-empty">No messages yet. Say hello!</div>';
+  await db.from('messages').update({read_at:new Date().toISOString()}).eq('sender_id',other).eq('receiver_id',user.id).is('read_at',null);
+  body.scrollTop=body.scrollHeight;
+  const sel=$('vyCloudContact');if(sel)sel.value=other;
+ };
+ window.vySendDm=async function(){
+  const user=await me(),sel=$('vyCloudContact'),input=$('vyCloudDmInput');
+  if(!user){return;}const other=sel&&sel.value,body=input&&input.value.trim();
+  if(!other||!body)return;
+  const r=await db.from('messages').insert({sender_id:user.id,receiver_id:other,body:body});
+  if(r.error){const s=$('vyCloudStatus');if(s)s.textContent=r.error.message;return;}
+  input.value='';await window.vyLoadConversation(other);
+ };
+ async function inbox(){
+  const body=shell('✉ Inbox','Private messages are delivered to the selected VYBORA account.');
+  if(!body)return;const user=await me();if(!user){body.innerHTML='Please log in to use Inbox.';return;}
+  const r=await db.from('profiles').select('id,username,full_name').neq('id',user.id).order('username').limit(100);
+  if(r.error){body.textContent=r.error.message;return;}
+  const contacts=r.data||[];
+  if(!contacts.length){body.innerHTML='<div class="vy-empty">No other VYBORA members yet. Invite someone to create an account.</div>';return;}
+  body.innerHTML='<label for="vyCloudContact">Choose a person</label><select id="vyCloudContact" onchange="vyLoadConversation(this.value)">'+contacts.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.username||c.full_name||'VYBORA member')+'</option>').join('')+'</select><div id="vyCloudMessages" style="display:grid;gap:8px;max-height:360px;overflow:auto;padding:12px 0"></div><div style="display:flex;gap:8px;align-items:center"><input id="vyCloudDmInput" type="text" maxlength="5000" placeholder="Write a private message…" style="flex:1;min-width:0"><button class="primary-btn" onclick="vySendDm()">Send</button></div>';
+  await window.vyLoadConversation(contacts[0].id);
+ }
+ async function activity(){
+  const body=shell('♡ Activity','Likes, comments and new followers on your account.');
+  if(!body)return;const user=await me();if(!user){body.innerHTML='Please log in to view Activity.';return;}
+  const r=await db.from('notifications').select('id,actor_id,kind,post_id,created_at,read_at').eq('recipient_id',user.id).order('created_at',{ascending:false}).limit(50);
+  if(r.error){body.textContent=r.error.message;return;}
+  const rows=r.data||[],ids=[...new Set(rows.map(x=>x.actor_id).filter(Boolean))];
+  const pr=ids.length?await db.from('profiles').select('id,username,full_name').in('id',ids):{data:[]};
+  const map={};(pr.data||[]).forEach(x=>map[x.id]=x);
+  body.innerHTML=rows.map(n=>{
+   const actor=map[n.actor_id]||{},name=actor.username||actor.full_name||'A creator';
+   const verb=n.kind==='like'?'liked your Reel':n.kind==='comment'?'commented on your Reel':'started following you';
+   return '<div class="vy-inbox-item"><div class="vy-avatar">'+esc(name.slice(0,1).toUpperCase())+'</div><div style="flex:1"><b>'+esc(name)+'</b> '+verb+'<div class="small">'+new Date(n.created_at).toLocaleString()+'</div></div>'+(n.read_at?'':'<span class="small">New</span>')+'</div>';
+  }).join('')||'<div class="vy-empty">No activity yet. Likes, comments and follows will appear here.</div>';
+  await db.from('notifications').update({read_at:new Date().toISOString()}).eq('recipient_id',user.id).is('read_at',null);
+ }
+ async function profile(){
+  const body=shell('◉ Your Profile','Your public VYBORA creator profile.');
+  if(!body)return;const user=await me();if(!user){body.innerHTML='Please log in to view your profile.';return;}
+  const [p,posts,followers,following]=await Promise.all([
+   db.from('profiles').select('username,full_name,bio,avatar_url,website').eq('id',user.id).maybeSingle(),
+   db.from('posts').select('id',{count:'exact',head:true}).eq('user_id',user.id),
+   db.from('follows').select('follower_id',{count:'exact',head:true}).eq('following_id',user.id),
+   db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',user.id)
+  ]);
+  const x=p.data||{},name=x.username||x.full_name||user.email;
+  body.innerHTML='<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="vy-avatar" id="vyCloudProfileAvatar" style="width:68px;height:68px;font-size:26px">'+esc(name.slice(0,1).toUpperCase())+'</div><div><h3 style="margin:0">'+esc(name)+'</h3><div class="small">'+esc(user.email)+'</div></div></div><p>'+esc(x.bio||'Add a short bio to introduce yourself.')+'</p><div class="vy-tabs"><button>'+(posts.count||0)+' Posts</button><button>'+(followers.count||0)+' Followers</button><button>'+(following.count||0)+' Following</button></div><button class="secondary-btn" onclick="vyPickAvatar()">📷 Change profile photo</button> <button class="secondary-btn" onclick="vyCloudEditProfile()">✏️ Edit name</button> <button class="secondary-btn" onclick="vyEditBio()">✍️ Edit bio</button>';
+  if(x.avatar_url){const avatar=el('vyCloudProfileAvatar');if(avatar)avatar.innerHTML='<img src="'+esc(x.avatar_url)+'" alt="Profile photo">';}
+ }
+ window.vyEditProfile=async function(){
+  const user=await me();if(!user){alert('Please log in first.');return;}
+  const old=await db.from('profiles').select('username,full_name,avatar_url').eq('id',user.id).maybeSingle();
+  if(old.error){alert('Could not load your profile: '+old.error.message);return;}
+  const current=old.data||{},name=prompt('Your display name',current.full_name||'');
+  if(name===null)return;
+  const username=prompt('Choose a username (3–30 characters)',current.username||(user.email||'creator').split('@')[0]);
+  if(username===null)return;
+  const clean=username.trim().replace(/^@/,'').toLowerCase(),display=name.trim();
+  if(!display){alert('Please enter a display name.');return;}
+  if(clean.length<3||clean.length>30||!/^[a-z0-9_]+$/.test(clean)){alert('Username must be 3–30 characters using letters, numbers or underscores.');return;}
+  const saved=await db.from('profiles').update({full_name:display,username:clean,updated_at:new Date().toISOString()}).eq('id',user.id);
+  if(saved.error){alert(saved.error.message.includes('duplicate')?'That username is already taken. Please choose another.':saved.error.message);return;}
+  await db.auth.updateUser({data:{full_name:display}});
+  if(el('vyProfileName'))el('vyProfileName').textContent=clean;
+  if(el('vyProfileAvatar'))el('vyProfileAvatar').textContent=clean.charAt(0).toUpperCase();
+  if(confirm('Your name is saved. Would you also like to choose a profile photo?')){
+   const picker=document.createElement('input');picker.type='file';picker.accept='image/jpeg,image/png,image/webp';picker.style.display='none';document.body.appendChild(picker);
+   picker.onchange=async function(){
+    const file=picker.files&&picker.files[0];picker.remove();if(!file)return;
+    if(!/^image\/(jpeg|png|webp)$/.test(file.type)){alert('Choose a JPG, PNG or WebP image.');return;}
+    if(file.size>5*1024*1024){alert('Please choose an image smaller than 5 MB.');return;}
+    try{
+     const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=user.id+'/'+Date.now()+'.'+ext;
+     const up=await db.storage.from('vybora-avatars').upload(path,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+     if(up.error)throw up.error;
+     const pub=db.storage.from('vybora-avatars').getPublicUrl(up.data.path),url=pub.data&&pub.data.publicUrl;
+     if(!url)throw new Error('Could not create a public photo URL.');
+     const changed=await db.from('profiles').update({avatar_url:url,updated_at:new Date().toISOString()}).eq('id',user.id);
+     if(changed.error)throw changed.error;
+     const apply=function(node){if(node)node.innerHTML='<img src="'+esc(url)+'" alt="Profile photo">';};
+     apply(el('vyProfileAvatar'));apply(el('vyCloudProfileAvatar'));
+     alert('Your profile photo has been saved!');
+    }catch(err){alert('Photo upload failed: '+(err.message||'Please try again.'));}
+   };
+   picker.click();
+  }
+  await loadFeed();
+ };
+ window.vyCloudEditProfile=async function(){
+  const user=await me();if(!user)return;
+  const current=await db.from('profiles').select('username,full_name').eq('id',user.id).maybeSingle();
+  const name=prompt('Your display name',current.data&&current.data.full_name||user.user_metadata&&user.user_metadata.full_name||'');if(name===null)return;
+  const username=prompt('Choose a username (3–30 characters)',current.data&&current.data.username||(user.email||'creator').split('@')[0]);if(username===null)return;
+  const clean=username.trim().replace(/^@/,'').toLowerCase();
+  if(clean.length<3||clean.length>30||!/^[a-z0-9_]+$/.test(clean)){alert('Username must be 3–30 characters using letters, numbers or underscores.');return;}
+  const r=await db.from('profiles').update({full_name:name.trim(),username:clean,updated_at:new Date().toISOString()}).eq('id',user.id);
+  if(r.error){alert(r.error.message);return;}await profile();
+ };
+ window.vyPickAvatar=function(){
+  const picker=document.createElement('input');picker.type='file';picker.accept='image/*';picker.setAttribute('aria-label','Choose profile photo');picker.style.position='fixed';picker.style.left='-9999px';
+  picker.onchange=async function(){
+   const file=picker.files&&picker.files[0];if(!file)return;
+   if(!file.type.startsWith('image/')){alert('Please choose an image.');picker.remove();return;}
+   if(file.size>5*1024*1024){alert('Please choose a photo smaller than 5 MB.');picker.remove();return;}
+   const user=await me();if(!user){alert('Please log in first.');picker.remove();return;}
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   const path=user.id+'/'+Date.now()+'.'+ext;
+   const uploaded=await db.storage.from('vybora-avatars').upload(path,file,{upsert:true,contentType:file.type});
+   if(uploaded.error){alert('Photo upload failed: '+uploaded.error.message);picker.remove();return;}
+   const url=db.storage.from('vybora-avatars').getPublicUrl(path).data.publicUrl;
+   const saved=await db.from('profiles').update({avatar_url:url,updated_at:new Date().toISOString()}).eq('id',user.id);
+   if(saved.error){alert('Could not save profile photo: '+saved.error.message);picker.remove();return;}
+   alert('Your VYBORA profile photo is updated!');await profile();picker.remove();
+  };
+  document.body.appendChild(picker);picker.click();
+ };
+ const old=window.vyNavigate;
+ window.vyNavigate=function(page,button){
+  if(page==='inbox'){document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));inbox();return;}
+  if(page==='notifications'){document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));activity();return;}
+  if(page==='profile'){document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));profile();return;}
+  return old.apply(this,arguments);
+ };
+})();
+
+
+</script>
+<script>
+(function(){
+ const db=window.vyClient;if(!db)return;
+ const baseNavigate=window.vyNavigate;
+ const baseSetFilter=window.vySetFilter;
+ const baseLoadConversation=window.vyLoadConversation;
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function current(){const r=await db.auth.getUser();return r.data&&r.data.user||null;}
+ window.vyCloudBookmark=async function(id,btn){
+  const u=await current();if(!u){alert('Log in to save posts.');return;}
+  const exists=btn.getAttribute('aria-pressed')==='true';
+  const r=exists?await db.from('bookmarks').delete().eq('user_id',u.id).eq('post_id',id):await db.from('bookmarks').insert({user_id:u.id,post_id:id});
+  if(r.error){alert('Could not update saved posts: '+r.error.message);return;}
+  await window.vyRefreshCloudFeed();
+ };
+ window.vyRefreshCloudFeed=async function(){
+  if(typeof window.vyReloadFeed==='function')return window.vyReloadFeed();
+  const u=await current();if(!u)return;
+  const q=await db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').order('created_at',{ascending:false}).limit(40);
+  if(q.error)return;
+  const ids=q.data.map(p=>p.user_id),pr=ids.length?await db.from('profiles').select('id,username,full_name').in('id',ids):{data:[]};
+  const names={};(pr.data||[]).forEach(p=>names[p.id]=p.username||p.full_name||'Creator');
+  const host=$('vyCloudFeed');if(!host)return;
+  host.innerHTML=q.data.map(p=>'<article class="vy-card"><div class="vy-head"><b>'+esc(names[p.user_id])+'</b></div>'+(p.media_type==='image'?'<img src="'+esc(p.media_url)+'" style="width:100%;max-height:620px;object-fit:contain">':'<video src="'+esc(p.media_url)+'" controls playsinline style="width:100%;max-height:620px"></video>')+'<div>'+esc(p.caption)+'</div></article>').join('');
+ };
+ window.vySetFilter=function(filter,btn){
+  if(baseSetFilter)baseSetFilter(filter,btn);
+  if(window.vyReloadFeed)window.vyReloadFeed();
+ };
+ window.vyLoadConversation=async function(other){
+  if(baseLoadConversation)await baseLoadConversation(other);
+  const u=await current();if(!u)return;
+  if(window.vyDmRealtime)db.removeChannel(window.vyDmRealtime);
+  window.vyDmRealtime=db.channel('vybora-dm-'+u.id)
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'receiver_id=eq.'+u.id},payload=>{
+    if(payload.new&&payload.new.sender_id===other&&baseLoadConversation)baseLoadConversation(other);
+   }).subscribe();
+ };
+ window.vyViewStory=async function(id,type,url,name){
+  const prior=$('vyStoryViewer');if(prior)prior.remove();
+  const story=await db.from('stories').select('user_id').eq('id',id).maybeSingle();
+  const u=await current(),owner=story.data&&story.data.user_id;
+  const viewer=document.createElement('div');viewer.id='vyStoryViewer';viewer.style.cssText='position:fixed;inset:0;background:#05050af2;z-index:99999;display:grid;place-items:center;padding:18px';
+  const media=type==='image'?'<img src="'+esc(url)+'" alt="Story by '+esc(name)+'" style="max-width:100%;max-height:68vh;object-fit:contain">':'<video src="'+esc(url)+'" controls autoplay playsinline style="max-width:100%;max-height:68vh"></video>';
+  viewer.innerHTML='<div style="width:min(520px,100%);text-align:center"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b>'+esc(name)+' · Story</b><button class="secondary-btn" id="vyStoryClose">✕ Close</button></div>'+media+(u&&owner&&u.id!==owner?'<div style="display:flex;gap:8px;margin-top:14px"><input id="vyStoryReply" maxlength="1000" placeholder="Reply to this story…" style="flex:1;min-width:0"><button class="primary-btn" id="vyStoryReplySend">Send</button></div><p class="small" id="vyStoryReplyStatus" aria-live="polite"></p>':'')+'</div>';
+  viewer.querySelector('#vyStoryClose').onclick=()=>viewer.remove();
+  if(u&&owner&&u.id!==owner){
+   viewer.querySelector('#vyStoryReplySend').onclick=async()=>{
+    const input=$('vyStoryReply'),status=$('vyStoryReplyStatus'),body=input&&input.value.trim();if(!body)return;
+    status.textContent='Sending…';
+    const sent=await db.from('messages').insert({sender_id:u.id,receiver_id:owner,body:'Reply to your story: '+body});
+    if(sent.error){status.textContent='Could not send: '+sent.error.message;return;}
+    input.value='';status.textContent='Story reply sent to '+name+'.';
+   };
+  }
+  viewer.addEventListener('click',e=>{if(e.target===viewer)viewer.remove();});document.body.appendChild(viewer);
+ };
+ window.vyCloudShare=async function(id){
+  const url=location.href.split('#')[0]+'#vybora-post-'+id;
+  if(navigator.share){try{await navigator.share({title:'VYBORA post',url});}catch(e){}}
+  else if(navigator.clipboard){try{await navigator.clipboard.writeText(url);alert('Post link copied.');}catch(e){alert(url);}}
+  else alert(url);
+ };
+ window.vyNavigate=function(page,button){
+  if(page!=='explore'){return baseNavigate?baseNavigate(page,button):undefined;}
+  document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));
+  const panel=$('vyPagePanel'),wrap=document.querySelector('#vybora .vy-wrap');
+  if(!panel||!wrap)return;wrap.hidden=true;panel.hidden=false;
+  panel.innerHTML='<h3>⌕ Explore VYBORA</h3><p class="small">Search real VYBORA creators and browse their posts.</p><input id="vyCreatorSearch" type="search" placeholder="Search usernames or names…" style="width:100%;margin:8px 0 14px"><div id="vyCreatorResults">Loading creators…</div>';
+  const load=async function(){
+   const q=await db.from('profiles').select('id,username,full_name,bio,avatar_url').order('created_at',{ascending:false}).limit(100);
+   const host=$('vyCreatorResults');if(!host)return;
+   if(q.error){host.textContent='Could not load creators: '+q.error.message;return;}
+   const render=()=>{
+    const term=($('vyCreatorSearch')?.value||'').trim().toLowerCase();
+    const rows=(q.data||[]).filter(p=>(p.username||'').toLowerCase().includes(term)||(p.full_name||'').toLowerCase().includes(term)||(p.bio||'').toLowerCase().includes(term));
+    host.innerHTML=rows.map(p=>'<div class="vy-inbox-item"><div class="vy-avatar">'+(p.avatar_url?'<img src="'+esc(p.avatar_url)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">':esc((p.username||p.full_name||'V').slice(0,1).toUpperCase()))+'</div><div style="flex:1;min-width:0"><b>'+esc(p.username||p.full_name||'VYBORA member')+'</b><div class="small">'+esc(p.bio||'VYBORA creator')+'</div></div><button class="secondary-btn" onclick="vyOpenCreator(\''+esc(p.id)+'\')">View profile</button></div>').join('')||'<div class="vy-empty">No creators found.</div>';
+   };
+   render();$('vyCreatorSearch')?.addEventListener('input',render);
+  };
+  load();
+ };
+ window.vyOpenCreator=async function(id){
+  const panel=$('vyPagePanel');if(!panel)return;
+  const [p,posts,followers,following]=await Promise.all([
+   db.from('profiles').select('id,username,full_name,bio,avatar_url,website').eq('id',id).maybeSingle(),
+   db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').eq('user_id',id).order('created_at',{ascending:false}).limit(30),
+   db.from('follows').select('follower_id',{count:'exact',head:true}).eq('following_id',id),
+   db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',id)
+  ]);
+  if(p.error||!p.data){panel.innerHTML='<p>Could not load this profile.</p>';return;}
+  const me=await current(),mine=me&&me.id===id;
+  const follow=me&&!mine?await db.from('follows').select('follower_id').eq('follower_id',me.id).eq('following_id',id).maybeSingle():{data:null};
+  const x=p.data;
+  panel.innerHTML='<button class="secondary-btn" onclick="vyNavigate(\'explore\')">← Back to Explore</button><div class="vy-inbox-item" style="margin-top:14px"><div class="vy-avatar">'+(x.avatar_url?'<img src="'+esc(x.avatar_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':esc((x.username||'V').slice(0,1).toUpperCase()))+'</div><div style="flex:1"><b>'+esc(x.username||x.full_name||'Creator')+'</b><div class="small">'+esc(x.bio||'')+'</div><div class="small">'+(posts.count||0)+' posts · '+(followers.count||0)+' followers · '+(following.count||0)+' following</div></div>'+(me&&!mine?'<button class="secondary-btn" onclick="vyToggleCreatorFollow(\''+esc(id)+'\',this)" data-following="'+!!follow.data+'">'+(follow.data?'Following':'＋ Follow')+'</button>':'')+'</div><div id="vyCreatorPosts"></div>';
+  const host=$('vyCreatorPosts');
+  host.innerHTML=(posts.data||[]).map(post=>'<article class="vy-card">'+(post.media_type==='image'?'<img src="'+esc(post.media_url)+'" style="width:100%;max-height:500px;object-fit:contain">':'<video src="'+esc(post.media_url)+'" controls playsinline style="width:100%;max-height:500px"></video>')+'<p>'+esc(post.caption)+'</p></article>').join('')||'<div class="vy-empty">No posts yet.</div>';
+ };
+ window.vyToggleCreatorFollow=async function(id,btn){
+  const me=await current();if(!me)return;
+  const on=btn.dataset.following==='true';
+  const r=on?await db.from('follows').delete().eq('follower_id',me.id).eq('following_id',id):await db.from('follows').insert({follower_id:me.id,following_id:id});
+  if(r.error){alert(r.error.message);return;}btn.dataset.following=String(!on);btn.textContent=on?'＋ Follow':'Following';
+ };
+})();
+
 /* Hamburger tap handler: run inside JavaScript and bypass legacy inline handlers. */
 (function(){
  if(window.__vyHamburgerTapFix)return;window.__vyHamburgerTapFix=true;
@@ -12,42 +2280,16 @@
   button.setAttribute('aria-expanded',open?'true':'false');
  },true);
 })();
-</script>
 
-
-</body>
-</html>
-
-/* Sidebar navigation dispatcher: make every workspace menu item open its matching section. */
+/* Workspace sidebar navigation: open the selected tool and close the mobile drawer. */
 (function(){
  if(window.__ffSidebarNavFix)return;window.__ffSidebarNavFix=true;
  document.addEventListener('click',function(event){
-  const button=event.target&&event.target.closest&&event.target.closest('.sidebar .side-btn[data-page]');
-  if(!button)return;
-  const page=button.getAttribute('data-page');
-  if(!page||typeof window.show!=='function')return;
-  event.preventDefault();event.stopImmediatePropagation();
-  window.show(page);
+  const button=event.target&&event.target.closest&&event.target.closest('.sidebar .side-btn[data-page]');if(!button)return;
+  const page=button.getAttribute('data-page');if(!page||typeof window.show!=='function')return;
+  event.preventDefault();event.stopImmediatePropagation();window.show(page);
   document.querySelectorAll('.sidebar .side-btn').forEach(function(item){item.classList.toggle('active',item===button);});
-  if(window.innerWidth<=900){
-   const side=document.querySelector('.sidebar');if(side)side.classList.remove('mobile-open');
-   document.body.classList.remove('menu-open');
-   const toggle=document.querySelector('.menu-toggle');if(toggle)toggle.setAttribute('aria-expanded','false');
-  }
- },true);
-})();
-/* Hamburger tap handler: run inside JavaScript and bypass legacy inline handlers. */
-(function(){
- if(window.__vyHamburgerTapFix)return;window.__vyHamburgerTapFix=true;
- document.addEventListener('click',function(event){
-  const button=event.target&&event.target.closest&&event.target.closest('.menu-toggle');
-  if(!button)return;
-  event.preventDefault();event.stopImmediatePropagation();
-  const side=document.querySelector('.sidebar');if(!side)return;
-  const open=!document.body.classList.contains('menu-open');
-  side.classList.toggle('mobile-open',open);
-  document.body.classList.toggle('menu-open',open);
-  button.setAttribute('aria-expanded',open?'true':'false');
+  if(window.innerWidth<=900){const side=document.querySelector('.sidebar');if(side)side.classList.remove('mobile-open');document.body.classList.remove('menu-open');const toggle=document.querySelector('.menu-toggle');if(toggle)toggle.setAttribute('aria-expanded','false');}
  },true);
 })();
 </script>
@@ -55,6 +2297,3 @@
 
 </body>
 </html>
-/* Ensure mobile sidebar items remain clickable above the dim layer. */
-@media(max-width:900px){body.menu-open .sidebar{z-index:2147483000!important;pointer-events:auto!important}body.menu-open .sidebar .side-btn{position:relative!important;z-index:2147483001!important;pointer-events:auto!important;touch-action:manipulation!important}}
-
