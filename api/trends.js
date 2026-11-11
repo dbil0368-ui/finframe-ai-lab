@@ -3,7 +3,7 @@ function decodeXml(value="") {
  return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"\'");
 }
 function tag(xml,name) { const m=xml.match(new RegExp("<"+name+"(?:\\s[^>]*)?>([\\s\\S]*?)</"+name+">","i")); return m?decodeXml(m[1].trim()):""; }
-module.exports = async function handler(req,res) {
+export default async function handler(req,res) {
  res.setHeader("Cache-Control","s-maxage=900, stale-while-revalidate=1800");
  res.setHeader("Access-Control-Allow-Origin","*");
  if(req.method==="OPTIONS"){res.status(204).end();return;}
