@@ -364,6 +364,13 @@ body.vybora-mode.vy-reels-mode #vybora .vy-main-nav{background:rgba(8,7,17,.98)}
  body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-head{padding:9px 12px}
  body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-actions button{padding:7px 8px}
 }
+/* Fix the actual nested feed: cards are rendered inside #vyFeed, not direct children of #vyCloudFeed */
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%;min-height:100%;height:auto;gap:0;margin:0;padding:0}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card{box-sizing:border-box!important;display:flex!important;flex:0 0 calc(100dvh - 58px - env(safe-area-inset-bottom))!important;width:100%!important;height:calc(100dvh - 58px - env(safe-area-inset-bottom))!important;min-height:calc(100dvh - 58px - env(safe-area-inset-bottom))!important;max-height:calc(100dvh - 58px - env(safe-area-inset-bottom))!important;margin:0!important;border:0!important;border-bottom:1px solid #332b43!important;border-radius:0!important;overflow:hidden!important;scroll-snap-align:start!important;scroll-snap-stop:always!important;touch-action:pan-y!important}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card>.vy-video{height:auto!important;min-height:0!important;flex:1 1 auto!important;width:100%!important;overflow:hidden}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card>.vy-reel-media{height:auto!important;min-height:0!important;flex:1 1 auto!important;width:100%!important;object-fit:cover}
+body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-head,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-actions,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-caption{flex-shrink:0!important}
+@media(max-width:520px){body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card{flex-basis:100%!important;height:100%!important;min-height:100%!important;max-height:100%!important}}
 body.vybora-mode.vy-account-connected #vyCloudAuth{display:none!important}
 </style>
 </head>
