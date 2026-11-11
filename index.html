@@ -320,9 +320,9 @@ body.hide-tool-descriptions .tool-card span{display:none}
  body:not(.vybora-mode) .topbar .menu-toggle{position:relative;z-index:60;pointer-events:auto;touch-action:manipulation}
  body.menu-open .topbar .menu-toggle{z-index:60}
  body.menu-open::before{pointer-events:none}
- body:not(.vybora-mode) .topbar{position:sticky;top:0;justify-content:flex-start;padding-left:10px!important;padding-right:12px!important}
- body:not(.vybora-mode) .topbar .menu-toggle{display:inline-grid!important;place-items:center;width:42px;height:42px;min-width:42px;margin:0 12px 0 0!important;padding:0!important;font-size:22px;line-height:1;flex:0 0 42px;order:0}
- body:not(.vybora-mode) .topbar .top-title{order:1;margin-left:0!important}
+ body:not(.vybora-mode) .topbar{position:sticky;top:0;justify-content:flex-end;padding-left:12px!important;padding-right:10px!important}
+ body:not(.vybora-mode) .topbar .menu-toggle{display:inline-grid!important;place-items:center;width:42px;height:42px;min-width:42px;margin:0 0 0 12px!important;padding:0!important;font-size:22px;line-height:1;flex:0 0 42px;order:2}
+ body:not(.vybora-mode) .topbar .top-title{order:0;margin-right:auto!important}
 }
 /* Respect the hidden attribute in VYBORA: app-mode display rules must not keep inactive screens visible */
 body.vybora-mode #vybora .vy-wrap[hidden],
