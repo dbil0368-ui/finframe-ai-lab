@@ -34,54 +34,77 @@ export default async function handler(req, res) {
     "Return concise plain text with these sections: BIG IDEA, 3 HOOK OPTIONS, CONTENT STRUCTURE (4-6 beats), CAPTION, CTA, HASHTAGS (5-8 relevant tags), FACT-CHECK NOTES."
   ].join("\n");
 
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
-        },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 1100 }
-        }),
-        signal: AbortSignal.timeout(45000)
-      }
-    );
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey
+          },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: {
+              maxOutputTokens: 850,
+              thinkingConfig: { thinkingLevel: "LOW" }
+            }
+          }),
+          signal: AbortSignal.timeout(75000)
+        }
+      );
 
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      const providerMessage = String(data?.error?.message || "");
-      console.error("[VYBORA Creator] Gemini request failed", {
-        status: response.status,
-        message: providerMessage.slice(0, 220)
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const providerMessage = String(data?.error?.message || "");
+        console.error("[VYBORA Creator] Gemini request failed", {
+          status: response.status,
+          message: providerMessage.slice(0, 220),
+          attempt: attempt + 1
+        });
+        if ((response.status === 503 || response.status === 504) && attempt === 0) {
+          await new Promise(resolve => setTimeout(resolve, 1200));
+          continue;
+        }
+        if (response.status === 401 || response.status === 403) {
+          return res.status(502).json({ error: "Gemini API key was rejected. Check the GEMINI_API_KEY configured for this Preview deployment." });
+        }
+        if (response.status === 429) {
+          return res.status(429).json({ error: "Gemini free-tier usage limit reached. Please wait and try again." });
+        }
+        return res.status(502).json({ error: "Gemini could not generate the brief. Please try again." });
+      }
+
+      const brief = (data?.candidates?.[0]?.content?.parts || [])
+        .map(part => typeof part.text === "string" ? part.text : "")
+        .join("\n")
+        .trim();
+
+      if (!brief) {
+        return res.status(502).json({ error: "Gemini returned an empty brief. Please try again." });
+      }
+
+      return res.status(200).json({ brief, model: MODEL });
+    } catch (error) {
+      lastError = error;
+      console.error("[VYBORA Creator] Gemini request error", {
+        errorName: String(error?.name || "Error").slice(0, 80),
+        message: String(error?.message || "").slice(0, 180),
+        attempt: attempt + 1
       });
-      if (response.status === 401 || response.status === 403) {
-        return res.status(502).json({ error: "Gemini API key was rejected. Check the GEMINI_API_KEY configured for this Preview deployment." });
+      if (attempt === 0 && (error?.name === "TimeoutError" || error?.name === "AbortError" || error?.name === "TypeError")) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        continue;
       }
-      if (response.status === 429) {
-        return res.status(429).json({ error: "Gemini free-tier usage limit reached. Please wait and try again." });
-      }
-      return res.status(502).json({ error: "Gemini could not generate the brief. Please try again." });
+      break;
     }
-
-    const brief = (data?.candidates?.[0]?.content?.parts || [])
-      .map(part => typeof part.text === "string" ? part.text : "")
-      .join("\n")
-      .trim();
-
-    if (!brief) {
-      return res.status(502).json({ error: "Gemini returned an empty brief. Please try again." });
-    }
-
-    return res.status(200).json({ brief, model: MODEL });
-  } catch (error) {
-    console.error("[VYBORA Creator] Gemini request error", {
-      errorName: String(error?.name || "Error").slice(0, 80),
-      message: String(error?.message || "").slice(0, 180)
-    });
-    return res.status(502).json({ error: "Gemini service is temporarily unavailable. Please try again." });
   }
+
+  return res.status(502).json({
+    error: lastError?.name === "TimeoutError"
+      ? "Gemini is taking longer than expected. Please try again in a moment."
+      : "Gemini service is temporarily unavailable. Please try again."
+  });
 }
