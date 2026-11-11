@@ -361,6 +361,7 @@ body.vybora-mode.vy-reels-mode #vybora .vy-main-nav{background:rgba(8,7,17,.98)}
  body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-head{padding:9px 12px}
  body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-actions button{padding:7px 8px}
 }
+body.vybora-mode.vy-account-connected #vyCloudAuth{display:none!important}
 </style>
 </head>
 <body>
@@ -1717,6 +1718,7 @@ function resetPreferences(){
  };
  window.vySignOut=async function(){const r=await db.auth.signOut();if(r.error){say(r.error.message);return;}currentUser=null;await signedOut();};
  async function signedIn(){
+  document.body.classList.add('vy-account-connected');
   el('vyAuthForm').hidden=true;el('vyAuthSignedIn').hidden=false;
   el('vyAuthSignedIn').style.display='flex';
   el('vyAuthUser').textContent=(currentUser.email||'')+' · Signed in';
@@ -1726,6 +1728,7 @@ function resetPreferences(){
   channel=db.channel('vybora-live-posts').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},()=>loadFeed()).subscribe();
  }
  async function signedOut(){
+  document.body.classList.remove('vy-account-connected');
   el('vyRecoveryForm').hidden=true;el('vyRecoveryForm').style.display='none';
   el('vyAuthForm').hidden=false;el('vyAuthSignedIn').hidden=true;
   el('vyAuthSignedIn').style.display='none';
