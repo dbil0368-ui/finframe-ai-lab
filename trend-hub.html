@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0b14">
+<title>VYBORA — Trend & Creator Studio</title>
+<style>
+:root{--bg:#090b14;--panel:#121625;--panel2:#181f31;--line:#273149;--txt:#f4f6ff;--muted:#9aa6bd;--violet:#9c7bff;--cyan:#5de1d2;--pink:#ff7bb7}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -15%,#34245b 0,transparent 38%),var(--bg);color:var(--txt);font:15px Inter,system-ui,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;color:inherit}.shell{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.side{border-right:1px solid var(--line);padding:24px 16px;background:#0c101b;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:4px 8px 30px;font-size:19px;font-weight:800;letter-spacing:.4px}.mark{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-size:21px;box-shadow:0 8px 25px #9c7bff55}.brand small{display:block;font-size:10px;color:var(--muted);font-weight:600;letter-spacing:2px;margin-top:3px}.nav{display:grid;gap:7px}.nav button{border:1px solid transparent;background:transparent;text-align:left;padding:13px 14px;border-radius:12px;color:#b9c2d6}.nav button.active,.nav button:hover{background:#1b2033;border-color:#353c59;color:#fff}.side-note{margin-top:auto;padding:14px;border:1px solid var(--line);border-radius:14px;background:#121827;color:var(--muted);font-size:12px;line-height:1.6}.main{min-width:0}.top{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;background:#0a0d18dd;backdrop-filter:blur(16px);z-index:5}.crumb{color:var(--muted);font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#5de1d2,#9c7bff);color:#101321;font-weight:900}.wrap{max-width:1250px;margin:auto;padding:32px}.view{display:none}.view.active{display:block}.eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800}.heading{font-size:clamp(27px,4vw,39px);letter-spacing:-1.2px;margin:8px 0}.sub{color:var(--muted);line-height:1.65;max-width:720px}.hero{padding:25px 0 24px;display:flex;justify-content:space-between;gap:24px;align-items:center}.hero-art{width:185px;min-width:130px;aspect-ratio:1;border-radius:28px;background:radial-gradient(circle at 30% 25%,#5de1d2,transparent 28%),radial-gradient(circle at 70% 70%,#ff7bb7,transparent 35%),linear-gradient(135deg,#37276a,#151a31);display:grid;place-items:center;font-size:65px;box-shadow:0 20px 65px #0007;border:1px solid #ffffff20}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.primary,.ghost{border:0;border-radius:11px;padding:11px 16px;font-weight:750}.primary{background:linear-gradient(120deg,var(--violet),#735ce8);box-shadow:0 8px 24px #8c70ff33}.ghost{background:#1a2234;border:1px solid #35405a}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:18px 0 28px}.stat,.card,.panel{background:linear-gradient(145deg,#151c2c,#101522);border:1px solid var(--line);border-radius:17px;padding:18px}.stat .n{font-size:26px;font-weight:850;margin:7px 0}.muted{color:var(--muted)}.stat small{color:var(--muted)}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:28px 0 13px}.section-title h2{font-size:18px;margin:0}.trend-list{display:grid;gap:10px}.trend{display:grid;grid-template-columns:38px 1fr auto;gap:13px;align-items:center;padding:14px;background:#121827;border:1px solid var(--line);border-radius:14px}.trend .emoji{width:38px;height:38px;border-radius:12px;background:#202943;display:grid;place-items:center;font-size:19px}.trend strong{display:block}.trend small{color:var(--muted)}.tag{font-size:11px;color:var(--cyan);background:#173a3b;padding:6px 9px;border-radius:30px;white-space:nowrap}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.filters button{border:1px solid var(--line);background:#111827;color:var(--muted);padding:8px 13px;border-radius:30px}.filters button.active{background:#302650;border-color:#8169d7;color:#fff}.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.tool-card{padding:20px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(140deg,#171d30,#111522)}.tool-icon{font-size:25px}.tool-card h3{margin:12px 0 6px}.tool-card p{color:var(--muted);line-height:1.55;font-size:13px}.field{width:100%;background:#0d1321;border:1px solid #34405b;border-radius:11px;color:#fff;padding:12px;outline:none}.field:focus{border-color:var(--violet)}textarea.field{min-height:115px;resize:vertical}.result{margin-top:14px;padding:14px;border:1px dashed #5e5487;background:#19182d;border-radius:12px;line-height:1.6;display:none}.result.show{display:block}.idea{padding:12px;border:1px solid var(--line);border-radius:12px;background:#111827;margin-top:10px}.notice{padding:12px 14px;background:#202036;border:1px solid #484269;border-radius:12px;color:#c5c4dc;font-size:12px;line-height:1.55;margin:18px 0}.foot{border-top:1px solid var(--line);margin-top:35px;padding:18px 0;color:#77839c;font-size:11px}.mobile{display:none}
+@media(max-width:850px){.shell{grid-template-columns:1fr}.side{height:auto;position:relative;padding:13px 14px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:2px 6px 12px}.nav{display:flex;overflow:auto;padding-bottom:3px}.nav button{white-space:nowrap;padding:10px 12px;font-size:13px}.side-note{display:none}.top{height:54px;padding:0 18px}.wrap{padding:22px 17px 60px}.hero-art{width:125px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tools{grid-template-columns:1fr}}
+@media(max-width:480px){.hero{align-items:flex-start}.hero-art{width:85px;min-width:85px;border-radius:20px;font-size:38px}.grid{gap:9px}.stat{padding:13px}.stat .n{font-size:21px}.trend{grid-template-columns:34px 1fr}.trend .tag{grid-column:2;justify-self:start}.wrap{padding-left:13px;padding-right:13px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="side">
+ <div class="brand"><div class="mark">✦</div><div>VYBORA<small>TREND & CREATOR LAB</small></div></div>
+ <nav class="nav" aria-label="Main navigation">
+  <button class="active" data-view="overview">⌂ &nbsp; Overview</button>
+  <button data-view="trends">↗ &nbsp; Trend Radar</button>
+  <button data-view="studio">✧ &nbsp; Creator Studio</button>
+  <button data-view="planner">▦ &nbsp; Content Planner</button>
+ </nav>
+ <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends and plan original content. Live trend feeds and AI services will be connected in a later phase.</div>
+</aside>
+<main class="main">
+ <header class="top"><div class="crumb">Workspace / <b id="crumb">Overview</b></div><div class="avatar">V</div></header>
+ <div class="wrap">
+  <section class="view active" id="overview">
+   <div class="hero"><div><div class="eyebrow">A new way to create</div><h1 class="heading">Turn what's happening<br>into what's next.</h1><p class="sub">VYBORA helps creators discover opportunities, shape stronger ideas and plan content with clarity.</p><div class="actions"><button class="primary" data-go="trends">Explore trends ↗</button><button class="ghost" data-go="studio">Open creator studio ✧</button></div></div><div class="hero-art">✦</div></div>
+   <div class="grid">
+    <div class="stat"><small>Workspace</small><div class="n">01</div><small>Trend intelligence</small></div>
+    <div class="stat"><small>Creator tools</small><div class="n">02</div><small>Idea & caption lab</small></div>
+    <div class="stat"><small>Planning</small><div class="n">03</div><small>Content calendar board</small></div>
+   </div>
+   <div class="section-title"><h2>Explore the workspace</h2><span class="muted">Your creative command center</span></div>
+   <div class="tools">
+    <article class="tool-card"><div class="tool-icon">🔥</div><h3>Trend Radar</h3><p>Explore sample topics by category and region. Spot ideas worth researching before you create.</p><button class="ghost" data-go="trends">Open Trend Radar →</button></article>
+    <article class="tool-card"><div class="tool-icon">✍️</div><h3>Creator Studio</h3><p>Shape a topic into a hook, short-form video outline and caption draft.</p><button class="ghost" data-go="studio">Open Studio →</button></article>
+    <article class="tool-card"><div class="tool-icon">🗓️</div><h3>Content Planner</h3><p>Save draft ideas in this browser and build a simple publishing queue.</p><button class="ghost" data-go="planner">Open Planner →</button></article>
+    <article class="tool-card"><div class="tool-icon">🧭</div><h3>Our direction</h3><p>Independent creator intelligence—not an Instagram clone. Original identity, tools and workflow.</p><span class="tag">BUILDING IN PUBLIC</span></article>
+   </div>
+   <div class="notice">Prototype note: trend examples are illustrative placeholders, not verified live Google Trends rankings. No external AI generation or live data connection is active in this first preview.</div>
+  </section>
+  <section class="view" id="trends">
+   <div class="eyebrow">Discover signals</div><h1 class="heading">Trend Radar</h1><p class="sub">Browse example trend themes and turn a topic into a content opportunity. Live regional data will be integrated after source and API validation.</p>
+   <div class="filters" id="trendFilters"><button class="active" data-filter="All">All</button><button data-filter="Entertainment">Entertainment</button><button data-filter="Sports">Sports</button><button data-filter="Technology">Technology</button><button data-filter="Culture">Culture</button></div>
+   <div class="trend-list" id="trendList"></div>
+   <div class="notice">These are demonstration topics for the prototype, not a live or ranked search report. Always verify a trend's current interest and source before publishing.</div>
+  </section>
+  <section class="view" id="studio">
+   <div class="eyebrow">Create with intention</div><h1 class="heading">Creator Studio</h1><p class="sub">Start with a topic. Get a structured creative brief you can edit and develop into an original post or short video.</p>
+   <div class="panel" style="max-width:780px;margin-top:22px"><label for="topic"><b>What's your topic?</b></label><input id="topic" class="field" style="margin:10px 0 14px" placeholder="e.g. a new film, local food, cricket moment…"><label for="format"><b>Content format</b></label><select id="format" class="field" style="margin:10px 0 14px"><option>Short video / Reel</option><option>Carousel post</option><option>Story</option><option>Creator thread</option></select><label for="audience"><b>Who is it for?</b></label><input id="audience" class="field" style="margin:10px 0 16px" placeholder="e.g. students in India, tech beginners…"><button class="primary" id="generate">Build my creative brief ✦</button><div class="result" id="brief"></div></div>
+   <div class="notice">This first version creates an editable starter outline in your browser. It does not call an AI model yet.</div>
+  </section>
+  <section class="view" id="planner">
+   <div class="eyebrow">Make ideas happen</div><h1 class="heading">Content Planner</h1><p class="sub">Save ideas from your Creator Studio and keep a lightweight queue on this device.</p>
+   <div class="panel" style="max-width:780px;margin-top:22px"><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="field" id="planInput" placeholder="Add a content idea…" style="flex:1;min-width:180px"><button class="primary" id="addPlan">Add idea +</button></div><div id="planList" style="margin-top:16px"></div></div>
+   <div class="notice">Planner items are stored locally in this browser only. They are not synced to an account or cloud yet.</div>
+  </section>
+  <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.1</footer>
+ </div>
+</main>
+</div>
+<script>
+const topics=[
+ {name:"New film & series conversations",cat:"Entertainment",icon:"🎬",note:"Review formats, audience reactions and explainers"},
+ {name:"Cricket match moments",cat:"Sports",icon:"🏏",note:"Short analysis, fan reactions and match-day stories"},
+ {name:"AI tools for everyday work",cat:"Technology",icon:"🤖",note:"Beginner tutorials, comparisons and practical demos"},
+ {name:"Local food discoveries",cat:"Culture",icon:"🍜",note:"Local creator stories, recipes and neighbourhood guides"},
+ {name:"Music and pop-culture moments",cat:"Entertainment",icon:"🎧",note:"Original commentary, recommendations and edits"},
+ {name:"Study and career skills",cat:"Technology",icon:"📚",note:"Quick explainers, checklists and learning journeys"},
+ {name:"Festivals and community stories",cat:"Culture",icon:"🎉",note:"Traditions, local voices and useful guides"}
+];
+function renderTrends(filter="All"){document.getElementById("trendList").innerHTML=topics.filter(t=>filter==="All"||t.cat===filter).map(t=>'<div class="trend"><div class="emoji">'+t.icon+'</div><div><strong>'+t.name+'</strong><small>'+t.note+'</small></div><span class="tag">'+t.cat+'</span></div>').join("")}
+renderTrends();
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner"})[id];window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
+document.querySelectorAll("#trendFilters button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#trendFilters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderTrends(b.dataset.filter)}));
+document.getElementById("generate").addEventListener("click",()=>{const topic=document.getElementById("topic").value.trim();const format=document.getElementById("format").value;const audience=document.getElementById("audience").value.trim()||"curious viewers";const box=document.getElementById("brief");if(!topic){box.classList.add("show");box.textContent="Please enter a topic first.";return}box.innerHTML='<b>Creative brief · '+format+'</b><div class="idea"><b>Hook</b><br>“Here is what you should know about '+escapeText(topic)+'.”</div><div class="idea"><b>Structure</b><br>1. Open with one surprising or useful point.<br>2. Explain the context in simple language.<br>3. Add your own perspective or example.<br>4. End with one clear question for '+escapeText(audience)+'.</div><div class="idea"><b>Caption starter</b><br>'+escapeText(topic)+' — the key points, what they mean, and what to look at next. What do you think?</div><button class="ghost" id="saveBrief" style="margin-top:12px">Save this idea to Planner</button>';box.classList.add("show");document.getElementById("saveBrief").addEventListener("click",()=>{addPlan(topic+" — "+format);show("planner")})});
+function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function getPlans(){try{return JSON.parse(localStorage.getItem("vybora_creator_plans")||"[]")}catch(e){return []}}
+function addPlan(value){const plans=getPlans();plans.unshift({text:value,done:false});localStorage.setItem("vybora_creator_plans",JSON.stringify(plans));renderPlans()}
+function renderPlans(){const el=document.getElementById("planList"),plans=getPlans();el.innerHTML=plans.length?plans.map((p,i)=>'<div class="trend"><input type="checkbox" '+(p.done?"checked":"")+' data-done="'+i+'" aria-label="Mark complete"><div><strong style="'+(p.done?"text-decoration:line-through;opacity:.55":"")+'">'+escapeText(p.text)+'</strong><small>Saved on this device</small></div><button class="ghost" data-remove="'+i+'">Remove</button></div>').join(""):'<p class="muted">No ideas saved yet. Create one in Creator Studio.</p>';el.querySelectorAll("[data-done]").forEach(x=>x.addEventListener("change",()=>{const a=getPlans();a[+x.dataset.done].done=x.checked;localStorage.setItem("vybora_creator_plans",JSON.stringify(a));renderPlans()}));el.querySelectorAll("[data-remove]").forEach(x=>x.addEventListener("click",()=>{const a=getPlans();a.splice(+x.dataset.remove,1);localStorage.setItem("vybora_creator_plans",JSON.stringify(a));renderPlans()}))}
+document.getElementById("addPlan").addEventListener("click",()=>{const el=document.getElementById("planInput"),v=el.value.trim();if(v){addPlan(v);el.value=""}});renderPlans();
+</script>
+</body></html>
