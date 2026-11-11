@@ -927,6 +927,29 @@ window.vyInitReels=function(){
   });
   host.dataset.vyReelTapBound='1';
  }
+ if(!host.dataset.vyReelSwipeBound){
+  let startY=0,startTop=0,tracking=false;
+  host.addEventListener('touchstart',event=>{
+   const t=event.touches&&event.touches[0];
+   tracking=!!t&&!event.target.closest('button,a,input,textarea,select');
+   if(tracking){startY=t.clientY;startTop=host.scrollTop;}
+  },{passive:true});
+  host.addEventListener('touchend',event=>{
+   if(!tracking)return;tracking=false;
+   const t=event.changedTouches&&event.changedTouches[0];if(!t)return;
+   const delta=startY-t.clientY;
+   if(Math.abs(delta)<48||Math.abs(host.scrollTop-startTop)>24)return;
+   const cards=[...host.querySelectorAll('.vy-card')].filter(card=>getComputedStyle(card).display!=='none');
+   if(cards.length<2)return;
+   const top=host.getBoundingClientRect().top;
+   let current=0,best=Infinity;
+   cards.forEach((card,index)=>{const distance=Math.abs(card.getBoundingClientRect().top-top);if(distance<best){best=distance;current=index;}});
+   const next=Math.max(0,Math.min(cards.length-1,current+(delta>0?1:-1)));
+   if(next!==current){const target=cards[next],targetTop=target.getBoundingClientRect().top-top+host.scrollTop;host.scrollTo({top:targetTop,behavior:'smooth'});}
+  },{passive:true});
+  host.addEventListener('touchcancel',()=>{tracking=false;},{passive:true});
+  host.dataset.vyReelSwipeBound='1';
+ }
  if(!('IntersectionObserver'in window)){
   videos.forEach(v=>{if(v.closest('.vy-card')?.getBoundingClientRect().top>=0)v.play().catch(()=>{});else v.pause();});
   return;
