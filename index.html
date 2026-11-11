@@ -1813,7 +1813,7 @@ function resetPreferences(){
    db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',user.id)
   ]);
   const x=p.data||{},name=x.username||x.full_name||user.email;
-  body.innerHTML='<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="vy-avatar" id="vyCloudProfileAvatar" style="width:68px;height:68px;font-size:26px">'+esc(name.slice(0,1).toUpperCase())+'</div><div><h3 style="margin:0">'+esc(name)+'</h3><div class="small">'+esc(user.email)+'</div></div></div><p>'+esc(x.bio||'Add a short bio to introduce yourself.')+'</p><div class="vy-tabs"><button>'+(posts.count||0)+' Reels</button><button>'+(followers.count||0)+' Followers</button><button>'+(following.count||0)+' Following</button></div><button class="secondary-btn" onclick="vyCloudEditProfile()">✏️ Edit profile</button>';
+  body.innerHTML='<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="vy-avatar" id="vyCloudProfileAvatar" style="width:68px;height:68px;font-size:26px">'+esc(name.slice(0,1).toUpperCase())+'</div><div><h3 style="margin:0">'+esc(name)+'</h3><div class="small">'+esc(user.email)+'</div></div></div><p>'+esc(x.bio||'Add a short bio to introduce yourself.')+'</p><div class="vy-tabs"><button>'+(posts.count||0)+' Reels</button><button>'+(followers.count||0)+' Followers</button><button>'+(following.count||0)+' Following</button></div><button class="secondary-btn" onclick="vyPickAvatar()">📷 Change profile photo</button> <button class="secondary-btn" onclick="vyCloudEditProfile()">✏️ Edit name</button>';
   if(x.avatar_url){const avatar=el('vyCloudProfileAvatar');if(avatar)avatar.innerHTML='<img src="'+esc(x.avatar_url)+'" alt="Profile photo">';}
  }
  window.vyEditProfile=async function(){
@@ -1863,6 +1863,24 @@ function resetPreferences(){
   if(clean.length<3||clean.length>30||!/^[a-z0-9_]+$/.test(clean)){alert('Username must be 3–30 characters using letters, numbers or underscores.');return;}
   const r=await db.from('profiles').update({full_name:name.trim(),username:clean,updated_at:new Date().toISOString()}).eq('id',user.id);
   if(r.error){alert(r.error.message);return;}await profile();
+ };
+ window.vyPickAvatar=function(){
+  const picker=document.createElement('input');picker.type='file';picker.accept='image/*';picker.setAttribute('aria-label','Choose profile photo');picker.style.position='fixed';picker.style.left='-9999px';
+  picker.onchange=async function(){
+   const file=picker.files&&picker.files[0];if(!file)return;
+   if(!file.type.startsWith('image/')){alert('Please choose an image.');picker.remove();return;}
+   if(file.size>5*1024*1024){alert('Please choose a photo smaller than 5 MB.');picker.remove();return;}
+   const user=await me();if(!user){alert('Please log in first.');picker.remove();return;}
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   const path=user.id+'/'+Date.now()+'.'+ext;
+   const uploaded=await db.storage.from('vybora-avatars').upload(path,file,{upsert:true,contentType:file.type});
+   if(uploaded.error){alert('Photo upload failed: '+uploaded.error.message);picker.remove();return;}
+   const url=db.storage.from('vybora-avatars').getPublicUrl(path).data.publicUrl;
+   const saved=await db.from('profiles').update({avatar_url:url,updated_at:new Date().toISOString()}).eq('id',user.id);
+   if(saved.error){alert('Could not save profile photo: '+saved.error.message);picker.remove();return;}
+   alert('Your VYBORA profile photo is updated!');await profile();picker.remove();
+  };
+  document.body.appendChild(picker);picker.click();
  };
  const old=window.vyNavigate;
  window.vyNavigate=function(page,button){
