@@ -923,6 +923,19 @@ body.vybora-mode #vybora .vy-menu-popover{position:fixed;top:62px;right:12px;z-i
 body.vybora-mode #vybora .vy-menu-popover[hidden]{display:none!important}
 body.vybora-mode #vybora .vy-menu-popover button{display:block;width:100%;padding:13px 12px;border:0;border-radius:9px;background:transparent;color:#fff;text-align:left;font-size:15px}
 body.vybora-mode #vybora .vy-menu-popover button:active{background:#302b3b}
+/* VYBORA light theme preference */
+body.vybora-mode.vy-light-mode{background:#f4f2f8!important;color:#201b2a!important}
+body.vybora-mode.vy-light-mode #vybora,
+body.vybora-mode.vy-light-mode #vybora .vy-wrap{background:#f4f2f8!important;color:#201b2a!important}
+body.vybora-mode.vy-light-mode #vybora .vy-card,
+body.vybora-mode.vy-light-mode #vybora .vy-settings-group,
+body.vybora-mode.vy-light-mode #vybora .vy-page-panel,
+body.vybora-mode.vy-light-mode #vybora .vy-stories{background:#fff!important;color:#201b2a!important;border-color:#ddd7e8!important}
+body.vybora-mode.vy-light-mode #vybora .vy-settings-group h4,
+body.vybora-mode.vy-light-mode #vybora .small,
+body.vybora-mode.vy-light-mode #vybora .vy-caption{color:#51485e!important}
+body.vybora-mode.vy-light-mode #vybora .vy-settings-row{border-color:#e7e1ed!important}
+body.vybora-mode.vy-light-mode #vybora .vy-settings-row button{background:#eee9f5!important;color:#241d30!important;border-color:#d8d0e2!important}
 /* VYBORA-specific settings page */
 body.vybora-mode #vybora .vy-settings-group{margin:14px 0;padding:14px;border:1px solid #302b3c;border-radius:14px;background:#111}
 body.vybora-mode #vybora .vy-settings-group h4{margin:0 0 8px;color:#f4eaff}
@@ -1045,13 +1058,13 @@ window.vySave=function(btn){const id=vyCardId(btn),s=vyState(),saved=new Set(s.s
 window.vyShare=function(btn){const card=btn?.closest('[data-vy-id]'),title=card?.querySelector('.vy-caption')?.innerText||'Watch. Create. Connect.';const shareData={title:'VYBORA',text:title,url:location.href.split('#')[0]+'#vybora'};if(navigator.share){navigator.share(shareData).catch(()=>{});}else if(navigator.clipboard){navigator.clipboard.writeText(shareData.url).then(()=>{if(btn)btn.textContent='✓ Link copied';}).catch(()=>alert('Copy the page link from your browser to share VYBORA.'));}else{alert(shareData.url);}};
 window.vyComment=function(btn){const card=btn.closest('[data-vy-id]'),box=card.querySelector('.vy-comments');const comment=prompt('Write a comment');if(comment&&comment.trim()){const line=document.createElement('div');line.className='vy-comment';line.textContent=vyProfile()+': '+comment.trim();box.appendChild(line);const s=vyState(),comments=s.comments||{};comments[card.dataset.vyId]=comments[card.dataset.vyId]||[];comments[card.dataset.vyId].push(comment.trim());vySaveState({comments});}};
 window.vyUpload=function(){const file=$('vyVideoFile').files[0],caption=$('vyCaptionInput').value.trim(),status=$('vyUploadStatus');if(!file){status.textContent='Please choose a video from your phone first.';return;}if(!file.type.startsWith('video/')){status.textContent='Please select a video file.';return;}if(file.size>100*1024*1024){status.textContent='Choose a video smaller than 100 MB for this browser preview.';return;}const url=URL.createObjectURL(file),id='local-'+Date.now(),card=document.createElement('article');card.className='vy-card';card.dataset.vyId=id;card.dataset.vyUser=vyProfile();const head=document.createElement('div');head.className='vy-head';const avatar=document.createElement('div');avatar.className='vy-avatar';avatar.textContent=vyProfile().charAt(0).toUpperCase();const name=document.createElement('strong');name.textContent=vyProfile()+' · just now';head.append(avatar,name);const video=document.createElement('video');video.controls=true;video.playsInline=true;video.preload='metadata';video.src=url;video.style.cssText='display:block;width:100%;max-height:620px;background:#000';const cap=document.createElement('div');cap.className='vy-caption';cap.textContent=caption||'My first VYBORA Reel ✨';const comments=document.createElement('div');comments.className='vy-comments';const actions=document.createElement('div');actions.className='vy-actions';actions.innerHTML='<button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>0</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button>';card.append(head,video,actions,cap,comments);$('vyFeed').prepend(card);$('vyPostCount').textContent=String((Number($('vyPostCount').textContent)||0)+1);$('vyCaptionInput').value='';status.textContent='Your Reel preview has been added. It is available only in this open browser session—not uploaded for other users.';window.vyFilter='for-you';document.querySelectorAll('#vybora .vy-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.vyFilter==='for-you'));vyRenderFeed();};
-window.vyEditProfile=function(){const name=prompt('Choose your VYBORA profile name',vyProfile());if(name&&name.trim()){const clean=name.trim().replace(/^@/,'').slice(0,24);vySaveState({profile:clean});$('vyProfileName').textContent=clean;$('vyProfileAvatar').textContent=clean.charAt(0).toUpperCase();}};
+window.vyEditProfile=function(){const name=prompt('Choose your VYBORA profile name',vyProfile());if(name&&name.trim()){const clean=name.trim().replace(/^@/,'').slice(0,24);vySaveState({profile:clean});const n=$('vyProfileName'),a=$('vyProfileAvatar');if(n)n.textContent=clean;if(a)a.textContent=clean.charAt(0).toUpperCase();if(document.getElementById('vyPagePanel')&&!document.getElementById('vyPagePanel').hidden)window.vyNavigate('settings');}};
 window.vyInitReels=function(){
  const host=$('vyCloudFeed');if(!host)return;
  if(window.vyReelObserver)window.vyReelObserver.disconnect();
  const videos=[...host.querySelectorAll('video.vy-reel-media')];
  videos.forEach(v=>{
-  v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.controls=false;
+  v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=(vyState().settings||{}).autoplay!==false;v.controls=false;
  });
  if(!host.dataset.vyReelTapBound){
   host.addEventListener('click',event=>{
@@ -1095,7 +1108,7 @@ window.vyInitReels=function(){
   let active=null,best=.65;
   visibility.forEach((ratio,v)=>{if(ratio>=best){best=ratio;active=v;}});
   videos.forEach(v=>{
-   if(v===active){if(v.paused)v.play().catch(()=>{});}
+   if(v===active){if((vyState().settings||{}).autoplay!==false&&v.paused)v.play().catch(()=>{});else if((vyState().settings||{}).autoplay===false&&!v.paused)v.pause();}
    else if(!v.paused)v.pause();
   });
  },{root:host,threshold:[0,.2,.45,.65,.85,1]});
@@ -1117,13 +1130,20 @@ window.vyNavigate=function(page,button){
  }else if(page==='notifications'){
   const items=vyState().activity||[];panel.innerHTML='<h3>♡ Activity</h3><p class="small">Your activity on this device.</p>'+(items.length?items.slice().reverse().map(function(a){return '<div class="vy-inbox-item"><div class="vy-avatar">'+vyEscape(a.icon||'♡')+'</div><div><b>'+vyEscape(a.title)+'</b><div class="small">'+vyEscape(a.detail||'')+'</div></div></div>';}).join(''):'<div class="vy-empty">No activity yet. Your local interactions will appear here.</div>');
  }else if(page==='settings'){
-  const prefs=vyState().settings||{};
-  panel.innerHTML='<div><h3>⚙ VYBORA Settings</h3><p class="small">Social account preferences, separate from FinFrame Workspace settings.</p></div><div class="vy-settings-group"><h4>👤 Account & Profile</h4><div class="vy-settings-row"><div><b>Creator profile</b><div class="small">Update your VYBORA display name and profile details</div></div><button class="secondary-btn" onclick="vyEditProfile()">Edit profile</button></div><div class="vy-settings-row"><div><b>Account session</b><div class="small">Sign out of your VYBORA account on this device</div></div><button class="secondary-btn" onclick="vySignOut()">Log out</button></div></div><div class="vy-settings-group"><h4>🔒 Privacy</h4><div class="vy-settings-row"><div><b>Private account preference</b><div class="small">Local preference only; does not restrict server-side post visibility yet</div></div><button class="secondary-btn" onclick="vyToggleSetting(\'privateAccount\')">'+(prefs.privateAccount?'On':'Off')+'</button></div></div><div class="vy-settings-group"><h4>🔔 Notifications</h4><div class="vy-settings-row"><div><b>Activity notifications</b><div class="small">Notification preference on this device</div></div><button class="secondary-btn" onclick="vyToggleSetting(\'notifications\')">'+(prefs.notifications===false?'Off':'On')+'</button></div></div><div class="vy-settings-group"><h4>🎨 Appearance</h4><div class="vy-settings-row"><div><b>Dark appearance</b><div class="small">VYBORA social screen appearance</div></div><button class="secondary-btn" onclick="vyToggleSetting(\'darkMode\')">'+(prefs.darkMode===false?'Off':'On')+'</button></div></div><p class="small">Preferences are saved in this browser. Privacy and notification switches are preferences only; server-side controls and push notifications are not configured.</p>'; }else if(page==='profile'){
+  const prefs=Object.assign({notifications:true,darkMode:true,privateAccount:false,autoplay:true},vyState().settings||{});
+  panel.innerHTML='<div><h3>⚙ VYBORA Settings</h3><p class="small">Manage your VYBORA profile, privacy preferences, playback and appearance.</p></div>'+
+  '<div class="vy-settings-group"><h4>👤 Account</h4><div class="vy-settings-row"><div><b>Creator profile</b><div class="small">Change the name shown on your VYBORA profile</div></div><button class="secondary-btn" onclick="vyEditProfile()">Edit profile</button></div><div class="vy-settings-row"><div><b>Sign out</b><div class="small">Log out of your VYBORA account on this device</div></div><button class="secondary-btn" onclick="vySignOut()">Log out</button></div></div>'+
+  '<div class="vy-settings-group"><h4>🔒 Privacy</h4><div class="vy-settings-row"><div><b>Private account preference</b><div class="small">Personal preference only; does not yet limit who can view posts</div></div><button class="secondary-btn" aria-pressed="'+(prefs.privateAccount?'true':'false')+'" onclick="vyToggleSetting(\'privateAccount\')">'+(prefs.privateAccount?'On':'Off')+'</button></div></div>'+
+  '<div class="vy-settings-group"><h4>▶ Playback</h4><div class="vy-settings-row"><div><b>Autoplay Reels</b><div class="small">Automatically play the visible Reel while browsing</div></div><button class="secondary-btn" aria-pressed="'+(prefs.autoplay?'true':'false')+'" onclick="vyToggleSetting(\'autoplay\')">'+(prefs.autoplay?'On':'Off')+'</button></div></div>'+
+  '<div class="vy-settings-group"><h4>🔔 Notifications</h4><div class="vy-settings-row"><div><b>Activity preference</b><div class="small">Saves your notification preference on this device; push alerts are not enabled</div></div><button class="secondary-btn" aria-pressed="'+(prefs.notifications?'true':'false')+'" onclick="vyToggleSetting(\'notifications\')">'+(prefs.notifications?'On':'Off')+'</button></div></div>'+
+  '<div class="vy-settings-group"><h4>🎨 Appearance</h4><div class="vy-settings-row"><div><b>Dark appearance</b><div class="small">Switch the VYBORA screen between dark and light themes</div></div><button class="secondary-btn" aria-pressed="'+(prefs.darkMode?'true':'false')+'" onclick="vyToggleSetting(\'darkMode\')">'+(prefs.darkMode?'On':'Off')+'</button></div></div>'+
+  '<p class="small">Settings are saved in this browser. Account privacy enforcement and push notifications need additional server-side setup.</p>';
+ }else if(page==='profile'){
   const s=vyState(),name=s.profile||'your_profile',posts=document.querySelectorAll('#vyFeed [data-vy-id]').length;
   panel.innerHTML='<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div class="vy-avatar" style="width:64px;height:64px;font-size:24px">'+name.charAt(0).toUpperCase()+'</div><div><h3 style="margin:0">'+name.replace(/[&<>"]/g,'')+'</h3><p class="small">Your VYBORA creator profile</p></div><button class="secondary-btn" onclick="vyEditProfile()">✏️ Edit profile</button></div><div class="vy-tabs" style="margin-top:20px"><button>'+posts+' Reels</button><button>'+(s.follows||[]).length+' Following</button><button>'+(s.saved||[]).length+' Saved</button></div><p class="small">Your local profile details are saved on this device only.</p><button class="primary-btn" onclick="vyNavigate(\'create\')">＋ Create a Reel</button>';
  }
 };
-window.vyToggleSetting=function(key){const settings=Object.assign({notifications:true,darkMode:true,privateAccount:false},vyState().settings||{});settings[key]=!settings[key];vySaveState({settings});window.vyNavigate('settings');};
+window.vyToggleSetting=function(key){const settings=Object.assign({notifications:true,darkMode:true,privateAccount:false,autoplay:true},vyState().settings||{});settings[key]=!settings[key];vySaveState({settings});document.body.classList.toggle('vy-light-mode',!settings.darkMode);if(key==='autoplay'&&window.vyInitReels)window.vyInitReels();window.vyNavigate('settings');};
 function vyEscape(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 window.vySendMessage=function(){const input=$('vyMessageInput');if(!input||!input.value.trim())return;const chats=vyState().chats||{},list=chats['vybora.daily']||[];list.push({mine:true,text:input.value.trim(),at:Date.now()});chats['vybora.daily']=list;vySaveState({chats});vyNavigate('inbox');};
 window.vyAddActivity=function(title,detail,icon){const s=vyState(),activity=s.activity||[];activity.push({title,detail,icon,at:Date.now()});vySaveState({activity:activity.slice(-50)});};
