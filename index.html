@@ -1598,15 +1598,22 @@ function resetPreferences(){
  };
  window.vySaveNewPassword=async function(){
   const password=el('vyNewPassword').value;
+  const btn=el('vyRecoveryForm').querySelector('button');
   if(password.length<6){say('Your new password must have at least 6 characters.');return;}
-  say('Updating your password…');
-  const r=await db.auth.updateUser({password:password});
-  if(r.error){say(r.error.message);return;}
-  recoveryMode=false;
-  const u=await db.auth.getUser();
-  if(u.data&&u.data.user){currentUser=u.data.user;await profileFor(currentUser);await signedIn();}
-  el('vyNewPassword').value='';
-  say('Your password has been updated successfully. You are now logged in.');
+  if(btn)btn.disabled=true;
+  say('Checking your password-reset session…');
+  try{
+   const sessionResult=await Promise.race([db.auth.getSession(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Recovery session check timed out. Reopen the newest password-reset email link.')),12000))]);
+   if(sessionResult.error)throw sessionResult.error;
+   if(!sessionResult.data||!sessionResult.data.session)throw new Error('Password-reset session missing or expired. Open the newest reset email link again, then return here.');
+   say('Updating your password…');
+   const result=await Promise.race([db.auth.updateUser({password:password}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Password update timed out. Check your connection, then reopen the reset email link and try again.')),20000))]);
+   if(result.error)throw result.error;
+   recoveryMode=false;el('vyNewPassword').value='';
+   el('vyRecoveryForm').hidden=true;el('vyRecoveryForm').style.display='none';el('vyAuthForm').hidden=false;
+   say('Password updated successfully. You can now log in with your new password.');
+  }catch(error){say('Could not update password: '+(error&&error.message?error.message:'Please reopen the latest reset email link and try again.'));}
+  finally{if(btn)btn.disabled=false;}
  };
  function showRecoveryForm(){
   el('vyAuthForm').hidden=true;
