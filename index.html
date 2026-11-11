@@ -2284,6 +2284,24 @@ function resetPreferences(){
  },true);
 })();
 </script>
+<script>
+/* Reliable home tool-card dispatcher: route taps directly to the requested workspace page. */
+(function(){
+ if(window.__finframeToolCardsReady)return;
+ window.__finframeToolCardsReady=true;
+ document.addEventListener('click',function(event){
+  const card=event.target&&event.target.closest&&event.target.closest('#homeToolGrid .tool-card');
+  if(!card)return;
+  const match=(card.getAttribute('onclick')||'').match(/openTool\(['"]([a-z]+)['"]\)/);
+  const page=match&&match[1];
+  if(!page||typeof window.show!=='function')return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  window.show(page);
+  if(typeof window.saveRecent==='function')window.saveRecent(page);
+ },true);
+})();
+</script>
 
 
 </body>
