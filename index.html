@@ -1635,9 +1635,9 @@ function resetPreferences(){
    const r=await withTimeout(db.auth.signInWithPassword({email:email,password:password}),15000,'Login request');
    if(r.error){say(r.error.message);return;}
    currentUser=r.data.user;
-   say('Login successful. Loading your profile…');
-   await withTimeout(profileFor(currentUser),12000,'Profile setup');
+   say('Login successful. Connecting your VYBORA account…');
    await signedIn();
+   withTimeout(profileFor(currentUser),12000,'Profile setup').then(()=>say('You are logged in. Your profile is ready.')).catch(err=>{console.warn('VYBORA profile setup:',err);say('You are logged in, but your profile could not sync yet. Check your internet and try Edit profile later.');});
   }catch(err){
    say('Login could not finish: '+(err&&err.message?err.message:String(err)));
    console.error('VYBORA login error:',err);
@@ -1649,7 +1649,7 @@ function resetPreferences(){
   el('vyAuthSignedIn').style.display='flex';
   el('vyAuthUser').textContent=(currentUser.email||'')+' · Signed in';
   say('Your account is connected. Reels you publish are saved online for other VYBORA users.');
-  await loadFeed();if(window.vyLoadStories)await window.vyLoadStories();
+  loadFeed().catch(err=>console.warn('VYBORA feed load:',err));if(window.vyLoadStories)Promise.resolve(window.vyLoadStories()).catch(err=>console.warn('VYBORA stories load:',err));
   if(channel)db.removeChannel(channel);
   channel=db.channel('vybora-live-posts').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},()=>loadFeed()).subscribe();
  }
