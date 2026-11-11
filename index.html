@@ -1699,22 +1699,28 @@ function resetPreferences(){
   if(r.error){say(r.error.message);return;}await window.vyCloudShowComments(id);await loadFeed();
  };
  window.vyUpload=async function(){
-  if(!currentUser){say('Log in before publishing a Reel.');return;}
-  const file=el('vyVideoFile').files[0],caption=el('vyCaptionInput').value.trim();
-  if(!file){el('vyUploadStatus').textContent='Choose a video file first.';return;}
-  if(file.size>100*1024*1024){el('vyUploadStatus').textContent='Please choose a video smaller than 100 MB.';return;}
-  if(!file.type.startsWith('video/')){el('vyUploadStatus').textContent='Please choose a video file.';return;}
-  el('vyUploadStatus').textContent='Uploading video to VYBORA…';
-  const ext=(file.name.split('.').pop()||'mp4').toLowerCase().replace(/[^a-z0-9]/g,'')||'mp4';
-  const path=currentUser.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
-  const up=await db.storage.from('vybora-media').upload(path,file,{contentType:file.type,upsert:false});
-  if(up.error){el('vyUploadStatus').textContent=up.error.message;return;}
-  const pub=db.storage.from('vybora-media').getPublicUrl(path).data.publicUrl;
-  const post=await db.from('posts').insert({user_id:currentUser.id,caption:caption,media_url:pub,media_type:'video'});
-  if(post.error){el('vyUploadStatus').textContent='Upload finished, but post save failed: '+post.error.message;return;}
-  el('vyUploadStatus').textContent='Your Reel is now published online!';
-  el('vyVideoFile').value='';el('vyCaptionInput').value='';
-  await loadFeed();
+  const status=el('vyUploadStatus');
+  try{
+   if(!currentUser){status.textContent='Log in before publishing a Reel.';return;}
+   const file=el('vyVideoFile').files[0],caption=el('vyCaptionInput').value.trim();
+   if(!file){status.textContent='Choose a video file first.';return;}
+   if(file.size>100*1024*1024){status.textContent='Please choose a video smaller than 100 MB.';return;}
+   if(!file.type.startsWith('video/')){status.textContent='Please choose a video file.';return;}
+   status.textContent='Uploading video to VYBORA…';
+   const ext=(file.name.split('.').pop()||'mp4').toLowerCase().replace(/[^a-z0-9]/g,'')||'mp4';
+   const path=currentUser.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
+   const up=await db.storage.from('vybora-media').upload(path,file,{contentType:file.type,upsert:false});
+   if(up.error){status.textContent='Video upload failed: '+up.error.message;return;}
+   const pub=db.storage.from('vybora-media').getPublicUrl(path).data.publicUrl;
+   const post=await db.from('posts').insert({user_id:currentUser.id,caption:caption,media_url:pub,media_type:'video'});
+   if(post.error){status.textContent='Video uploaded, but Reel save failed: '+post.error.message;return;}
+   status.textContent='Your Reel is now published online!';
+   el('vyVideoFile').value='';el('vyCaptionInput').value='';
+   await loadFeed();
+  }catch(err){
+   status.textContent='Upload stopped: '+(err&&err.message?err.message:String(err))+' — please try again.';
+   console.error('VYBORA upload error:',err);
+  }
  };
  db.auth.getSession().then(async r=>{
   if(recoveryMode){showRecoveryForm();}
