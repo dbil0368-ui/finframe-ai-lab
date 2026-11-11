@@ -748,7 +748,7 @@ body.hide-tool-descriptions .tool-card span{display:none}
   <div class="vy-wrap">
    <div>
     <div class="vy-stories" id="vyStoriesCloud" aria-label="Stories"><button class="vy-story own" type="button" onclick="vyAddStory()"><span>＋</span><small>Your story</small></button><span class="small">Loading stories…</span></div>
-    <div class="vy-search"><input id="vySearchInput" type="text" placeholder="🔎 Search captions or #hashtags" oninput="vyRenderFeed()"><button class="secondary-btn" onclick="document.getElementById('vySearchInput').value='';vyRenderFeed()">Clear</button></div>
+    <div class="vy-search"><input id="vySearchInput" type="text" placeholder="🔎 Search captions or #hashtags" oninput="vyRenderFeed();if(window.vyReloadFeed)window.vyReloadFeed()"><button class="secondary-btn" onclick="document.getElementById('vySearchInput').value='';vyRenderFeed()">Clear</button></div>
     <div class="vy-tabs" aria-label="Reels feed filters">
      <button class="active" data-vy-filter="for-you" onclick="vySetFilter('for-you',this)">✨ For You</button>
      <button data-vy-filter="following" onclick="vySetFilter('following',this)">👥 Following</button>
@@ -1673,7 +1673,7 @@ function resetPreferences(){
    if(el('vyFollowingCount'))el('vyFollowingCount').textContent=String(followingCount.count||0);
    if(el('vyFollowerCount'))el('vyFollowerCount').textContent=String(followerCount.count||0);
   }
-  if(!r.data.length){host.innerHTML='';return;}
+  if(!r.data.length){host.innerHTML='<div class="vy-empty">No Reels yet. Be the first to publish a photo or video!</div>';return;}
   const ids=[...new Set(r.data.map(p=>p.user_id))];
   const pr=await db.from('profiles').select('id,username,full_name,avatar_url').in('id',ids);
   const profiles={};(pr.data||[]).forEach(p=>profiles[p.id]=p);
@@ -1688,6 +1688,9 @@ function resetPreferences(){
   let visiblePosts=r.data;
   if(window.vyFilter==='following')visiblePosts=visiblePosts.filter(p=>following.includes(p.user_id));
   if(window.vyFilter==='saved')visiblePosts=visiblePosts.filter(p=>savedIds.includes(p.id));
+  const searchText=(el('vySearchInput')?.value||'').trim().toLowerCase();
+  if(searchText)visiblePosts=visiblePosts.filter(p=>(p.caption||'').toLowerCase().includes(searchText));
+  if(!visiblePosts.length){host.innerHTML='<div class="vy-empty">'+(window.vyFilter==='saved'?'No saved Reels yet. Tap Save on a post to keep it here.':window.vyFilter==='following'?'No Reels from followed creators yet.':'No Reels match your search. Try another word or hashtag.')+'</div>';return;}
   host.innerHTML=visiblePosts.map(p=>{
    const user=profiles[p.user_id]||{},name=user.username||user.full_name||'VYBORA creator';
    const count=likes.filter(x=>x.post_id===p.id).length,liked=!!(currentUser&&likes.some(x=>x.post_id===p.id&&x.user_id===currentUser.id));
