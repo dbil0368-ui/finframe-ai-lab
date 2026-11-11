@@ -1,6 +1,4 @@
-import { generateText } from "ai";
-
-const MODEL = process.env.AI_GATEWAY_MODEL || "openai/gpt-5-mini";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -9,6 +7,13 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Use POST for Creator Studio." });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return res.status(503).json({
+      error: "Gemini is not configured yet. Add GEMINI_API_KEY to the Vercel Preview environment."
+    });
   }
 
   const body = req.body || {};
@@ -20,7 +25,8 @@ export default async function handler(req, res) {
   if (!topic) return res.status(400).json({ error: "Please enter a topic." });
 
   const prompt = [
-    "Create a practical, original creative brief. Do not invent facts, statistics, quotes, or current events. If the topic needs verification, clearly mark claims to verify.",
+    "You are VYBORA Creator Studio, an ethical creator strategist. Create a practical, original creative brief. Be specific, fresh, safe, and concise.",
+    "Do not invent facts, statistics, quotes, or current events. If the topic needs verification, clearly mark claims to verify.",
     "Write in " + language + ".",
     "Audience: " + audience,
     "Format: " + format,
@@ -29,45 +35,53 @@ export default async function handler(req, res) {
   ].join("\n");
 
   try {
-    // The AI SDK's default Gateway provider automatically uses Vercel OIDC
-    // on Preview/Production deployments, without manually forwarding tokens.
-    const result = await generateText({
-      model: MODEL,
-      system: "You are VYBORA Creator Studio, an ethical creator strategist. Be specific, fresh, safe, and concise.",
-      prompt,
-      maxOutputTokens: 1100,
-      timeout: 45000,
-      maxRetries: 0
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey
+        },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 1100 }
+        }),
+        signal: AbortSignal.timeout(45000)
+      }
+    );
 
-    if (typeof result.text !== "string" || !result.text.trim()) {
-      return res.status(502).json({ error: "AI returned an empty brief. Please try again." });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const providerMessage = String(data?.error?.message || "");
+      console.error("[VYBORA Creator] Gemini request failed", {
+        status: response.status,
+        message: providerMessage.slice(0, 220)
+      });
+      if (response.status === 401 || response.status === 403) {
+        return res.status(502).json({ error: "Gemini API key was rejected. Check the GEMINI_API_KEY configured for this Preview deployment." });
+      }
+      if (response.status === 429) {
+        return res.status(429).json({ error: "Gemini free-tier usage limit reached. Please wait and try again." });
+      }
+      return res.status(502).json({ error: "Gemini could not generate the brief. Please try again." });
     }
 
-    return res.status(200).json({
-      brief: result.text.trim(),
-      model: result.response?.modelId || MODEL
-    });
+    const brief = (data?.candidates?.[0]?.content?.parts || [])
+      .map(part => typeof part.text === "string" ? part.text : "")
+      .join("\n")
+      .trim();
+
+    if (!brief) {
+      return res.status(502).json({ error: "Gemini returned an empty brief. Please try again." });
+    }
+
+    return res.status(200).json({ brief, model: MODEL });
   } catch (error) {
-    const message = String(error?.message || "");
-    const status = Number(error?.statusCode || error?.status || error?.response?.status || 0);
-    console.error("[VYBORA Creator] AI generation failed", {
-      status: status || null,
+    console.error("[VYBORA Creator] Gemini request error", {
       errorName: String(error?.name || "Error").slice(0, 80),
-      message: message.replace(/Bearer\s+\S+/gi, "Bearer [redacted]").slice(0, 240),
-      oidcAvailable: Boolean(process.env.VERCEL_OIDC_TOKEN),
-      apiKeyAvailable: Boolean(process.env.AI_GATEWAY_API_KEY)
+      message: String(error?.message || "").slice(0, 180)
     });
-
-    if (status === 401 || status === 403 || /unauthori[sz]ed|forbidden|authentication/i.test(message)) {
-      return res.status(502).json({ error: "AI Gateway authentication failed. Preview OIDC access needs attention." });
-    }
-    if (status === 402 || /insufficient_funds|customer_verification_required|quota_for_entity_exceeded/i.test(message)) {
-      return res.status(402).json({ error: "AI Gateway needs billing verification or available credits. Check Vercel AI Gateway billing." });
-    }
-    if (status === 429) {
-      return res.status(429).json({ error: "AI usage limit reached. Please try again later." });
-    }
-    return res.status(502).json({ error: "AI service is temporarily unavailable. Please try again." });
+    return res.status(502).json({ error: "Gemini service is temporarily unavailable. Please try again." });
   }
 }
