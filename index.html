@@ -1234,29 +1234,6 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 }
 <\/script>
 
-
-
-<script>
-/* Reliable mobile bottom-navigation dispatcher: handle taps before legacy inline handlers. */
-(function(){
- if(window.__vyBottomNavReady)return;
- window.__vyBottomNavReady=true;
- document.addEventListener('click',function(event){
-  const button=event.target&&event.target.closest&&event.target.closest('#vybora .vy-main-nav button[data-vy-page]');
-  if(!button)return;
-  const page=button.dataset.vyPage;
-  if(!page||typeof window.vyNavigate!=='function')return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  document.body.classList.toggle('vy-reels-mode',page==='reels');
-  document.querySelectorAll('#vybora .vy-main-nav button').forEach(function(item){
-   item.classList.toggle('active',item===button);
-  });
-  try{window.vyNavigate(page,button);}
-  catch(error){console.error('VYBORA navigation error:',error);const panel=document.getElementById('vyPagePanel');if(panel){panel.hidden=false;panel.textContent='এই পেজটি খুলতে সমস্যা হচ্ছে। আবার চেষ্টা করো।';}}
- },true);
-})();
-</script>
 </body></html>`;
  }
  const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
