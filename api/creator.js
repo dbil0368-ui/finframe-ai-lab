@@ -1,4 +1,4 @@
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -49,8 +49,7 @@ export default async function handler(req, res) {
             contents: [{ role: "user", parts: [{ text: prompt }] }],
             generationConfig: {
               maxOutputTokens: 850,
-              thinkingConfig: { thinkingLevel: "LOW" }
-            }
+                          }
           }),
           signal: AbortSignal.timeout(75000)
         }
@@ -65,7 +64,7 @@ export default async function handler(req, res) {
           attempt: attempt + 1
         });
         if ((response.status === 503 || response.status === 504) && attempt === 0) {
-          await new Promise(resolve => setTimeout(resolve, 1200));
+          await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
           continue;
         }
         if (response.status === 401 || response.status === 403) {
@@ -74,7 +73,7 @@ export default async function handler(req, res) {
         if (response.status === 429) {
           return res.status(429).json({ error: "Gemini free-tier usage limit reached. Please wait and try again." });
         }
-        return res.status(502).json({ error: "Gemini could not generate the brief. Please try again." });
+        return res.status(502).json({ error: "Gemini is temporarily busy. Please try again in a minute." });
       }
 
       const brief = (data?.candidates?.[0]?.content?.parts || [])
