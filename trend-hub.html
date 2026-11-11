@@ -21,7 +21,7 @@
   <button data-view="studio">✧ &nbsp; Creator Studio</button>
   <button data-view="planner">▦ &nbsp; Content Planner</button>
  </nav>
- <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends and plan original content. Live trend feeds and AI services will be connected in a later phase.</div>
+ <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends and plan original content. Live Google Trends RSS is now connected for supported regions. AI generation and cloud sync are planned next.</div>
 </aside>
 <main class="main">
  <header class="top"><div class="crumb">Workspace / <b id="crumb">Overview</b></div><div class="avatar">V</div></header>
@@ -40,13 +40,13 @@
     <article class="tool-card"><div class="tool-icon">🗓️</div><h3>Content Planner</h3><p>Save draft ideas in this browser and build a simple publishing queue.</p><button class="ghost" data-go="planner">Open Planner →</button></article>
     <article class="tool-card"><div class="tool-icon">🧭</div><h3>Our direction</h3><p>Independent creator intelligence—not an Instagram clone. Original identity, tools and workflow.</p><span class="tag">BUILDING IN PUBLIC</span></article>
    </div>
-   <div class="notice">Prototype note: trend examples are illustrative placeholders, not verified live Google Trends rankings. No external AI generation or live data connection is active in this first preview.</div>
+   <div class="notice">Prototype note: trend examples are illustrative placeholders, not verified live Google Trends rankings. Live Trend Radar is connected through a cached server endpoint. AI generation and cloud sync are not active yet.</div>
   </section>
   <section class="view" id="trends">
-   <div class="eyebrow">Discover signals</div><h1 class="heading">Trend Radar</h1><p class="sub">Browse example trend themes and turn a topic into a content opportunity. Live regional data will be integrated after source and API validation.</p>
-   <div class="filters" id="trendFilters"><button class="active" data-filter="All">All</button><button data-filter="Entertainment">Entertainment</button><button data-filter="Sports">Sports</button><button data-filter="Technology">Technology</button><button data-filter="Culture">Culture</button></div>
-   <div class="trend-list" id="trendList"></div>
-   <div class="notice">These are demonstration topics for the prototype, not a live or ranked search report. Always verify a trend's current interest and source before publishing.</div>
+   <div class="eyebrow">Live search signals</div><h1 class="heading">Trend Radar</h1><p class="sub">See Google's public Trending Now RSS feed for a selected country. Search volume is an approximate bucket, not an exact count.</p>
+   <div class="panel" style="margin:20px 0"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label for="trendRegion"><b>Region</b></label><select id="trendRegion" class="field" style="width:auto;min-width:150px"><option value="IN">India</option><option value="BD">Bangladesh</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="SG">Singapore</option><option value="DE">Germany</option><option value="FR">France</option><option value="JP">Japan</option></select><button class="primary" id="refreshTrends">Refresh trends ↻</button><span id="trendStatus" class="muted" aria-live="polite">Not loaded yet</span></div></div>
+   <div class="trend-list" id="trendList"><div class="panel muted">Loading current trends…</div></div>
+   <div class="notice">Source: Google Trends public RSS. This feed currently provides a limited set of recent trends and approximate traffic labels. It is not the full Trends dataset and VYBORA is not affiliated with Google.</div>
   </section>
   <section class="view" id="studio">
    <div class="eyebrow">Create with intention</div><h1 class="heading">Creator Studio</h1><p class="sub">Start with a topic. Get a structured creative brief you can edit and develop into an original post or short video.</p>
@@ -58,22 +58,14 @@
    <div class="panel" style="max-width:780px;margin-top:22px"><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="field" id="planInput" placeholder="Add a content idea…" style="flex:1;min-width:180px"><button class="primary" id="addPlan">Add idea +</button></div><div id="planList" style="margin-top:16px"></div></div>
    <div class="notice">Planner items are stored locally in this browser only. They are not synced to an account or cloud yet.</div>
   </section>
-  <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.1</footer>
+  <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.2</footer>
  </div>
 </main>
 </div>
 <script>
-const topics=[
- {name:"New film & series conversations",cat:"Entertainment",icon:"🎬",note:"Review formats, audience reactions and explainers"},
- {name:"Cricket match moments",cat:"Sports",icon:"🏏",note:"Short analysis, fan reactions and match-day stories"},
- {name:"AI tools for everyday work",cat:"Technology",icon:"🤖",note:"Beginner tutorials, comparisons and practical demos"},
- {name:"Local food discoveries",cat:"Culture",icon:"🍜",note:"Local creator stories, recipes and neighbourhood guides"},
- {name:"Music and pop-culture moments",cat:"Entertainment",icon:"🎧",note:"Original commentary, recommendations and edits"},
- {name:"Study and career skills",cat:"Technology",icon:"📚",note:"Quick explainers, checklists and learning journeys"},
- {name:"Festivals and community stories",cat:"Culture",icon:"🎉",note:"Traditions, local voices and useful guides"}
-];
-function renderTrends(filter="All"){document.getElementById("trendList").innerHTML=topics.filter(t=>filter==="All"||t.cat===filter).map(t=>'<div class="trend"><div class="emoji">'+t.icon+'</div><div><strong>'+t.name+'</strong><small>'+t.note+'</small></div><span class="tag">'+t.cat+'</span></div>').join("")}
-renderTrends();
+function escapeText(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function loadTrends(){const region=document.getElementById("trendRegion").value;const list=document.getElementById("trendList"),status=document.getElementById("trendStatus"),btn=document.getElementById("refreshTrends");btn.disabled=true;status.textContent="Fetching Google Trends…";list.innerHTML='<div class="panel muted">Loading current trends…</div>';try{const response=await fetch("/api/trends?geo="+encodeURIComponent(region),{headers:{Accept:"application/json"}});const data=await response.json();if(!response.ok)throw new Error(data.error||"Trend feed unavailable");if(!data.items||!data.items.length)throw new Error("No trends were returned for this region.");list.innerHTML=data.items.map(item=>'<div class="trend"><div class="emoji">↗</div><div><strong>'+escapeText(item.title)+'</strong><small>Approx. searches: '+escapeText(item.traffic||"Not provided")+' · '+escapeText(item.published||"Recent")+'</small></div><span class="tag">#'+item.rank+'</span></div>').join("");status.textContent="Updated "+new Date(data.updatedAt).toLocaleTimeString()+" · "+data.region;}catch(error){list.innerHTML='<div class="panel"><b>Could not load live trends</b><p class="muted">'+escapeText(error.message)+'</p><button class="ghost" onclick="loadTrends()">Try again</button></div>';status.textContent="Feed unavailable";}finally{btn.disabled=false}}
+document.getElementById("refreshTrends").addEventListener("click",loadTrends);document.getElementById("trendRegion").addEventListener("change",loadTrends);loadTrends();
 function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner"})[id];window.scrollTo({top:0,behavior:"smooth"})}
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
