@@ -1126,7 +1126,7 @@ window.vyNavigate=function(page,button){
  }else if(page==='create'){
   panel.hidden=true;wrap.hidden=false;const creator=document.querySelector('#vybora .vy-upload');if(creator)creator.scrollIntoView({behavior:'smooth',block:'center'});return;
  }else if(page==='inbox'){
-  const chats=vyState().chats||{};const chat=chats['vybora.daily']||[];panel.innerHTML='<h3>✉ Inbox</h3><p class="small">Local demo chat · messages stay on this device and are not sent to another person.</p><div class="vy-inbox-item"><div class="vy-avatar">V</div><div style="flex:1"><b>vybora.daily</b><div class="small">VYBORA community demo</div></div><span class="small">Demo</span></div><div id="vyChatLog" style="display:grid;gap:8px;max-height:280px;overflow:auto;padding:12px 0">'+(chat.length?chat.map(function(m){return '<div style="justify-self:'+(m.mine?'end':'start')+';max-width:85%;padding:9px 12px;border-radius:12px;background:var(--panel2)">'+vyEscape(m.text)+'</div>';}).join(''):'<div class="vy-empty">Start a local demo conversation below.</div>')+'</div><div style="display:flex;gap:8px;align-items:center"><input id="vyMessageInput" type="text" placeholder="Write a message..." style="flex:1;min-width:0"><button class="primary-btn" onclick="vySendMessage()">Send</button></div><p class="small">Real person-to-person messaging needs user accounts and a shared backend.</p>';
+  panel.innerHTML='<h3>✉ Inbox</h3><p class="small">Search a VYBORA username to start a private conversation.</p><div style="display:flex;gap:8px"><input id="vyChatSearch" placeholder="Username" style="flex:1;min-width:0"><button class="secondary-btn" onclick="vyFindChatUser()">Find</button></div><div id="vyChatMatches" style="margin-top:10px"></div><div id="vyChatHeader" class="small" style="margin-top:14px">Choose a creator to open chat.</div><div id="vyChatLog" style="display:grid;gap:8px;max-height:42vh;overflow:auto;padding:12px 0"></div><div style="display:flex;gap:8px;align-items:center"><input id="vyMessageInput" type="text" placeholder="Write a message..." style="flex:1;min-width:0"><button class="primary-btn" onclick="vySendMessage()">Send</button></div>';
  }else if(page==='notifications'){
   const items=vyState().activity||[];panel.innerHTML='<h3>♡ Activity</h3><p class="small">Your activity on this device.</p>'+(items.length?items.slice().reverse().map(function(a){return '<div class="vy-inbox-item"><div class="vy-avatar">'+vyEscape(a.icon||'♡')+'</div><div><b>'+vyEscape(a.title)+'</b><div class="small">'+vyEscape(a.detail||'')+'</div></div></div>';}).join(''):'<div class="vy-empty">No activity yet. Your local interactions will appear here.</div>');
  }else if(page==='settings'){
@@ -2053,6 +2053,28 @@ function resetPreferences(){
   const exists=btn.getAttribute('aria-pressed')==='true';
   const r=exists?await db.from('likes').delete().eq('post_id',id).eq('user_id',currentUser.id):await db.from('likes').insert({post_id:id,user_id:currentUser.id});
   if(r.error){say(r.error.message);return;}await loadFeed();
+ };
+ window.vyFindChatUser=async function(){
+  const input=el('vyChatSearch'),host=el('vyChatMatches'),term=(input&&input.value||'').trim();if(!host||!term)return;if(!currentUser){host.textContent='Log in first.';return;}
+  const r=await db.from('profiles').select('id,username,full_name,is_private').ilike('username','%'+term.replace(/[%_]/g,'')+'%').neq('id',currentUser.id).limit(10);
+  if(r.error){host.textContent=r.error.message;return;}host.innerHTML=r.data.length?r.data.map(p=>'<button class="secondary-btn" style="margin:3px" onclick="vyOpenChat(\\''+esc(p.id)+'\\',\\''+esc(p.username||p.full_name||'Creator')+'\\')">'+esc(p.username||p.full_name||'Creator')+'</button>').join(''):'No creators found.';
+ };
+ window.vyOpenChat=async function(id,name){
+  window.vyActiveChatUser=id;const h=el('vyChatHeader');if(h)h.textContent='Chat with '+name;await window.vyLoadChat();
+ };
+ window.vyLoadChat=async function(){
+  const host=el('vyChatLog');if(!host||!window.vyActiveChatUser||!currentUser)return;
+  const uid=currentUser.id,other=window.vyActiveChatUser;
+  const r=await db.from('messages').select('id,sender_id,receiver_id,body,created_at').or('and(sender_id.eq.'+uid+',receiver_id.eq.'+other+'),and(sender_id.eq.'+other+',receiver_id.eq.'+uid+')').order('created_at',{ascending:true}).limit(100);
+  if(r.error){host.textContent='Could not load messages: '+r.error.message;return;}
+  host.innerHTML=r.data.length?r.data.map(m=>'<div style="justify-self:'+(m.sender_id===uid?'end':'start')+';max-width:85%;padding:9px 12px;border-radius:12px;background:var(--panel2)">'+esc(m.body)+'</div>').join(''):'<div class="vy-empty">No messages yet. Say hello!</div>';
+  const unread=r.data.filter(m=>m.receiver_id===uid&&!m.read_at).map(m=>m.id);
+  if(unread.length)await db.from('messages').update({read_at:new Date().toISOString()}).in('id',unread);
+ };
+ window.vySendMessage=async function(){
+  const input=el('vyMessageInput'),body=(input&&input.value||'').trim();if(!body||!window.vyActiveChatUser||!currentUser){say('Choose a creator first.');return;}
+  const r=await db.from('messages').insert({sender_id:currentUser.id,receiver_id:window.vyActiveChatUser,body});
+  if(r.error){say('Message could not be sent: '+r.error.message);return;}input.value='';await window.vyLoadChat();
  };
  window.vySetPrivateAccount=async function(){
   if(!currentUser){say('Log in first.');return;}
