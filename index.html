@@ -360,6 +360,10 @@ body.vybora-mode #vybora .vy-search{padding:0 2px}
 body.vybora-mode #vybora .vy-tabs{padding:0 2px}
 body.vybora-mode #vybora .vy-card{border-radius:13px;background:#12101e;border:1px solid #29243a;margin-bottom:14px}
 body.vybora-mode #vybora .vy-video{height:min(70svh,680px);min-height:420px;border-radius:0}
+/* Normal-size uploaded videos in the regular feed; Reels keeps its full-screen layout */
+body.vybora-mode:not(.vy-reels-mode) #vyCloudFeed video.vy-reel-media{display:block!important;width:100%!important;height:auto!important;max-height:480px!important;aspect-ratio:4/5!important;object-fit:contain!important;background:#000!important}
+body.vybora-mode:not(.vy-reels-mode) #vyCloudFeed .vy-card>video{display:block!important;width:100%!important;height:auto!important;max-height:480px!important;aspect-ratio:4/5!important;object-fit:contain!important;background:#000!important}
+
 body.vybora-mode #vybora .vy-actions{gap:6px}
 body.vybora-mode #vybora .vy-actions button{font-size:12px;padding:9px 10px}
 body.vybora-mode #vybora .vy-page-panel{max-width:680px;margin:10px auto 90px;border-radius:14px;background:#12101e;border-color:#29243a}
