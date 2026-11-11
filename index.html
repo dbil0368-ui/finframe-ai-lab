@@ -1134,7 +1134,7 @@ window.toggleMobileMenu=function(){
  if(document.body.classList.contains('vybora-mode')){
   let menu=document.getElementById('vyMenuPopover');
   if(!menu){
-   menu=document.createElement('div');menu.id='vyMenuPopover';menu.className='vy-menu-popover';
+   menu=document.createElement('div');menu.id='vyMenuPopover';menu.className='vy-menu-popover';menu.hidden=true;
    menu.innerHTML="<button type='button' onclick=\"window.vyNavigate('settings');window.toggleMobileMenu()\">⚙️ Settings</button><button type='button' onclick=\"window.vyNavigate('profile');window.toggleMobileMenu()\">◉ Profile</button><button type='button' onclick=\"window.vyNavigate('notifications');window.toggleMobileMenu()\">♡ Activity</button>";
    document.getElementById('vybora')?.appendChild(menu);
   }
