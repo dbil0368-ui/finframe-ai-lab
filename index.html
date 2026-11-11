@@ -1636,7 +1636,7 @@ function resetPreferences(){
   el('vyAuthSignedIn').style.display='flex';
   el('vyAuthUser').textContent=(currentUser.email||'')+' · Signed in';
   say('Your account is connected. Reels you publish are saved online for other VYBORA users.');
-  await loadFeed();await loadStories();
+  await loadFeed();if(window.vyLoadStories)await window.vyLoadStories();
   if(channel)db.removeChannel(channel);
   channel=db.channel('vybora-live-posts').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},()=>loadFeed()).subscribe();
  }
