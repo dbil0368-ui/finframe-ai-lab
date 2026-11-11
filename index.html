@@ -1075,6 +1075,8 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 (function(){
  const db=window.vyClient;if(!db)return;
  const baseNavigate=window.vyNavigate;
+ const baseSetFilter=window.vySetFilter;
+ const baseLoadConversation=window.vyLoadConversation;
  const $=id=>document.getElementById(id);
  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  async function current(){const r=await db.auth.getUser();return r.data&&r.data.user||null;}
@@ -1094,6 +1096,19 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   const names={};(pr.data||[]).forEach(p=>names[p.id]=p.username||p.full_name||'Creator');
   const host=$('vyCloudFeed');if(!host)return;
   host.innerHTML=q.data.map(p=>'<article class="vy-card"><div class="vy-head"><b>'+esc(names[p.user_id])+'</b></div>'+(p.media_type==='image'?'<img src="'+esc(p.media_url)+'" style="width:100%;max-height:620px;object-fit:contain">':'<video src="'+esc(p.media_url)+'" controls playsinline style="width:100%;max-height:620px"></video>')+'<div>'+esc(p.caption)+'</div></article>').join('');
+ };
+ window.vySetFilter=function(filter,btn){
+  if(baseSetFilter)baseSetFilter(filter,btn);
+  if(window.vyReloadFeed)window.vyReloadFeed();
+ };
+ window.vyLoadConversation=async function(other){
+  if(baseLoadConversation)await baseLoadConversation(other);
+  const u=await current();if(!u)return;
+  if(window.vyDmRealtime)db.removeChannel(window.vyDmRealtime);
+  window.vyDmRealtime=db.channel('vybora-dm-'+u.id)
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'receiver_id=eq.'+u.id},payload=>{
+    if(payload.new&&payload.new.sender_id===other&&baseLoadConversation)baseLoadConversation(other);
+   }).subscribe();
  };
  window.vyCloudShare=async function(id){
   const url=location.href.split('#')[0]+'#vybora-post-'+id;
