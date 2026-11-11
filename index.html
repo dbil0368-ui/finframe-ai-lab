@@ -1070,6 +1070,81 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 <\/script>
+
+<script>
+(function(){
+ const db=window.vyClient;if(!db)return;
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function current(){const r=await db.auth.getUser();return r.data&&r.data.user||null;}
+ window.vyCloudBookmark=async function(id,btn){
+  const u=await current();if(!u){alert('Log in to save posts.');return;}
+  const exists=btn.getAttribute('aria-pressed')==='true';
+  const r=exists?await db.from('bookmarks').delete().eq('user_id',u.id).eq('post_id',id):await db.from('bookmarks').insert({user_id:u.id,post_id:id});
+  if(r.error){alert('Could not update saved posts: '+r.error.message);return;}
+  await window.vyRefreshCloudFeed();
+ };
+ window.vyRefreshCloudFeed=async function(){
+  if(typeof window.vyReloadFeed==='function')return window.vyReloadFeed();
+  const u=await current();if(!u)return;
+  const q=await db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').order('created_at',{ascending:false}).limit(40);
+  if(q.error)return;
+  const ids=q.data.map(p=>p.user_id),pr=ids.length?await db.from('profiles').select('id,username,full_name').in('id',ids):{data:[]};
+  const names={};(pr.data||[]).forEach(p=>names[p.id]=p.username||p.full_name||'Creator');
+  const host=$('vyCloudFeed');if(!host)return;
+  host.innerHTML=q.data.map(p=>'<article class="vy-card"><div class="vy-head"><b>'+esc(names[p.user_id])+'</b></div>'+(p.media_type==='image'?'<img src="'+esc(p.media_url)+'" style="width:100%;max-height:620px;object-fit:contain">':'<video src="'+esc(p.media_url)+'" controls playsinline style="width:100%;max-height:620px"></video>')+'<div>'+esc(p.caption)+'</div></article>').join('');
+ };
+ window.vyCloudShare=async function(id){
+  const url=location.href.split('#')[0]+'#vybora-post-'+id;
+  if(navigator.share){try{await navigator.share({title:'VYBORA post',url});}catch(e){}}
+  else if(navigator.clipboard){try{await navigator.clipboard.writeText(url);alert('Post link copied.');}catch(e){alert(url);}}
+  else alert(url);
+ };
+ window.vyNavigate=function(page,button){
+  const base=window.vyNavigateBase;
+  if(page!=='explore'){return base?base(page,button):undefined;}
+  document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));
+  const panel=$('vyPagePanel'),wrap=document.querySelector('#vybora .vy-wrap');
+  if(!panel||!wrap)return;wrap.hidden=true;panel.hidden=false;
+  panel.innerHTML='<h3>⌕ Explore VYBORA</h3><p class="small">Search real VYBORA creators and browse their posts.</p><input id="vyCreatorSearch" type="search" placeholder="Search usernames or names…" style="width:100%;margin:8px 0 14px"><div id="vyCreatorResults">Loading creators…</div>';
+  const load=async function(){
+   const q=await db.from('profiles').select('id,username,full_name,bio,avatar_url').order('created_at',{ascending:false}).limit(100);
+   const host=$('vyCreatorResults');if(!host)return;
+   if(q.error){host.textContent='Could not load creators: '+q.error.message;return;}
+   const render=()=>{
+    const term=($('vyCreatorSearch')?.value||'').trim().toLowerCase();
+    const rows=(q.data||[]).filter(p=>(p.username||'').toLowerCase().includes(term)||(p.full_name||'').toLowerCase().includes(term)||(p.bio||'').toLowerCase().includes(term));
+    host.innerHTML=rows.map(p=>'<div class="vy-inbox-item"><div class="vy-avatar">'+(p.avatar_url?'<img src="'+esc(p.avatar_url)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">':esc((p.username||p.full_name||'V').slice(0,1).toUpperCase()))+'</div><div style="flex:1;min-width:0"><b>'+esc(p.username||p.full_name||'VYBORA member')+'</b><div class="small">'+esc(p.bio||'VYBORA creator')+'</div></div><button class="secondary-btn" onclick="vyOpenCreator(\''+esc(p.id)+'\')">View profile</button></div>').join('')||'<div class="vy-empty">No creators found.</div>';
+   };
+   render();$('vyCreatorSearch')?.addEventListener('input',render);
+  };
+  load();
+ };
+ window.vyOpenCreator=async function(id){
+  const panel=$('vyPagePanel');if(!panel)return;
+  const [p,posts,followers,following]=await Promise.all([
+   db.from('profiles').select('id,username,full_name,bio,avatar_url,website').eq('id',id).maybeSingle(),
+   db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').eq('user_id',id).order('created_at',{ascending:false}).limit(30),
+   db.from('follows').select('follower_id',{count:'exact',head:true}).eq('following_id',id),
+   db.from('follows').select('following_id',{count:'exact',head:true}).eq('follower_id',id)
+  ]);
+  if(p.error||!p.data){panel.innerHTML='<p>Could not load this profile.</p>';return;}
+  const me=await current(),mine=me&&me.id===id;
+  const follow=me&&!mine?await db.from('follows').select('follower_id').eq('follower_id',me.id).eq('following_id',id).maybeSingle():{data:null};
+  const x=p.data;
+  panel.innerHTML='<button class="secondary-btn" onclick="vyNavigate(\'explore\')">← Back to Explore</button><div class="vy-inbox-item" style="margin-top:14px"><div class="vy-avatar">'+(x.avatar_url?'<img src="'+esc(x.avatar_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':esc((x.username||'V').slice(0,1).toUpperCase()))+'</div><div style="flex:1"><b>'+esc(x.username||x.full_name||'Creator')+'</b><div class="small">'+esc(x.bio||'')+'</div><div class="small">'+(posts.count||0)+' posts · '+(followers.count||0)+' followers · '+(following.count||0)+' following</div></div>'+(me&&!mine?'<button class="secondary-btn" onclick="vyToggleCreatorFollow(\''+esc(id)+'\',this)" data-following="'+!!follow.data+'">'+(follow.data?'Following':'＋ Follow')+'</button>':'')+'</div><div id="vyCreatorPosts"></div>';
+  const host=$('vyCreatorPosts');
+  host.innerHTML=(posts.data||[]).map(post=>'<article class="vy-card">'+(post.media_type==='image'?'<img src="'+esc(post.media_url)+'" style="width:100%;max-height:500px;object-fit:contain">':'<video src="'+esc(post.media_url)+'" controls playsinline style="width:100%;max-height:500px"></video>')+'<p>'+esc(post.caption)+'</p></article>').join('')||'<div class="vy-empty">No posts yet.</div>';
+ };
+ window.vyToggleCreatorFollow=async function(id,btn){
+  const me=await current();if(!me)return;
+  const on=btn.dataset.following==='true';
+  const r=on?await db.from('follows').delete().eq('follower_id',me.id).eq('following_id',id):await db.from('follows').insert({follower_id:me.id,following_id:id});
+  if(r.error){alert(r.error.message);return;}btn.dataset.following=String(!on);btn.textContent=on?'＋ Follow':'Following';
+ };
+})();
+</script>
+
 </body></html>`;
  }
  const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
@@ -1673,18 +1748,22 @@ function resetPreferences(){
   const pr=await db.from('profiles').select('id,username,full_name,avatar_url').in('id',ids);
   const profiles={};(pr.data||[]).forEach(p=>profiles[p.id]=p);
   const postIds=r.data.map(p=>p.id);
-  const [lr,cr,mr]=await Promise.all([
+  const [lr,cr,mr,br]=await Promise.all([
    db.from('likes').select('post_id,user_id').in('post_id',postIds),
    db.from('comments').select('post_id').in('post_id',postIds),
-   currentUser?db.from('follows').select('following_id').eq('follower_id',currentUser.id):Promise.resolve({data:[]})
+   currentUser?db.from('follows').select('following_id').eq('follower_id',currentUser.id):Promise.resolve({data:[]}),
+   currentUser?db.from('bookmarks').select('post_id').eq('user_id',currentUser.id):Promise.resolve({data:[]})
   ]);
-  const likes=lr.data||[],comments=cr.data||[],following=(mr.data||[]).map(x=>x.following_id);
-  host.innerHTML=r.data.map(p=>{
+  const likes=lr.data||[],comments=cr.data||[],following=(mr.data||[]).map(x=>x.following_id),savedIds=(br.data||[]).map(x=>x.post_id);
+  let visiblePosts=r.data;
+  if(window.vyFilter==='following')visiblePosts=visiblePosts.filter(p=>following.includes(p.user_id));
+  if(window.vyFilter==='saved')visiblePosts=visiblePosts.filter(p=>savedIds.includes(p.id));
+  host.innerHTML=visiblePosts.map(p=>{
    const user=profiles[p.user_id]||{},name=user.username||user.full_name||'VYBORA creator';
    const count=likes.filter(x=>x.post_id===p.id).length,liked=!!(currentUser&&likes.some(x=>x.post_id===p.id&&x.user_id===currentUser.id));
    const commentCount=comments.filter(x=>x.post_id===p.id).length;
    const media=p.media_type==='image'?'<img src="'+esc(p.media_url)+'" alt="VYBORA post" style="width:100%;max-height:620px;object-fit:contain;background:#08080d">':'<video src="'+esc(p.media_url)+'" controls playsinline preload="metadata" style="width:100%;max-height:620px;background:#08080d"></video>';
-   return '<article class="vy-card" data-vy-cloud-id="'+esc(p.id)+'"><div class="vy-head"><div class="vy-avatar">'+esc(name.slice(0,1).toUpperCase())+'</div><div><strong>'+esc(name)+'</strong><div class="small">VYBORA creator</div></div>'+(currentUser&&p.user_id!==currentUser.id?'<button class="secondary-btn" style="margin-left:auto" onclick="vyCloudFollow(\''+esc(p.user_id)+'\',this)">'+(following.includes(p.user_id)?'Following':'＋ Follow')+'</button>':'')+'</div>'+media+'<div class="vy-actions"><button aria-pressed="'+liked+'" onclick="vyCloudLike(\''+esc(p.id)+'\',this)">'+(liked?'♥':'♡')+' Like <b>'+count+'</b></button><button onclick="vyCloudShowComments(\''+esc(p.id)+'\',this)">💬 Comments ('+commentCount+')</button></div><div class="vy-caption"><strong>'+esc(name)+'</strong> '+esc(p.caption)+'<div class="small">'+new Date(p.created_at).toLocaleString()+'</div></div><div class="vy-comments" id="vyComments-'+esc(p.id)+'"></div></article>';
+   return '<article class="vy-card" data-vy-cloud-id="'+esc(p.id)+'"><div class="vy-head"><div class="vy-avatar">'+esc(name.slice(0,1).toUpperCase())+'</div><div><strong>'+esc(name)+'</strong><div class="small">VYBORA creator</div></div>'+(currentUser&&p.user_id!==currentUser.id?'<button class="secondary-btn" style="margin-left:auto" onclick="vyCloudFollow(\''+esc(p.user_id)+'\',this)">'+(following.includes(p.user_id)?'Following':'＋ Follow')+'</button>':'')+'</div>'+media+'<div class="vy-actions"><button aria-pressed="'+liked+'" onclick="vyCloudLike(\''+esc(p.id)+'\',this)">'+(liked?'♥':'♡')+' Like <b>'+count+'</b></button><button onclick="vyCloudShowComments(\''+esc(p.id)+'\',this)">💬 Comments ('+commentCount+')</button><button aria-pressed="'+savedIds.includes(p.id)+'" onclick="vyCloudBookmark(\''+esc(p.id)+'\',this)">'+(savedIds.includes(p.id)?'✓ Saved':'🔖 Save')+'</button><button onclick="vyCloudShare(\''+esc(p.id)+'\')">↗ Share</button></div><div class="vy-caption"><strong>'+esc(name)+'</strong> '+esc(p.caption)+'<div class="small">'+new Date(p.created_at).toLocaleString()+'</div></div><div class="vy-comments" id="vyComments-'+esc(p.id)+'"></div></article>';
   }).join('');
  }
 
