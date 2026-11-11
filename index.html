@@ -303,6 +303,45 @@ body.no-sticky-header .topbar{position:relative}
 body.hide-sidebar-note .sidebar-note{display:none}
 body.hide-tool-descriptions .tool-card span{display:none}
 
+
+/* VYBORA standalone social-app presentation */
+body.vybora-mode{background:#080711}
+body.vybora-mode .sidebar,body.vybora-mode .topbar,body.vybora-mode .mobile-nav{display:none!important}
+body.vybora-mode .main-area{margin:0;min-height:100dvh}
+body.vybora-mode .content{width:100%;max-width:none;margin:0;padding:0 0 82px}
+body.vybora-mode #vybora{min-height:100dvh;background:#080711;color:#fff}
+body.vybora-mode #vybora>.page-title{display:none}
+body.vybora-mode #vyCloudAuth{max-width:680px!important;margin:0 auto 10px!important;border-radius:0 0 16px 16px!important;background:#151323!important;border-top:0!important;padding:10px 14px!important}
+body.vybora-mode #vyCloudAuth h3{font-size:14px;margin:0 0 4px}
+body.vybora-mode #vyCloudStatus{font-size:12px;margin:2px 0}
+body.vybora-mode #vyAuthForm{grid-template-columns:1fr 1fr!important}
+body.vybora-mode #vyAuthForm input:first-child{display:none}
+body.vybora-mode #vyAuthForm input{min-width:0}
+body.vybora-mode #vyCloudFeed{max-width:680px!important;margin:0 auto!important}
+body.vybora-mode #vybora .vy-main-nav{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:1000;max-width:none;margin:0;padding:7px 3px calc(7px + env(safe-area-inset-bottom));border:0;border-top:1px solid #302842;border-radius:0;background:rgba(12,10,22,.97);backdrop-filter:blur(18px);gap:2px}
+body.vybora-mode #vybora .vy-main-nav button{padding:7px 2px;font-size:11px;color:#bcb5ce}
+body.vybora-mode #vybora .vy-main-nav button span{display:block;margin:3px 0 0;font-size:10px}
+body.vybora-mode #vybora .vy-main-nav button.active{background:transparent;color:#d7b7ff}
+body.vybora-mode #vybora .vy-main-nav button.active:first-letter{color:#c38cff}
+body.vybora-mode #vybora .vy-wrap{display:block;max-width:680px;margin:0 auto;padding:0 10px}
+body.vybora-mode #vybora .vy-side{display:none}
+body.vybora-mode #vybora .vy-stories{border:0;border-radius:0;background:#100e1b;margin:0 -10px 10px;padding:12px 14px}
+body.vybora-mode #vybora .vy-search{padding:0 2px}
+body.vybora-mode #vybora .vy-tabs{padding:0 2px}
+body.vybora-mode #vybora .vy-card{border-radius:13px;background:#12101e;border:1px solid #29243a;margin-bottom:14px}
+body.vybora-mode #vybora .vy-video{height:min(70svh,680px);min-height:420px;border-radius:0}
+body.vybora-mode #vybora .vy-actions{gap:6px}
+body.vybora-mode #vybora .vy-actions button{font-size:12px;padding:9px 10px}
+body.vybora-mode #vybora .vy-page-panel{max-width:680px;margin:10px auto 90px;border-radius:14px;background:#12101e;border-color:#29243a}
+@media(max-width:520px){
+ body.vybora-mode #vybora .vy-wrap{padding:0}
+ body.vybora-mode #vybora .vy-card{border-radius:0;border-left:0;border-right:0;margin-bottom:10px}
+ body.vybora-mode #vybora .vy-video{height:68svh;min-height:390px}
+ body.vybora-mode #vybora .vy-stories{margin-left:0;margin-right:0}
+ body.vybora-mode #vyCloudAuth{margin:0 0 8px!important;border-radius:0 0 14px 14px!important}
+ body.vybora-mode #vyCloudFeed{width:100%}
+ body.vybora-mode #vybora .vy-page-panel{margin:10px 10px 90px;padding:15px}
+}
 </style>
 </head>
 <body>
@@ -899,6 +938,7 @@ document.addEventListener('click',function(event){
 window.show=function(id){
  const target=document.getElementById(id);
  if(!target)return;
+ document.body.classList.toggle('vybora-mode',id==='vybora');
  document.querySelectorAll('main section').forEach(section=>section.classList.remove('active'));
  target.classList.add('active');
  document.querySelectorAll('.side-btn').forEach(button=>{
