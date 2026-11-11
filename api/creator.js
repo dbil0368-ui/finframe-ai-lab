@@ -1,4 +1,4 @@
-const MODEL = process.env.AI_GATEWAY_MODEL || "openai/gpt-5.4";
+const MODEL = process.env.AI_GATEWAY_MODEL || "openai/gpt-5-mini";
 const GATEWAY_URL = "https://ai-gateway.vercel.sh/v1/chat/completions";
 
 module.exports = async function handler(req, res) {
