@@ -1074,6 +1074,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 <script>
 (function(){
  const db=window.vyClient;if(!db)return;
+ const baseNavigate=window.vyNavigate;
  const $=id=>document.getElementById(id);
  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  async function current(){const r=await db.auth.getUser();return r.data&&r.data.user||null;}
@@ -1101,8 +1102,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   else alert(url);
  };
  window.vyNavigate=function(page,button){
-  const base=window.vyNavigateBase;
-  if(page!=='explore'){return base?base(page,button):undefined;}
+  if(page!=='explore'){return baseNavigate?baseNavigate(page,button):undefined;}
   document.querySelectorAll('#vybora .vy-main-nav button').forEach(b=>b.classList.toggle('active',b.dataset.vyPage===page));
   const panel=$('vyPagePanel'),wrap=document.querySelector('#vybora .vy-wrap');
   if(!panel||!wrap)return;wrap.hidden=true;panel.hidden=false;
@@ -1725,6 +1725,7 @@ function resetPreferences(){
   await loadFeed();
  }
  async function loadFeed(){
+  window.vyReloadFeed=loadFeed;
   const host=el('vyCloudFeed');if(!host)return;
   if(currentUser&&typeof window.vyLoadStories==='function')window.vyLoadStories();
   const r=await db.from('posts').select('id,user_id,caption,media_url,media_type,created_at').order('created_at',{ascending:false}).limit(40);
