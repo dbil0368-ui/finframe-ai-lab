@@ -906,6 +906,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
  body:not(.vybora-mode) .topbar .menu-toggle{display:inline-flex!important;position:absolute!important;left:auto!important;right:12px!important;top:50%!important;transform:translateY(-50%)!important;order:2!important;align-items:center!important;justify-content:center!important;flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;margin:0!important;padding:0!important;z-index:2147483003!important;pointer-events:auto!important;touch-action:manipulation!important}
 }
 
+
+@media(max-width:900px){body.vybora-mode .main-area .topbar .menu-toggle{font-size:0!important}body.vybora-mode .main-area .topbar .menu-toggle::before{content:"⚙";font-size:25px!important;line-height:1}}
 /* VYBORA-specific settings page */
 body.vybora-mode #vybora .vy-settings-group{margin:14px 0;padding:14px;border:1px solid #302b3c;border-radius:14px;background:#111}
 body.vybora-mode #vybora .vy-settings-group h4{margin:0 0 8px;color:#f4eaff}
@@ -1121,11 +1123,16 @@ window.closeMobileMenu=function(){
  if(menuButton)menuButton.setAttribute('aria-expanded','false');
 };
 window.toggleMobileMenu=function(){
+ const menuButton=document.querySelector('.menu-toggle');
+ if(document.body.classList.contains('vybora-mode')){
+  if(typeof window.vyNavigate==='function')window.vyNavigate('settings');
+  if(menuButton){menuButton.textContent='⚙';menuButton.setAttribute('aria-label','VYBORA Settings');menuButton.setAttribute('aria-expanded','false');}
+  return;
+ }
  const side=document.querySelector('.sidebar');
  if(!side)return;
  const opened=side.classList.toggle('mobile-open');
  document.body.classList.toggle('menu-open',opened);
- const menuButton=document.querySelector('.menu-toggle');
  if(menuButton)menuButton.setAttribute('aria-expanded',opened?'true':'false');
 };
 document.addEventListener('click',function(event){
