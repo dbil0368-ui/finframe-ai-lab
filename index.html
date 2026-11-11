@@ -342,6 +342,25 @@ body.vybora-mode #vybora .vy-page-panel{max-width:680px;margin:10px auto 90px;bo
  body.vybora-mode #vyCloudFeed{width:100%}
  body.vybora-mode #vybora .vy-page-panel{margin:10px 10px 90px;padding:15px}
 }
+
+/* VYBORA Reels: immersive vertical snap feed */
+body.vybora-mode.vy-reels-mode #vybora .vy-wrap{display:none!important}
+body.vybora-mode.vy-reels-mode #vyCloudFeed{max-width:680px!important;width:100%;height:calc(100svh - 66px - env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior-y:contain;scroll-snap-type:y mandatory;scrollbar-width:none;margin:0 auto!important}
+body.vybora-mode.vy-reels-mode #vyCloudFeed::-webkit-scrollbar{display:none}
+body.vybora-mode.vy-reels-mode #vyCloudFeed>.vy-card{height:calc(100svh - 66px - env(safe-area-inset-bottom));min-height:500px;box-sizing:border-box;margin:0;padding:0 0 12px;border:0;border-bottom:1px solid #332b43;border-radius:0;background:#080711;display:flex;flex-direction:column;justify-content:flex-start;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-head{flex:0 0 auto;padding:12px 14px}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-reel-media{width:100%;height:0;min-height:0;flex:1 1 auto;object-fit:cover;background:#000}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-actions{flex:0 0 auto;padding:7px 10px;display:flex;gap:6px;flex-wrap:wrap}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-caption{flex:0 0 auto;padding:4px 14px 10px;max-height:76px;overflow:auto}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-comments{display:none}
+body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-reel-empty{height:100%;display:grid;place-items:center;padding:25px;text-align:center}
+body.vybora-mode.vy-reels-mode #vybora .vy-main-nav{background:rgba(8,7,17,.98)}
+@media(max-width:520px){
+ body.vybora-mode.vy-reels-mode #vyCloudFeed{height:calc(100svh - 58px - env(safe-area-inset-bottom))}
+ body.vybora-mode.vy-reels-mode #vyCloudFeed>.vy-card{height:calc(100svh - 58px - env(safe-area-inset-bottom));min-height:420px}
+ body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-head{padding:9px 12px}
+ body.vybora-mode.vy-reels-mode #vyCloudFeed .vy-actions button{padding:7px 8px}
+}
 </style>
 </head>
 <body>
@@ -888,11 +907,24 @@ window.vyShare=function(btn){const card=btn?.closest('[data-vy-id]'),title=card?
 window.vyComment=function(btn){const card=btn.closest('[data-vy-id]'),box=card.querySelector('.vy-comments');const comment=prompt('Write a comment');if(comment&&comment.trim()){const line=document.createElement('div');line.className='vy-comment';line.textContent=vyProfile()+': '+comment.trim();box.appendChild(line);const s=vyState(),comments=s.comments||{};comments[card.dataset.vyId]=comments[card.dataset.vyId]||[];comments[card.dataset.vyId].push(comment.trim());vySaveState({comments});}};
 window.vyUpload=function(){const file=$('vyVideoFile').files[0],caption=$('vyCaptionInput').value.trim(),status=$('vyUploadStatus');if(!file){status.textContent='Please choose a video from your phone first.';return;}if(!file.type.startsWith('video/')){status.textContent='Please select a video file.';return;}if(file.size>100*1024*1024){status.textContent='Choose a video smaller than 100 MB for this browser preview.';return;}const url=URL.createObjectURL(file),id='local-'+Date.now(),card=document.createElement('article');card.className='vy-card';card.dataset.vyId=id;card.dataset.vyUser=vyProfile();const head=document.createElement('div');head.className='vy-head';const avatar=document.createElement('div');avatar.className='vy-avatar';avatar.textContent=vyProfile().charAt(0).toUpperCase();const name=document.createElement('strong');name.textContent=vyProfile()+' · just now';head.append(avatar,name);const video=document.createElement('video');video.controls=true;video.playsInline=true;video.preload='metadata';video.src=url;video.style.cssText='display:block;width:100%;max-height:620px;background:#000';const cap=document.createElement('div');cap.className='vy-caption';cap.textContent=caption||'My first VYBORA Reel ✨';const comments=document.createElement('div');comments.className='vy-comments';const actions=document.createElement('div');actions.className='vy-actions';actions.innerHTML='<button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>0</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button>';card.append(head,video,actions,cap,comments);$('vyFeed').prepend(card);$('vyPostCount').textContent=String((Number($('vyPostCount').textContent)||0)+1);$('vyCaptionInput').value='';status.textContent='Your Reel preview has been added. It is available only in this open browser session—not uploaded for other users.';window.vyFilter='for-you';document.querySelectorAll('#vybora .vy-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.vyFilter==='for-you'));vyRenderFeed();};
 window.vyEditProfile=function(){const name=prompt('Choose your VYBORA profile name',vyProfile());if(name&&name.trim()){const clean=name.trim().replace(/^@/,'').slice(0,24);vySaveState({profile:clean});$('vyProfileName').textContent=clean;$('vyProfileAvatar').textContent=clean.charAt(0).toUpperCase();}};
+window.vyInitReels=function(){
+ const host=$('vyCloudFeed');if(!host)return;
+ if(window.vyReelObserver)window.vyReelObserver.disconnect();
+ const videos=host.querySelectorAll('video.vy-reel-media');
+ videos.forEach(v=>{v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.controls=false;v.addEventListener('click',()=>{v.muted=!v.muted;},{passive:true});});
+ if(!('IntersectionObserver'in window)){videos.forEach(v=>{if(v.closest('.vy-card')?.getBoundingClientRect().top>=0)v.play().catch(()=>{});});return;}
+ window.vyReelObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  const v=entry.target;if(entry.isIntersecting&&entry.intersectionRatio>=.65){videos.forEach(other=>{if(other!==v)other.pause();});v.play().catch(()=>{});}
+  else v.pause();
+ }),{root:host,threshold:[.2,.65,.9]});
+ videos.forEach(v=>window.vyReelObserver.observe(v));
+};
 window.vyNavigate=function(page,button){
+ document.body.classList.toggle('vy-reels-mode',page==='reels');
  document.querySelectorAll('#vybora .vy-main-nav button').forEach(function(b){b.classList.toggle('active',b.dataset.vyPage===page);});
  const panel=$('vyPagePanel'),wrap=document.querySelector('#vybora .vy-wrap');
  if(!panel||!wrap)return;
- if(page==='home'||page==='reels'){panel.hidden=true;wrap.hidden=false;window.vyFilter=page==='reels'?'for-you':(window.vyFilter||'for-you');document.querySelectorAll('#vybora .vy-tabs button').forEach(function(b){b.classList.toggle('active',b.dataset.vyFilter===window.vyFilter);});vyRenderFeed();if(page==='reels')$('vyFeed').scrollIntoView({behavior:'smooth',block:'start'});return;}
+ if(page==='home'||page==='reels'){panel.hidden=true;wrap.hidden=false;window.vyFilter=page==='reels'?'for-you':(window.vyFilter||'for-you');document.querySelectorAll('#vybora .vy-tabs button').forEach(function(b){b.classList.toggle('active',b.dataset.vyFilter===window.vyFilter);});vyRenderFeed();if(page==='reels'){if(window.vyInitReels)window.vyInitReels();$('vyCloudFeed')?.scrollTo({top:0,behavior:'smooth'});$('vyFeed')?.scrollIntoView({behavior:'smooth',block:'start'});}return;}
  wrap.hidden=true;panel.hidden=false;
  if(page==='explore'){
   panel.innerHTML='<h3>⌕ Explore VYBORA</h3><p class="small">Discover topics and find creators. Choose a hashtag to filter the Reels feed.</p><div class="vy-explore-tags"><button onclick="vySearchTag(\'VYBORA\');vyNavigate(\'reels\')">#VYBORA</button><button onclick="vySearchTag(\'Travel\');vyNavigate(\'reels\')">#Travel</button><button onclick="vySearchTag(\'Music\');vyNavigate(\'reels\')">#Music</button><button onclick="vySearchTag(\'Nature\');vyNavigate(\'reels\')">#Nature</button><button onclick="vySearchTag(\'Creators\');vyNavigate(\'reels\')">#Creators</button></div><h3 style="margin-top:24px">Suggested creators</h3><div class="vy-inbox-item"><div class="vy-avatar">V</div><div style="flex:1"><b>vybora.daily</b><div class="small">Daily inspiration</div></div><button class="secondary-btn" onclick="vyFollow(this)" data-user="vybora.daily">＋ Follow</button></div><div class="vy-inbox-item"><div class="vy-avatar">M</div><div style="flex:1"><b>motion.maker</b><div class="small">Creative videos</div></div><button class="secondary-btn" onclick="vyFollow(this)" data-user="motion.maker">＋ Follow</button></div>';
@@ -1744,9 +1776,10 @@ function resetPreferences(){
    const user=profiles[p.user_id]||{},name=user.username||user.full_name||'VYBORA creator';
    const count=likes.filter(x=>x.post_id===p.id).length,liked=!!(currentUser&&likes.some(x=>x.post_id===p.id&&x.user_id===currentUser.id));
    const commentCount=comments.filter(x=>x.post_id===p.id).length;
-   const media=p.media_type==='image'?'<img src="'+esc(p.media_url)+'" alt="VYBORA post" style="width:100%;max-height:620px;object-fit:contain;background:#08080d">':'<video src="'+esc(p.media_url)+'" controls playsinline preload="metadata" style="width:100%;max-height:620px;background:#08080d"></video>';
+   const media=p.media_type==='image'?'<img class="vy-reel-media" src="'+esc(p.media_url)+'" alt="VYBORA post" loading="lazy">':'<video class="vy-reel-media" src="'+esc(p.media_url)+'" playsinline muted loop autoplay preload="metadata"></video>';
    return '<article class="vy-card" data-vy-cloud-id="'+esc(p.id)+'"><div class="vy-head"><div class="vy-avatar">'+esc(name.slice(0,1).toUpperCase())+'</div><div><strong>'+esc(name)+'</strong><div class="small">VYBORA creator</div></div>'+(currentUser&&p.user_id!==currentUser.id?'<button class="secondary-btn" style="margin-left:auto" onclick="vyCloudFollow(\''+esc(p.user_id)+'\',this)">'+(following.includes(p.user_id)?'Following':'＋ Follow')+'</button>':'')+'</div>'+media+'<div class="vy-actions"><button aria-pressed="'+liked+'" onclick="vyCloudLike(\''+esc(p.id)+'\',this)">'+(liked?'♥':'♡')+' Like <b>'+count+'</b></button><button onclick="vyCloudShowComments(\''+esc(p.id)+'\',this)">💬 Comments ('+commentCount+')</button><button aria-pressed="'+savedIds.includes(p.id)+'" onclick="vyCloudBookmark(\''+esc(p.id)+'\',this)">'+(savedIds.includes(p.id)?'✓ Saved':'🔖 Save')+'</button><button onclick="vyCloudShare(\''+esc(p.id)+'\')">↗ Share</button></div><div class="vy-caption"><strong>'+esc(name)+'</strong> '+esc(p.caption)+'<div class="small">'+new Date(p.created_at).toLocaleString()+'</div></div><div class="vy-comments" id="vyComments-'+esc(p.id)+'"></div></article>';
   }).join('');
+  if(document.body.classList.contains('vy-reels-mode'))window.vyInitReels();
  }
 
  window.vyEditBio=async function(){
