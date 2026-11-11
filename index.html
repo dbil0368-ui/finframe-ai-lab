@@ -877,6 +877,12 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     body.vybora-mode #vybora .vy-video{height:62svh!important;min-height:320px!important}
     body.vybora-mode #vybora .vy-main-nav button{font-size:17px!important}
    }
+
+/* Keep the mobile menu button at the far left of the top bar */
+@media(max-width:900px){
+ body:not(.vybora-mode) .topbar{display:flex!important;justify-content:flex-start!important;padding-left:12px!important;padding-right:14px!important}
+ body:not(.vybora-mode) .topbar .menu-toggle{display:inline-flex!important;order:-1!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;margin:0 12px 0 0!important;left:0!important;right:auto!important}
+}
 </style>
   <nav class="vy-main-nav" aria-label="VYBORA main navigation">
    <button class="active" data-vy-page="home" onclick="vyNavigate('home',this)">⌂ <span>Home</span></button>
