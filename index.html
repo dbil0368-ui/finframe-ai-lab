@@ -1110,6 +1110,25 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     if(payload.new&&payload.new.sender_id===other&&baseLoadConversation)baseLoadConversation(other);
    }).subscribe();
  };
+ window.vyViewStory=async function(id,type,url,name){
+  const prior=$('vyStoryViewer');if(prior)prior.remove();
+  const story=await db.from('stories').select('user_id').eq('id',id).maybeSingle();
+  const u=await current(),owner=story.data&&story.data.user_id;
+  const viewer=document.createElement('div');viewer.id='vyStoryViewer';viewer.style.cssText='position:fixed;inset:0;background:#05050af2;z-index:99999;display:grid;place-items:center;padding:18px';
+  const media=type==='image'?'<img src="'+esc(url)+'" alt="Story by '+esc(name)+'" style="max-width:100%;max-height:68vh;object-fit:contain">':'<video src="'+esc(url)+'" controls autoplay playsinline style="max-width:100%;max-height:68vh"></video>';
+  viewer.innerHTML='<div style="width:min(520px,100%);text-align:center"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b>'+esc(name)+' · Story</b><button class="secondary-btn" id="vyStoryClose">✕ Close</button></div>'+media+(u&&owner&&u.id!==owner?'<div style="display:flex;gap:8px;margin-top:14px"><input id="vyStoryReply" maxlength="1000" placeholder="Reply to this story…" style="flex:1;min-width:0"><button class="primary-btn" id="vyStoryReplySend">Send</button></div><p class="small" id="vyStoryReplyStatus" aria-live="polite"></p>':'')+'</div>';
+  viewer.querySelector('#vyStoryClose').onclick=()=>viewer.remove();
+  if(u&&owner&&u.id!==owner){
+   viewer.querySelector('#vyStoryReplySend').onclick=async()=>{
+    const input=$('vyStoryReply'),status=$('vyStoryReplyStatus'),body=input&&input.value.trim();if(!body)return;
+    status.textContent='Sending…';
+    const sent=await db.from('messages').insert({sender_id:u.id,receiver_id:owner,body:'Reply to your story: '+body});
+    if(sent.error){status.textContent='Could not send: '+sent.error.message;return;}
+    input.value='';status.textContent='Story reply sent to '+name+'.';
+   };
+  }
+  viewer.addEventListener('click',e=>{if(e.target===viewer)viewer.remove();});document.body.appendChild(viewer);
+ };
  window.vyCloudShare=async function(id){
   const url=location.href.split('#')[0]+'#vybora-post-'+id;
   if(navigator.share){try{await navigator.share({title:'VYBORA post',url});}catch(e){}}
