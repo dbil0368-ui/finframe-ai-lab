@@ -395,6 +395,20 @@ body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card>.vy-reel-media{heig
 body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-head,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-actions,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-caption{flex-shrink:0!important}
 @media(max-width:520px){body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card{flex-basis:100%!important;height:100%!important;min-height:100%!important;max-height:100%!important}}
 body.vybora-mode.vy-account-connected #vyCloudAuth{display:none!important}
+
+/* Consolidated mobile drawer fix: keep the menu above the page and fully interactive. */
+@media(max-width:900px){
+ body:not(.vybora-mode) .sidebar{z-index:2147483000!important;pointer-events:auto!important}
+ body.menu-open:not(.vybora-mode) .sidebar{display:flex!important;visibility:visible!important;transform:translateX(0)!important;pointer-events:auto!important}
+ body.menu-open:not(.vybora-mode) .sidebar .side-btn{position:relative!important;z-index:2147483001!important;pointer-events:auto!important;touch-action:manipulation!important}
+ body.menu-open:not(.vybora-mode)::before{z-index:2147482998!important;pointer-events:none!important}
+ body.vybora-mode .main-area .topbar{display:flex!important;visibility:visible!important;opacity:1!important;position:fixed!important;top:8px!important;left:8px!important;right:auto!important;width:52px!important;height:52px!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;z-index:2147483002!important}
+ body.vybora-mode .main-area .topbar .menu-toggle{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:2147483003!important;width:48px!important;height:48px!important;align-items:center!important;justify-content:center!important}
+ body.vybora-mode .sidebar{display:flex!important;visibility:hidden!important;pointer-events:none!important;position:fixed!important;left:0!important;top:0!important;bottom:0!important;width:min(270px,85vw)!important;z-index:2147483001!important;transform:translateX(-110%)!important}
+ body.vybora-mode.menu-open .sidebar{visibility:visible!important;pointer-events:auto!important;transform:translateX(0)!important}
+ body.vybora-mode.menu-open .sidebar .side-btn{pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:2147483002!important}
+ body.vybora-mode.menu-open::before{z-index:2147483000!important;pointer-events:none!important}
+}
 </style>
 </head>
 <body>
