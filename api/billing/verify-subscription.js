@@ -43,7 +43,7 @@ export default async function handler(req, res) {
   const secret = process.env.RAZORPAY_KEY_SECRET;
   if (!secret || !String(process.env.RAZORPAY_KEY_ID || "").startsWith("rzp_test_")) return send(res, 503, { error: "Razorpay Test Mode is not configured." });
   try {
-    const expected = crypto.createHmac("sha256", secret).update(subscriptionId + "|" + paymentId).digest();
+    const expected = crypto.createHmac("sha256", secret).update(paymentId + "|" + subscriptionId).digest();
     const supplied = Buffer.from(signature, "hex");
     if (supplied.length !== expected.length || !crypto.timingSafeEqual(supplied, expected)) return send(res, 400, { error: "Payment signature could not be verified." });
 
