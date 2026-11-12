@@ -1,4 +1,5 @@
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
+const MODELS = (process.env.GEMINI_MODEL || "gemini-3.5-flash-lite,gemini-3.1-flash-lite")
+  .split(",").map(value => value.trim()).filter(Boolean);
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -35,7 +36,8 @@ export default async function handler(req, res) {
   ].join("\n");
 
   let lastError;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
+  for (const model of MODELS) {
+    for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,
@@ -63,7 +65,7 @@ export default async function handler(req, res) {
           message: providerMessage.slice(0, 220),
           attempt: attempt + 1
         });
-        if ((response.status === 503 || response.status === 504) && attempt === 0) {
+        if ((response.status === 429 || response.status === 503 || response.status === 504) && attempt === 0) {
           await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
           continue;
         }
@@ -73,7 +75,8 @@ export default async function handler(req, res) {
         if (response.status === 429) {
           return res.status(429).json({ error: "Gemini free-tier usage limit reached. Please wait and try again." });
         }
-        return res.status(502).json({ error: "Gemini is temporarily busy. Please try again in a minute." });
+        if ([429, 503, 504].includes(response.status)) break;
+        return res.status(502).json({ error: "Gemini request failed. Please try again shortly." });
       }
 
       const brief = (data?.candidates?.[0]?.content?.parts || [])
@@ -85,7 +88,7 @@ export default async function handler(req, res) {
         return res.status(502).json({ error: "Gemini returned an empty brief. Please try again." });
       }
 
-      return res.status(200).json({ brief, model: MODEL });
+      return res.status(200).json({ brief, model });
     } catch (error) {
       lastError = error;
       console.error("[VYBORA Creator] Gemini request error", {
@@ -100,10 +103,11 @@ export default async function handler(req, res) {
       break;
     }
   }
+  }
 
   return res.status(502).json({
     error: lastError?.name === "TimeoutError"
       ? "Gemini is taking longer than expected. Please try again in a moment."
-      : "Gemini service is temporarily unavailable. Please try again."
+      : "Gemini service is temporarily unavailable on both models. Please try again shortly."
   });
 }
