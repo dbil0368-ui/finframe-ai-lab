@@ -33,7 +33,12 @@
 
 .auth-panel{margin:18px 0;padding:16px;border:1px solid var(--line);border-radius:15px;background:#111827}
 .auth-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.auth-row .field{flex:1;min-width:170px}
-.auth-status{font-size:12px;color:var(--muted);margin-top:9px}
+.auth-status{font-size:12px;color:var(--muted);margin-top:5px}
+.account-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.account-bar button{font-size:12px;padding:8px 11px}
+.auth-panel.is-signed-in{padding:11px 14px}
+.auth-content{padding-top:8px}
+.auth-panel:not(.is-signed-in) #accountToggle{display:none}
 </style>
 </head>
 <body>
@@ -51,7 +56,7 @@
 <main class="main">
  <header class="top"><div class="crumb">Workspace / <b id="crumb">Overview</b></div><div class="avatar">V</div></header>
  <div class="wrap">
-  <section class="auth-panel" aria-label="VYBORA account"><b>Creator account & cloud sync</b><p class="muted" style="font-size:13px;margin:6px 0">Create an account or sign in to keep your Planner ideas across devices.</p><div class="auth-row"><input id="authEmail" class="field" type="email" autocomplete="email" placeholder="Email address"><input id="authPassword" class="field" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)"><button class="primary" id="signIn">Sign in</button><button class="ghost" id="signUp">Create account</button><button class="ghost" id="forgotPassword">Forgot password?</button><button class="ghost" id="signOut" hidden>Sign out</button></div><div id="passwordResetBox" hidden style="margin-top:12px"><label for="newPassword"><b>New password</b></label><input id="newPassword" class="field" type="password" autocomplete="new-password" placeholder="Choose a new password (at least 8 characters)" style="margin:8px 0"><button class="primary" id="saveNewPassword">Update password</button></div><div class="auth-status" id="authStatus" aria-live="polite">Not signed in · Planner is saved on this device.</div></section>
+  <section class="auth-panel" id="authPanel" aria-label="VYBORA account"><div class="account-bar"><div><b>Creator account & cloud sync</b><div class="auth-status" id="authStatus" aria-live="polite">Not signed in · Planner is saved on this device.</div></div><button class="ghost" id="accountToggle" type="button" aria-expanded="false">Account details +</button></div><div class="auth-content" id="authContent" hidden><p class="muted" style="font-size:13px;margin:6px 0">Create an account or sign in to keep your Planner ideas across devices.</p><div class="auth-row"><input id="authEmail" class="field" type="email" autocomplete="email" placeholder="Email address"><input id="authPassword" class="field" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)"><button class="primary" id="signIn">Sign in</button><button class="ghost" id="signUp">Create account</button><button class="ghost" id="forgotPassword">Forgot password?</button><button class="ghost" id="signOut" hidden>Sign out</button></div><div id="passwordResetBox" hidden style="margin-top:12px"><label for="newPassword"><b>New password</b></label><input id="newPassword" class="field" type="password" autocomplete="new-password" placeholder="Choose a new password (at least 8 characters)" style="margin:8px 0"><button class="primary" id="saveNewPassword">Update password</button></div></div></section>
   <section class="view active" id="overview">
    <div class="hero"><div><div class="eyebrow">A new way to create</div><h1 class="heading">Turn what's happening<br>into what's next.</h1><p class="sub">VYBORA helps creators discover opportunities, shape stronger ideas and plan content with clarity.</p><div class="actions"><button class="primary" data-go="trends">Explore trends ↗</button><button class="ghost" data-go="studio">Open creator studio ✧</button></div></div><div class="hero-art">✦</div></div>
    <div class="grid">
@@ -97,9 +102,19 @@
 const supabaseClient=window.supabase.createClient("https://pxgoaygwtxrrqkftluut.supabase.co","sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh");
 let currentUser=null;
 let calendarCursor=new Date();
+document.getElementById("accountToggle").addEventListener("click",()=>{
+ const content=document.getElementById("authContent"),button=document.getElementById("accountToggle");
+ content.hidden=!content.hidden;
+ button.textContent=content.hidden?"Account details +":"Hide account −";
+ button.setAttribute("aria-expanded",String(!content.hidden));
+});
 async function refreshAuth(){
  const {data}=await supabaseClient.auth.getSession();
  currentUser=data.session?.user||null;
+ document.getElementById("authPanel").classList.toggle("is-signed-in",!!currentUser);
+ document.getElementById("authContent").hidden=!!currentUser;
+ document.getElementById("accountToggle").textContent="Account details +";
+ document.getElementById("accountToggle").setAttribute("aria-expanded","false");
  const status=document.getElementById("authStatus");
  status.textContent=currentUser?"Signed in as "+currentUser.email+" · Cloud Planner enabled":"Not signed in · Planner is saved on this device.";
  document.getElementById("signOut").hidden=!currentUser;
