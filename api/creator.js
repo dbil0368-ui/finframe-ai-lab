@@ -21,14 +21,14 @@ export default async function handler(req, res) {
   const topic = typeof body.topic === "string" ? body.topic.trim().slice(0, 240) : "";
   const format = typeof body.format === "string" ? body.format.slice(0, 60) : "Short video";
   const audience = typeof body.audience === "string" ? body.audience.trim().slice(0, 160) : "curious viewers";
-  const language = typeof body.language === "string" ? body.language.slice(0, 40) : "Bengali";
+  const language = typeof body.language === "string" ? body.language.slice(0, 40) : "English";
 
   if (!topic) return res.status(400).json({ error: "Please enter a topic." });
 
   const prompt = [
     "You are VYBORA Creator Studio, an ethical creator strategist. Create a practical, original creative brief. Be specific, fresh, safe, and concise.",
     "Do not invent facts, statistics, quotes, or current events. If the topic needs verification, clearly mark claims to verify.",
-    "Write in " + language + ".",
+    "Write entirely in clear, natural English. All headings, hooks, captions, calls to action, hashtags, and notes must be in English. Do not use Bengali or any other language, even if the topic contains non-English words.",
     "Audience: " + audience,
     "Format: " + format,
     "Topic: " + topic,
