@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
         {
           method: "POST",
           headers: {
