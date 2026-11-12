@@ -50,6 +50,7 @@
   <button data-view="trends">↗ &nbsp; Trend Radar</button>
   <button data-view="studio">✧ &nbsp; Creator Studio</button>
   <button data-view="planner">▦ &nbsp; Content Planner</button>
+  <button data-view="billing">₹ &nbsp; Plans & Billing</button>
  </nav>
  <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends, and plan original content. Live Google Trends data is available for supported regions. AI-powered creative briefs are enabled in Preview.</div>
 </aside>
@@ -93,10 +94,22 @@
    <div class="upcoming-list" id="upcomingList"><p class="muted">Sign in to view your publishing schedule.</p></div>
    <div class="notice">Choose a date and time on an idea, then save its schedule. Scheduled ideas sync to your account and appear in the calendar on your other devices. VYBORA plans content; it does not automatically publish to social platforms yet.</div>
   </section>
+  <section class="view" id="billing">
+   <div class="eyebrow">Simple creator plans</div><h1 class="heading">Plans & Billing</h1>
+   <p class="sub">Choose a VYBORA plan. Checkout is currently connected to Razorpay Test Mode, so test payments do not move real money.</p>
+   <div class="notice" id="billingStatus" aria-live="polite">Sign in to view your plan or start a subscription.</div>
+   <div class="tools" style="margin-top:18px">
+    <article class="tool-card"><div class="tool-icon">✦</div><h3>Starter</h3><p><strong style="font-size:28px;color:#fff">₹199</strong> / month</p><p>For creators getting started with a consistent content workflow.</p><button class="primary" id="buyStarter" type="button">Choose Starter</button></article>
+    <article class="tool-card"><div class="tool-icon">✧</div><h3>Pro</h3><p><strong style="font-size:28px;color:#fff">₹499</strong> / month</p><p>For creators who want more room to plan and create.</p><button class="primary" id="buyPro" type="button">Choose Pro</button></article>
+   </div>
+   <div class="notice">Billing note: These are monthly recurring plans configured for up to 12 monthly billing cycles. This Preview uses Razorpay Test Mode only. Do not enter real card or bank details into a test checkout. Live payments will remain unavailable until Razorpay approves your website and the live integration is separately configured.</div>
+   <p class="muted" style="font-size:12px">By continuing, you agree to the <a href="/terms.html" style="color:var(--violet)">Terms of Use</a> and acknowledge the <a href="/privacy.html" style="color:var(--violet)">Privacy Notice</a>.</p>
+  </section>
   <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.2 · <a href="/privacy.html" style="color:var(--muted)">Privacy</a> · <a href="/terms.html" style="color:var(--muted)">Terms</a></footer>
  </div>
 </main>
 </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const supabaseClient=window.supabase.createClient("https://pxgoaygwtxrrqkftluut.supabase.co","sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh");
@@ -117,6 +130,7 @@ async function refreshAuth(){
  document.getElementById("accountToggle").setAttribute("aria-expanded","false");
  const status=document.getElementById("authStatus");
  status.textContent=currentUser?"Signed in as "+currentUser.email+" · Cloud Planner enabled":"Not signed in · Planner is saved on this device.";
+ loadBillingStatus();
  document.getElementById("signOut").hidden=!currentUser;
  document.getElementById("signIn").hidden=!!currentUser;
  document.getElementById("signUp").hidden=!!currentUser;
@@ -144,7 +158,63 @@ supabaseClient.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY"){
 function escapeText(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 async function loadTrends(){const region=document.getElementById("trendRegion").value;const list=document.getElementById("trendList"),status=document.getElementById("trendStatus"),btn=document.getElementById("refreshTrends");btn.disabled=true;status.textContent="Fetching Google Trends…";list.innerHTML='<div class="panel muted">Loading current trends…</div>';try{const response=await fetch("/api/trends?geo="+encodeURIComponent(region),{headers:{Accept:"application/json"}});const data=await response.json();if(!response.ok)throw new Error(data.error||"Trend feed unavailable");if(!data.items||!data.items.length)throw new Error("No trends were returned for this region.");list.innerHTML=data.items.map(item=>'<div class="trend"><div class="emoji">↗</div><div><strong>'+escapeText(item.title)+'</strong><small>Approx. searches: '+escapeText(item.traffic||"Not provided")+' · '+escapeText(item.published||"Recent")+'</small></div><button class="ghost" type="button" data-create-trend="'+escapeText(item.title)+'">Create with this trend ✧</button></div>').join("");list.querySelectorAll("[data-create-trend]").forEach(button=>button.addEventListener("click",()=>{document.getElementById("topic").value=button.dataset.createTrend||"";show("studio");document.getElementById("topic").focus()}));status.textContent="Updated "+new Date(data.updatedAt).toLocaleTimeString()+" · "+data.region;}catch(error){list.innerHTML='<div class="panel"><b>Could not load live trends</b><p class="muted">'+escapeText(error.message)+'</p><button class="ghost" onclick="loadTrends()">Try again</button></div>';status.textContent="Feed unavailable";}finally{btn.disabled=false}}
 document.getElementById("refreshTrends").addEventListener("click",loadTrends);document.getElementById("trendRegion").addEventListener("change",loadTrends);loadTrends();
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner"})[id];window.scrollTo({top:0,behavior:"smooth"})}
+async function loadBillingStatus(){
+ const box=document.getElementById("billingStatus");
+ if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
+ box.textContent="Loading your billing status…";
+ try{
+  const {data}=await supabaseClient.auth.getSession();
+  const response=await fetch("/api/billing/status",{headers:{Authorization:"Bearer "+(data.session?.access_token||"")}});
+  const result=await response.json();
+  if(!response.ok)throw new Error(result.error||"Could not load billing status.");
+  const sub=result.subscription;
+  if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
+  const label={starter:"Starter",pro:"Pro"}[sub.plan_key]||sub.plan_key;
+  const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
+  box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
+ }catch(error){box.textContent=error.message}
+}
+async function startVyboraCheckout(plan){
+ if(!currentUser){document.getElementById("authContent").hidden=false;document.getElementById("accountToggle").textContent="Hide account −";document.getElementById("authStatus").textContent="Please sign in before choosing a plan.";show("overview");return}
+ const button=document.getElementById(plan==="starter"?"buyStarter":"buyPro");
+ button.disabled=true;button.textContent="Opening secure checkout…";
+ try{
+  const {data}=await supabaseClient.auth.getSession();
+  const token=data.session?.access_token;
+  if(!token)throw new Error("Your session expired. Please sign in again.");
+  const response=await fetch("/api/billing/create-subscription",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({plan})});
+  const result=await response.json();
+  if(!response.ok)throw new Error(result.error||"Could not start checkout.");
+  if(typeof Razorpay==="undefined")throw new Error("Secure checkout did not load. Refresh the page and try again.");
+  const checkout=new Razorpay({
+   key:result.keyId,
+   subscription_id:result.subscriptionId,
+   name:"VYBORA",
+   description:(plan==="starter"?"Starter":"Pro")+" · ₹"+(plan==="starter"?"199":"499")+" per month",
+   image:"",
+   prefill:{email:result.customerEmail||""},
+   notes:{plan:plan,product:"VYBORA Trend Hub"},
+   theme:{color:"#9c7bff"},
+   handler:async function(payment){
+    button.textContent="Verifying payment…";
+    const verifyResponse=await fetch("/api/billing/verify-subscription",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify(payment)});
+    const verified=await verifyResponse.json();
+    if(!verifyResponse.ok)throw new Error(verified.error||"Payment verification failed.");
+    document.getElementById("billingStatus").textContent=verified.message||"Payment received. Checking subscription status…";
+    await loadBillingStatus();
+   },
+   modal:{ondismiss:function(){button.disabled=false;button.textContent=plan==="starter"?"Choose Starter":"Choose Pro";}}
+  });
+  checkout.on("payment.failed",function(){document.getElementById("billingStatus").textContent="Test payment failed or was cancelled. No plan was activated.";button.disabled=false;button.textContent=plan==="starter"?"Choose Starter":"Choose Pro";});
+  checkout.open();
+ }catch(error){
+  document.getElementById("billingStatus").textContent=error.message;
+  button.disabled=false;button.textContent=plan==="starter"?"Choose Starter":"Choose Pro";
+ }
+}
+document.getElementById("buyStarter").addEventListener("click",()=>startVyboraCheckout("starter"));
+document.getElementById("buyPro").addEventListener("click",()=>startVyboraCheckout("pro"));
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
 document.querySelectorAll("#trendFilters button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#trendFilters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderTrends(b.dataset.filter)}));
