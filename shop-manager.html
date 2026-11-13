@@ -143,7 +143,7 @@ $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify
 $('clearBtn').addEventListener('click',()=>{if(confirm('সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।')){data={entries:[],products:[]};save()}});
 render();
 $('langSelect').value=currentLang;
-$('langSelect').addEventListener('change',e=>{currentLang=e.target.value;localStorage.setItem(LANG_KEY,currentLang);render();applyTranslations()});
+$('langSelect').addEventListener('change',e=>{currentLang=e.target.value;localStorage.setItem(LANG_KEY,currentLang);location.reload()});
 applyTranslations();
 </script>
 </body></html>
