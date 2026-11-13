@@ -574,7 +574,7 @@ function makeStatement(){
  if(!data.products.length)lines.push('No products added.');
  data.products.forEach(p=>lines.push(p.name+' | '+p.qty+' '+p.unit+' | Cost '+money(p.cost)));
  lines.push('','Note: This statement is generated from records stored in this browser.');
- return lines.join('\\n');
+ return lines.join('\n');
 }
 $('shareStatementBtn').addEventListener('click',async()=>{
  const statement=makeStatement();
