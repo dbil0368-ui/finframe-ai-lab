@@ -171,16 +171,29 @@ body.login-open:after{content:"";position:fixed;inset:0;background:#030611c9;bac
 
 /* Mobile hamburger menu with useful workspace shortcuts */
 .brand-name{display:flex;align-items:center;gap:11px}
-.mobile-menu-toggle{display:none;border:1px solid #ffffff24;background:#1a2236;color:#fff;border-radius:11px;width:42px;height:40px;font-size:21px;line-height:1}
+.mobile-menu-toggle{display:none;border:1px solid #ffffff24;background:linear-gradient(145deg,#252b46,#151c30);color:#fff;border-radius:13px;width:44px;height:42px;font-size:21px;line-height:1;box-shadow:0 7px 22px #0005}
+.menu-settings{display:none}
 @media(max-width:850px){
  .brand{display:flex;align-items:center;justify-content:space-between;padding:2px 6px 10px}
  .mobile-menu-toggle{display:inline-grid;place-items:center;flex:0 0 auto}
- .nav{display:none!important;overflow:visible!important;scroll-snap-type:none!important;padding:8px 0 4px!important;margin:0!important}
- .side.menu-open .nav{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .side.menu-open .nav button{width:100%;justify-content:flex-start;white-space:normal;min-height:44px;border-radius:12px;text-align:left}
- .side.menu-open .nav button:last-child{grid-column:1/-1}
+ .nav{display:none!important}
+ .side.menu-open .nav{display:grid!important;position:fixed;z-index:1202;top:68px;right:14px;width:min(340px,calc(100vw - 28px));max-height:calc(100dvh - 88px);overflow:auto;gap:7px;padding:18px!important;margin:0!important;border:1px solid #a78bfa66;border-radius:22px;background:linear-gradient(155deg,#1b2540f7,#101624fa 72%);box-shadow:0 24px 80px #000c,0 0 35px #9b83ff20;backdrop-filter:blur(22px)}
+ body.menu-open:before{content:"";position:fixed;inset:0;z-index:1201;background:#030611b8;backdrop-filter:blur(4px)}
+ .side.menu-open .nav button{width:100%;display:flex;align-items:center;min-height:48px;padding:12px 14px;border:1px solid #ffffff12;border-radius:13px;background:#ffffff08;color:#dfe5f7;text-align:left;font-size:14px;transition:.18s}
+ .side.menu-open .nav button:hover,.side.menu-open .nav button.active{background:linear-gradient(100deg,#9b83ff35,#5de1d21c);border-color:#a78bfa80;color:#fff;box-shadow:inset 3px 0 #a78bfa}
+ .side.menu-open .menu-settings{display:block;margin-top:8px;padding:14px;border:1px solid #ffffff16;border-radius:15px;background:#0b1220}
+ .menu-settings-title{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:#91a0bd;font-weight:800;margin-bottom:10px}
+ .theme-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .theme-choice{border:1px solid #ffffff20;border-radius:10px;padding:9px 5px;background:#182238;color:#e9edfb;font-size:11px;font-weight:700}
+ .theme-choice[aria-pressed="true"]{border-color:#a78bfa;background:#302650;box-shadow:0 0 0 2px #a78bfa22}
+ .theme-dot{display:block;width:100%;height:8px;border-radius:8px;margin-bottom:7px}
+ .theme-dot.aurora{background:linear-gradient(90deg,#67e8d5,#a78bfa,#fb91c5)}
+ .theme-dot.midnight{background:linear-gradient(90deg,#5b6b8e,#202b42,#101624)}
+ .theme-dot.rose{background:linear-gradient(90deg,#ff9bc8,#a78bfa,#38203e)}
 }
-@media(max-width:420px){.side.menu-open .nav{grid-template-columns:1fr}}
+body[data-vybora-theme="midnight"]{--violet:#8197c9;--cyan:#9bb4d9;--pink:#8e9ab9}
+body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
+
 
 </style>
 </head>
@@ -195,6 +208,14 @@ body.login-open:after{content:"";position:fixed;inset:0;background:#030611c9;bac
   <button data-view="planner">▦ &nbsp; Content Planner</button>
   <button data-view="billing">₹ &nbsp; Plans & Billing</button>
   <button type="button" id="menuCreatorLogin">♙ &nbsp; Creator Login / My Account</button>
+  <div class="menu-settings">
+   <div class="menu-settings-title">Make VYBORA yours · Appearance</div>
+   <div class="theme-options" role="group" aria-label="Choose VYBORA theme">
+    <button class="theme-choice" type="button" data-vybora-theme-choice="aurora" aria-pressed="true"><span class="theme-dot aurora"></span>Aurora</button>
+    <button class="theme-choice" type="button" data-vybora-theme-choice="midnight" aria-pressed="false"><span class="theme-dot midnight"></span>Midnight</button>
+    <button class="theme-choice" type="button" data-vybora-theme-choice="rose" aria-pressed="false"><span class="theme-dot rose"></span>Rose</button>
+   </div>
+  </div>
  </nav>
  <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends, and plan original content. Live Google Trends data is available for supported regions. AI-powered creative briefs are enabled in Preview.</div>
 </aside>
@@ -364,19 +385,21 @@ function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.togg
 
 const mobileMenuToggle=document.getElementById("mobileMenuToggle");
 const sideMenu=document.querySelector(".side");
+function closeMobileMenu(){
+ sideMenu.classList.remove("menu-open");document.body.classList.remove("menu-open");
+ mobileMenuToggle.setAttribute("aria-expanded","false");mobileMenuToggle.setAttribute("aria-label","Open menu");mobileMenuToggle.textContent="☰";
+}
 mobileMenuToggle.addEventListener("click",()=>{
- const opened=sideMenu.classList.toggle("menu-open");
- mobileMenuToggle.setAttribute("aria-expanded",String(opened));
- mobileMenuToggle.setAttribute("aria-label",opened?"Close menu":"Open menu");
- mobileMenuToggle.textContent=opened?"✕":"☰";
+ const opened=sideMenu.classList.toggle("menu-open");document.body.classList.toggle("menu-open",opened);
+ mobileMenuToggle.setAttribute("aria-expanded",String(opened));mobileMenuToggle.setAttribute("aria-label",opened?"Close menu":"Open menu");mobileMenuToggle.textContent=opened?"✕":"☰";
 });
-document.getElementById("menuCreatorLogin").addEventListener("click",()=>{
- document.getElementById("creatorLoginFab").click();
- sideMenu.classList.remove("menu-open");
- mobileMenuToggle.setAttribute("aria-expanded","false");
- mobileMenuToggle.setAttribute("aria-label","Open menu");
- mobileMenuToggle.textContent="☰";
-});
+document.getElementById("menuCreatorLogin").addEventListener("click",()=>{closeMobileMenu();document.getElementById("creatorLoginFab").click()});
+document.querySelectorAll("[data-vybora-theme-choice]").forEach(button=>button.addEventListener("click",()=>{
+ const theme=button.dataset.vyboraThemeChoice;document.body.dataset.vyboraTheme=theme;
+ document.querySelectorAll("[data-vybora-theme-choice]").forEach(b=>b.setAttribute("aria-pressed",String(b===button)));
+}));
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeMobileMenu()});
+document.querySelectorAll("#mainNav [data-view]").forEach(button=>button.addEventListener("click",closeMobileMenu));
 
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
