@@ -598,7 +598,7 @@ $('shareStatementBtn').addEventListener('click',async()=>{
 $('clearBtn').addEventListener('click',()=>{if(confirm('সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।')){data={entries:[],products:[],customers:[]};save()}});
 render();
 $('langSelect').value=currentLang;
-$('langSelect').addEventListener('change',e=>{currentLang=e.target.value;localStorage.setItem(LANG_KEY,currentLang);render();applyTranslations();$('languageNote').style.display=fullyTranslatedLanguages.includes(currentLang)?'none':'block'});
+$('langSelect').addEventListener('change',e=>{currentLang=e.target.value;localStorage.setItem(LANG_KEY,currentLang);location.reload()});
 applyTranslations();
 if(!fullyTranslatedLanguages.includes(currentLang)) $('languageNote').style.display='block';
 </script>
