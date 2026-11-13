@@ -234,6 +234,23 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
 .growth-result .growth-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .growth-generate:disabled{opacity:.65;cursor:wait}
 @media(max-width:520px){#creatorGrowthTools .tool-card{padding:16px}}
+
+/* Small fixed shortcut to VYBORA Social */
+.social-shortcut{
+ position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:39;
+ display:inline-flex;align-items:center;justify-content:center;
+ min-height:36px;padding:8px 15px;border-radius:999px;
+ border:1px solid #67e8d588;
+ background:linear-gradient(110deg,#173c43f5,#302650f5);
+ color:#eafffb;text-decoration:none;font-size:11px;font-weight:800;
+ letter-spacing:.2px;white-space:nowrap;
+ box-shadow:0 7px 24px #0009,0 0 0 3px #67e8d51a;
+ backdrop-filter:blur(12px);
+}
+.social-shortcut:hover{filter:brightness(1.15);transform:translateX(-50%) translateY(-2px)}
+.social-shortcut:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:480px){.social-shortcut{bottom:12px;min-height:34px;padding:7px 13px;font-size:10px}}
+
 </style>
 </head>
 <body>
@@ -583,4 +600,5 @@ loadCreatorKit();
 renderPlans();
 refreshAuth();
 </script>
+<a class="social-shortcut" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social in a new tab">Open VYBORA Social ↗</a>
 </body></html>
