@@ -25,14 +25,20 @@ export default async function handler(req, res) {
 
   if (!topic) return res.status(400).json({ error: "Please enter a topic." });
 
+  const mode = typeof body.mode === "string" ? body.mode.slice(0, 30) : "brief";
+  const instruction = typeof body.instruction === "string" ? body.instruction.slice(0, 1200) : "";
+  const platform = typeof body.platform === "string" ? body.platform.slice(0, 60) : "Multiple platforms";
+  const safeLanguage = language || "English";
   const prompt = [
-    "You are VYBORA Creator Studio, an ethical creator strategist. Create a practical, original creative brief. Be specific, fresh, safe, and concise.",
+    "You are VYBORA Creator Studio, an ethical creator strategist. Create practical, original creator assets. Be specific, fresh, safe, and concise.",
     "Do not invent facts, statistics, quotes, or current events. If the topic needs verification, clearly mark claims to verify.",
-    "Write entirely in clear, natural English. All headings, hooks, captions, calls to action, hashtags, and notes must be in English. Do not use Bengali or any other language, even if the topic contains non-English words.",
+    "Write all output in this language: " + safeLanguage + ".",
     "Audience: " + audience,
+    "Platform: " + platform,
     "Format: " + format,
+    "Task type: " + mode,
     "Topic: " + topic,
-    "Return concise plain text with these sections: BIG IDEA, 3 HOOK OPTIONS, CONTENT STRUCTURE (4-6 beats), CAPTION, CTA, HASHTAGS (5-8 relevant tags), FACT-CHECK NOTES."
+    instruction || "Create a concise creative brief with a big idea, hooks, content structure, caption, CTA, hashtags, and fact-check notes."
   ].join("\n");
 
   let lastError;
