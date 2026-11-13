@@ -19,7 +19,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 </style>
 </head>
 <body>
-<header><div class="brand">VYBORA • BUSINESS TOOLS</div><div class="head"><div><h1>দোকানের হিসাব, এখন মোবাইলে</h1><div class="sub">সহজ বিক্রি • খরচ • বাকি • স্টক</div></div><div class="actions"><select id="langSelect" aria-label="Language" style="width:auto;min-width:115px"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option><option value="as">অসমীয়া</option></select><button class="btn ghost" id="exportBtn">ডেটা ডাউনলোড</button></div></div></header>
+<header><div class="brand">VYBORA • BUSINESS TOOLS</div><div class="head"><div><h1>দোকানের হিসাব, এখন মোবাইলে</h1><div class="sub">সহজ বিক্রি • খরচ • বাকি • স্টক</div></div><div class="actions"><select id="langSelect" aria-label="Language" style="width:auto;min-width:115px"><option value="en">English</option><option value="as">অসমীয়া · Assamese</option><option value="bn">বাংলা · Bengali</option><option value="brx">बड़ो · Bodo</option><option value="doi">डोगरी · Dogri</option><option value="gu">ગુજરાતી · Gujarati</option><option value="hi">हिन्दी · Hindi</option><option value="kn">ಕನ್ನಡ · Kannada</option><option value="ks">कॉशुर · Kashmiri</option><option value="kok">कोंकणी · Konkani</option><option value="mai">मैथिली · Maithili</option><option value="ml">മലയാളം · Malayalam</option><option value="mni">মৈতৈলোন্ · Manipuri</option><option value="mr">मराठी · Marathi</option><option value="ne">नेपाली · Nepali</option><option value="or">ଓଡ଼ିଆ · Odia</option><option value="pa">ਪੰਜਾਬੀ · Punjabi</option><option value="sa">संस्कृतम् · Sanskrit</option><option value="sat">ᱥᱟᱱᱛᱟᱲᱤ · Santali</option><option value="sd">سنڌي · Sindhi</option><option value="ta">தமிழ் · Tamil</option><option value="te">తెలుగు · Telugu</option><option value="ur">اردو · Urdu</option></select><button class="btn ghost" id="exportBtn">ডেটা ডাউনলোড</button></div></div></header>
 <main>
 <section class="stats">
  <div class="stat"><small>আজকের বিক্রি</small><strong id="todaySales">₹০</strong></div>
@@ -54,7 +54,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
  <div class="grid"><div class="panel"><h2>পণ্য যোগ করুন</h2><form id="stockForm"><label>পণ্যের নাম</label><input id="productName" required placeholder="যেমন: চিনি ১ কেজি"><div class="row"><div><label>পরিমাণ</label><input id="productQty" type="number" min="0" step="1" required></div><div><label>একক</label><input id="productUnit" placeholder="পিস / কেজি / প্যাকেট" required></div></div><label>প্রতি এককের ক্রয়মূল্য (₹)</label><input id="productCost" type="number" min="0" step="0.01" placeholder="ঐচ্ছিক"><button class="btn primary">স্টকে যোগ করুন</button></form></div><div class="panel"><h2>স্টকের তালিকা</h2><div id="stockList" class="list"></div></div></div>
 </section>
 <section class="view" id="history"><div class="panel"><div class="head"><div><h2>সব হিসাব</h2><p>সাম্প্রতিক হিসাবগুলো এখানে দেখুন।</p></div><button class="btn ghost" id="clearBtn">সব মুছুন</button></div><div id="historyList" class="list"></div></div></section>
-<p class="note">গুরুত্বপূর্ণ: এটি প্রাথমিক বিনামূল্যের প্রোটোটাইপ, পূর্ণাঙ্গ হিসাবরক্ষণ বা কর-পরামর্শের বিকল্প নয়। ডেটা এখন শুধু এই ডিভাইসে সংরক্ষিত হয়; অনলাইন ব্যাকআপ, একাধিক কর্মীর অ্যাক্সেস বা পেমেন্ট এখনও যুক্ত হয়নি।</p>
+<p class="note" id="languageNote">Language packs: English, Bengali, Hindi and Assamese are translated. Other 18 scheduled languages currently use English fallback while their translations are being prepared.</p><p class="note">গুরুত্বপূর্ণ: এটি প্রাথমিক বিনামূল্যের প্রোটোটাইপ, পূর্ণাঙ্গ হিসাবরক্ষণ বা কর-পরামর্শের বিকল্প নয়। ডেটা এখন শুধু এই ডিভাইসে সংরক্ষিত হয়; অনলাইন ব্যাকআপ, একাধিক কর্মীর অ্যাক্সেস বা পেমেন্ট এখনও যুক্ত হয়নি।</p>
 </main><footer>VYBORA Shop Manager • প্রথম পরীক্ষামূলক সংস্করণ</footer>
 <script>
 
@@ -98,7 +98,8 @@ const translations={
  }
 };
 let currentLang=localStorage.getItem(LANG_KEY)||'bn';
-function tr(value){return (translations[currentLang]&&translations[currentLang][value])||value}
+const fullyTranslatedLanguages=['en','bn','hi','as'];
+function tr(value){return (translations[currentLang]&&translations[currentLang][value])||(translations.en&&translations.en[value])||value}
 function applyTranslations(){
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  let node;
@@ -145,5 +146,6 @@ render();
 $('langSelect').value=currentLang;
 $('langSelect').addEventListener('change',e=>{currentLang=e.target.value;localStorage.setItem(LANG_KEY,currentLang);location.reload()});
 applyTranslations();
+if(!fullyTranslatedLanguages.includes(currentLang)) $('languageNote').style.display='block';
 </script>
 </body></html>
