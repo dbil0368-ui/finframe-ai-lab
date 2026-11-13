@@ -528,7 +528,7 @@ ur:{
 };
 let currentLang=localStorage.getItem(LANG_KEY)||'bn';
 const fullyTranslatedLanguages=['en','bn','hi','as'];
-function tr(value){return (translations[currentLang]&&translations[currentLang][value])||(translations.en&&translations.en[value])||value}
+function tr(value){if(currentLang==='bn')return value;return (translations[currentLang]&&translations[currentLang][value])||(translations.en&&translations.en[value])||value}
 function applyTranslations(){
  document.documentElement.dir=currentLang==='ur'||currentLang==='sd'||currentLang==='ks'?'rtl':'ltr';
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
