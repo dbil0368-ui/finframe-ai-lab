@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152b"><title>VYBORA Shop Manager</title>
+<style>
+:root{--bg:#f4f6fb;--ink:#172033;--muted:#697386;--card:#fff;--line:#e5e9f2;--brand:#5b48d6;--green:#16845b;--red:#c34b58}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif}
+header{background:linear-gradient(120deg,#171c3b,#5140b9);color:white;padding:22px max(18px,calc((100vw - 1080px)/2));}
+.brand{font-size:13px;opacity:.8;letter-spacing:.08em}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{font-size:25px;margin:6px 0}.sub{opacity:.8;font-size:13px}
+main{max-width:1080px;margin:auto;padding:18px 14px 60px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 4px 18px #19244a08}.stat small{color:var(--muted)}.stat strong{display:block;font-size:22px;margin-top:5px}.positive{color:var(--green)}.negative{color:var(--red)}
+nav{display:flex;gap:7px;overflow:auto;padding:14px 0}nav button,.btn{border:0;border-radius:10px;padding:11px 14px;background:#e9e7fb;color:#3c3294;font-weight:650;white-space:nowrap}nav button.active,.btn.primary{background:var(--brand);color:white}.btn.ghost{background:#f0f2f7;color:#344054}.btn.danger{background:#fff0f0;color:#a52f3b}
+.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel h2{font-size:17px;margin:0 0 12px}.panel p{color:var(--muted);font-size:13px;margin:4px 0 12px}
+label{display:block;font-size:13px;color:#505b70;margin:10px 0 5px}input,select,textarea{width:100%;border:1px solid #dce1ec;border-radius:10px;padding:11px;background:#fff;color:var(--ink);font:inherit}form .btn{margin-top:12px;width:100%}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.list{display:grid;gap:8px}.item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:11px}.item small{display:block;color:var(--muted);font-size:12px}.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed #cfd5e2;border-radius:12px;font-size:13px}
+.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:14px}.pill{font-size:11px;padding:4px 8px;border-radius:30px;background:#eef0f7;color:#5a6476}.actions{display:flex;gap:7px;flex-wrap:wrap}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(max-width:650px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}.grid{grid-template-columns:1fr}header{padding:18px 15px}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div class="brand">VYBORA • BUSINESS TOOLS</div><div class="head"><div><h1>দোকানের হিসাব, এখন মোবাইলে</h1><div class="sub">সহজ বিক্রি • খরচ • বাকি • স্টক</div></div><button class="btn ghost" id="exportBtn">ডেটা ডাউনলোড</button></div></header>
+<main>
+<section class="stats">
+ <div class="stat"><small>আজকের বিক্রি</small><strong id="todaySales">₹০</strong></div>
+ <div class="stat"><small>আজকের খরচ</small><strong id="todayExpenses">₹০</strong></div>
+ <div class="stat"><small>আজকের নেট</small><strong id="todayNet">₹০</strong></div>
+</section>
+<nav>
+ <button class="active" data-view="home">🏠 সারাংশ</button><button data-view="entry">＋ হিসাব যোগ</button><button data-view="dues">📒 বাকি খাতা</button><button data-view="stock">📦 পণ্যের স্টক</button><button data-view="history">🧾 সব হিসাব</button>
+</nav>
+<section class="view active" id="home">
+ <div class="grid">
+  <div class="panel"><h2>আজকের ব্যবসা</h2><p>আজকের বিক্রি থেকে খরচ বাদ দিয়ে হিসাব দেখুন।</p><div id="homeSummary" class="list"></div></div>
+  <div class="panel"><h2>দ্রুত কাজ</h2><p>এক ট্যাপে নতুন বিক্রি বা খরচ লিখুন।</p><div class="actions"><button class="btn primary" onclick="showView('entry')">＋ হিসাব লিখুন</button><button class="btn ghost" onclick="showView('dues')">বাকি দেখুন</button></div><div class="note">প্রথমে নিজের দোকানের নাম ও হিসাব লিখলেই শুরু করতে পারবেন।</div></div>
+ </div>
+</section>
+<section class="view" id="entry">
+ <div class="grid">
+  <div class="panel"><h2>নতুন হিসাব</h2><p>বিক্রি, খরচ বা ক্রেতার বাকি যোগ করুন।</p>
+   <form id="entryForm">
+    <label>হিসাবের ধরন</label><select id="kind"><option value="sale">বিক্রি</option><option value="expense">খরচ</option><option value="due">বাকি বিক্রি</option><option value="payment">বাকি আদায়</option></select>
+    <label>বিবরণ</label><input id="description" placeholder="যেমন: চাল বিক্রি / দোকান ভাড়া" required>
+    <div class="row"><div><label>টাকার পরিমাণ (₹)</label><input id="amount" type="number" min="0.01" step="0.01" required></div><div><label>তারিখ</label><input id="date" type="date" required></div></div>
+    <label>ক্রেতার নাম (বাকি বা আদায়ের জন্য)</label><input id="customer" placeholder="নাম লিখুন">
+    <button class="btn primary" type="submit">হিসাব সংরক্ষণ করুন</button>
+   </form>
+  </div>
+  <div class="panel"><h2>মনে রাখুন</h2><p>• বিক্রি: নগদ/ডিজিটাল বিক্রি।</p><p>• খরচ: দোকানের দৈনিক খরচ।</p><p>• বাকি বিক্রি: ক্রেতার কাছে পাওনা টাকা।</p><p>• বাকি আদায়: আগে দেওয়া বাকির টাকা ফেরত পাওয়া।</p><div class="note">এই প্রাথমিক সংস্করণে হিসাব এই ডিভাইসের ব্রাউজারে থাকে। ব্রাউজারের ডেটা মুছলে হিসাব হারাতে পারেন—নিয়মিত ডেটা ডাউনলোড করে রাখুন।</div></div>
+ </div>
+</section>
+<section class="view" id="dues"><div class="panel"><h2>ক্রেতার বাকি খাতা</h2><p>যাদের কাছে টাকা পাওনা আছে, তাদের তালিকা।</p><div id="dueList" class="list"></div></div></section>
+<section class="view" id="stock">
+ <div class="grid"><div class="panel"><h2>পণ্য যোগ করুন</h2><form id="stockForm"><label>পণ্যের নাম</label><input id="productName" required placeholder="যেমন: চিনি ১ কেজি"><div class="row"><div><label>পরিমাণ</label><input id="productQty" type="number" min="0" step="1" required></div><div><label>একক</label><input id="productUnit" placeholder="পিস / কেজি / প্যাকেট" required></div></div><label>প্রতি এককের ক্রয়মূল্য (₹)</label><input id="productCost" type="number" min="0" step="0.01" placeholder="ঐচ্ছিক"><button class="btn primary">স্টকে যোগ করুন</button></form></div><div class="panel"><h2>স্টকের তালিকা</h2><div id="stockList" class="list"></div></div></div>
+</section>
+<section class="view" id="history"><div class="panel"><div class="head"><div><h2>সব হিসাব</h2><p>সাম্প্রতিক হিসাবগুলো এখানে দেখুন।</p></div><button class="btn ghost" id="clearBtn">সব মুছুন</button></div><div id="historyList" class="list"></div></div></section>
+<p class="note">গুরুত্বপূর্ণ: এটি প্রাথমিক বিনামূল্যের প্রোটোটাইপ, পূর্ণাঙ্গ হিসাবরক্ষণ বা কর-পরামর্শের বিকল্প নয়। ডেটা এখন শুধু এই ডিভাইসে সংরক্ষিত হয়; অনলাইন ব্যাকআপ, একাধিক কর্মীর অ্যাক্সেস বা পেমেন্ট এখনও যুক্ত হয়নি।</p>
+</main><footer>VYBORA Shop Manager • প্রথম পরীক্ষামূলক সংস্করণ</footer>
+<script>
+const KEY='vybora_shop_manager_v1';
+let data={entries:[],products:[]};
+try{data=JSON.parse(localStorage.getItem(KEY))||data}catch(e){}
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+const today=()=>new Date().toISOString().slice(0,10);
+$('date').value=today();
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function showView(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===name));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===name))}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+function render(){
+ const t=today(), entries=data.entries;
+ const sum=(kind,filter)=>entries.filter(e=>e.kind===kind&&filter(e)).reduce((a,e)=>a+Number(e.amount),0);
+ const sales=sum('sale',e=>e.date===t), expenses=sum('expense',e=>e.date===t), due=sum('due',()=>true), paid=sum('payment',()=>true);
+ $('todaySales').textContent=money(sales);$('todayExpenses').textContent=money(expenses);$('todayNet').textContent=money(sales-expenses);$('todayNet').className=sales-expenses>=0?'positive':'negative';
+ $('homeSummary').innerHTML='<div class="item"><span>মোট পাওনা বাকি</span><strong>'+money(due-paid)+'</strong></div><div class="item"><span>মোট পণ্য</span><strong>'+data.products.length+'টি</strong></div><div class="item"><span>আজকের হিসাব</span><strong>'+entries.filter(e=>e.date===t).length+'টি</strong></div>';
+ const customers={};entries.forEach(e=>{if(e.customer&&(e.kind==='due'||e.kind==='payment')){customers[e.customer]=(customers[e.customer]||0)+(e.kind==='due'?1:-1)*Number(e.amount)}});
+ const dues=Object.entries(customers).filter(x=>x[1]>0.009);
+ $('dueList').innerHTML=dues.length?dues.map(([name,amt])=>'<div class="item"><div><strong>'+esc(name)+'</strong><small>ক্রেতার বাকি</small></div><strong class="negative">'+money(amt)+'</strong></div>').join(''):'<div class="empty">এখনও কোনো বাকি যোগ করা হয়নি।</div>';
+ $('stockList').innerHTML=data.products.length?data.products.map((p,i)=>'<div class="item"><div><strong>'+esc(p.name)+'</strong><small>'+p.qty+' '+esc(p.unit)+' • ক্রয়মূল্য '+money(p.cost)+'</small></div><button class="btn ghost" onclick="changeQty('+i+')">পরিমাণ বদল</button></div>').join(''):'<div class="empty">এখনও কোনো পণ্য যোগ করা হয়নি।</div>';
+ const sorted=[...entries].sort((a,b)=>b.created-a.created);
+ $('historyList').innerHTML=sorted.length?sorted.map(e=>'<div class="item"><div><strong>'+esc(e.description)+'</strong><small>'+e.date+' • '+label(e.kind)+(e.customer?' • '+esc(e.customer):'')+'</small></div><strong class="'+(e.kind==='expense'?'negative':e.kind==='due'?'negative':'positive')+'">'+(e.kind==='expense'?'−':e.kind==='due'?'বাকি ':'+')+money(e.amount)+'</strong></div>').join(''):'<div class="empty">এখনও কোনো হিসাব নেই। “হিসাব যোগ” থেকে শুরু করুন।</div>';
+}
+function label(k){return {sale:'বিক্রি',expense:'খরচ',due:'বাকি বিক্রি',payment:'বাকি আদায়'}[k]||k}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('entryForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number($('amount').value);if(!(amount>0))return alert('সঠিক টাকার পরিমাণ লিখুন।');const kind=$('kind').value,customer=$('customer').value.trim();if((kind==='due'||kind==='payment')&&!customer)return alert('বাকি হিসাবের জন্য ক্রেতার নাম লিখুন।');data.entries.push({kind,description:$('description').value.trim(),amount,date:$('date').value,customer,created:Date.now()});e.target.reset();$('date').value=today();save();showView('home');alert('হিসাব সংরক্ষণ হয়েছে।')});
+$('stockForm').addEventListener('submit',e=>{e.preventDefault();data.products.push({name:$('productName').value.trim(),qty:Number($('productQty').value),unit:$('productUnit').value.trim(),cost:Number($('productCost').value||0)});e.target.reset();save();alert('পণ্য যোগ হয়েছে।')});
+function changeQty(i){const q=prompt('নতুন মোট পরিমাণ লিখুন:',data.products[i].qty);if(q===null)return;if(q.trim()===''||!Number.isFinite(Number(q))||Number(q)<0)return alert('সঠিক পরিমাণ লিখুন।');data.products[i].qty=Number(q);save()}
+$('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vybora-shop-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)});
+$('clearBtn').addEventListener('click',()=>{if(confirm('সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।')){data={entries:[],products:[]};save()}});
+render();
+</script>
+</body></html>
