@@ -53,7 +53,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 <section class="view" id="stock">
  <div class="grid"><div class="panel"><h2>পণ্য যোগ করুন</h2><form id="stockForm"><label>পণ্যের নাম</label><input id="productName" required placeholder="যেমন: চিনি ১ কেজি"><div class="row"><div><label>পরিমাণ</label><input id="productQty" type="number" min="0" step="1" required></div><div><label>একক</label><input id="productUnit" placeholder="পিস / কেজি / প্যাকেট" required></div></div><label>প্রতি এককের ক্রয়মূল্য (₹)</label><input id="productCost" type="number" min="0" step="0.01" placeholder="ঐচ্ছিক"><button class="btn primary">স্টকে যোগ করুন</button></form></div><div class="panel"><h2>স্টকের তালিকা</h2><div id="stockList" class="list"></div></div></div>
 </section>
-<section class="view" id="history"><div class="panel"><div class="head"><div><h2>সব হিসাব</h2><p>সাম্প্রতিক হিসাবগুলো এখানে দেখুন।</p></div><button class="btn ghost" id="clearBtn">সব মুছুন</button></div><div id="historyList" class="list"></div></div></section>
+<section class="view" id="history"><div class="panel"><div class="head"><div><h2>সব হিসাব</h2><p>সাম্প্রতিক হিসাবগুলো এখানে দেখুন।</p></div><div class="actions"><button class="btn primary" id="shareStatementBtn">📤 হিসাব স্টেটমেন্ট শেয়ার</button><button class="btn ghost" id="clearBtn">সব মুছুন</button></div></div><div id="historyList" class="list"></div></div></section>
 <p class="note" id="languageNote" style="display:none">Language packs: English, Bengali, Hindi and Assamese have broader translations. The other 18 scheduled languages have translated main menus and key labels; some instructions and messages may still appear in English. Native-speaker review is recommended.</p><p class="note">গুরুত্বপূর্ণ: এটি প্রাথমিক বিনামূল্যের প্রোটোটাইপ, পূর্ণাঙ্গ হিসাবরক্ষণ বা কর-পরামর্শের বিকল্প নয়। ডেটা এখন শুধু এই ডিভাইসে সংরক্ষিত হয়; অনলাইন ব্যাকআপ, একাধিক কর্মীর অ্যাক্সেস বা পেমেন্ট এখনও যুক্ত হয়নি।</p>
 </main><footer>VYBORA Shop Manager • প্রথম পরীক্ষামূলক সংস্করণ</footer>
 <script>
@@ -61,7 +61,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 const LANG_KEY='vybora_shop_language';
 const translations={
  en:{
- 'দোকানের হিসাব, এখন মোবাইলে':'Shop accounts, now on your phone','সহজ বিক্রি • খরচ • বাকি • স্টক':'Sales • Expenses • Customer dues • Stock','ডেটা ডাউনলোড':'Download backup',
+ 'দোকানের হিসাব, এখন মোবাইলে':'Shop accounts, now on your phone','সহজ বিক্রি • খরচ • বাকি • স্টক':'Sales • Expenses • Customer dues • Stock','ডেটা ডাউনলোড':'Download backup','📤 হিসাব স্টেটমেন্ট শেয়ার':'📤 Share account statement',
  '🏠 সারাংশ':'🏠 Overview','＋ হিসাব যোগ':'＋ Add entry','📒 বাকি খাতা':'📒 Customer dues','📦 পণ্যের স্টক':'📦 Inventory','🧾 সব হিসাব':'🧾 All records',
  'আজকের বিক্রি':'Today’s sales','আজকের খরচ':'Today’s expenses','আজকের নেট':'Today’s net','আজকের ব্যবসা':'Today at a glance','আজকের বিক্রি থেকে খরচ বাদ দিয়ে হিসাব দেখুন।':'Sales minus expenses for today.',
  'দ্রুত কাজ':'Quick actions','এক ট্যাপে নতুন বিক্রি বা খরচ লিখুন।':'Add a sale or expense in one tap.','＋ হিসাব লিখুন':'＋ Add entry','বাকি দেখুন':'View dues','প্রথমে নিজের দোকানের নাম ও হিসাব লিখলেই শুরু করতে পারবেন।':'Start by entering your shop transactions.',
@@ -85,7 +85,7 @@ const translations={
  'VYBORA Shop Manager • প্রথম পরীক্ষামূলক সংস্করণ':'VYBORA Shop Manager • शुरुआती परीक्षण संस्करण','মোট পাওনা বাকি':'कुल उधार बाकी','মোট পণ্য':'कुल सामान','আজকের হিসাব':'आज की एंट्री','ক্রেতার বাকি':'ग्राहक का बकाया','ক্রয়মূল্য':'खरीद मूल्य','এখনও কোনো বাকি যোগ করা হয়নি।':'अभी कोई उधार नहीं जोड़ा गया।','এখনও কোনো পণ্য যোগ করা হয়নি।':'अभी कोई सामान नहीं जोड़ा गया।','নতুন মোট পরিমাণ লিখুন:':'नई कुल मात्रा लिखें:','সঠিক পরিমাণ লিখুন।':'सही मात्रा लिखें।','সঠিক টাকার পরিমাণ লিখুন।':'सही रकम दर्ज करें।','বাকি হিসাবের জন্য ক্রেতার নাম লিখুন।':'उधार एंट्री के लिए ग्राहक का नाम लिखें।','হিসাব সংরক্ষণ হয়েছে।':'एंट्री सेव हो गई।','পণ্য যোগ হয়েছে।':'सामान जोड़ दिया गया।','সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।':'क्या सभी रिकॉर्ड और सामान हटाएँ? पहले बैकअप डाउनलोड करें।','এখনও কোনো হিসাব নেই। “হিসাব যোগ” থেকে শুরু করুন।':'अभी कोई एंट्री नहीं है। “एंट्री जोड़ें” से शुरू करें।'
  },
  as:{
- 'দোকানের হিসাব, এখন মোবাইলে':'দোকানৰ হিচাপ, এতিয়া মোবাইলত','সহজ বিক্রি • খরচ • বাকি • স্টক':'সহজ বিক্ৰী • খৰচ • বাকী • মজুত','ডেটা ডাউনলোড':'বেকআপ ডাউনলোড',
+ 'দোকানের হিসাব, এখন মোবাইলে':'দোকানৰ হিচাপ, এতিয়া মোবাইলত','সহজ বিক্রি • খরচ • বাকি • স্টক':'সহজ বিক্ৰী • খৰচ • বাকী • মজুত','ডেটা ডাউনলোড':'বেকআপ ডাউনলোড','📤 হিসাব স্টেটমেন্ট শেয়ার':'📤 হিচাপৰ বিবৰণ শ্বেয়াৰ কৰক',
  '🏠 সারাংশ':'🏠 সাৰাংশ','＋ হিসাব যোগ':'＋ হিচাপ যোগ','📒 বাকি খাতা':'📒 বাকীৰ বহী','📦 পণ্যের স্টক':'📦 সামগ্ৰীৰ মজুত','🧾 সব হিসাব':'🧾 সকলো হিচাপ',
  'আজকের বিক্রি':'আজিৰ বিক্ৰী','আজকের খরচ':'আজিৰ খৰচ','আজকের নেট':'আজিৰ নিকা','আজকের ব্যবসা':'আজিৰ ব্যৱসায়','আজকের বিক্রি থেকে খরচ বাদ দিয়ে হিসাব দেখুন।':'আজিৰ বিক্ৰীৰ পৰা খৰচ বাদ দি হিচাপ চাওক।',
  'দ্রুত কাজ':'দ্ৰুত কাম','এক ট্যাপে নতুন বিক্রি বা খরচ লিখুন।':'এটা টেপতে নতুন বিক্ৰী বা খৰচ লিখক।','＋ হিসাব লিখুন':'＋ হিচাপ লিখক','বাকি দেখুন':'বাকী চাওক','প্রথমে নিজের দোকানের নাম ও হিসাব লিখলেই শুরু করতে পারবেন।':'দোকানৰ লেনদেন লিখি আৰম্ভ কৰক।',
@@ -563,6 +563,25 @@ $('entryForm').addEventListener('submit',e=>{e.preventDefault();const amount=Num
 $('stockForm').addEventListener('submit',e=>{e.preventDefault();data.products.push({name:$('productName').value.trim(),qty:Number($('productQty').value),unit:$('productUnit').value.trim(),cost:Number($('productCost').value||0)});e.target.reset();save();alert('পণ্য যোগ হয়েছে।')});
 function changeQty(i){const q=prompt('নতুন মোট পরিমাণ লিখুন:',data.products[i].qty);if(q===null)return;if(q.trim()===''||!Number.isFinite(Number(q))||Number(q)<0)return alert('সঠিক পরিমাণ লিখুন।');data.products[i].qty=Number(q);save()}
 $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vybora-shop-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)});
+function makeStatement(){
+ const lines=['VYBORA Shop Manager','Account statement','Generated: '+new Date().toLocaleString(),'','TODAY','Sales: '+money(data.entries.filter(e=>e.kind==='sale'&&e.date===today()).reduce((a,e)=>a+Number(e.amount),0)),'Expenses: '+money(data.entries.filter(e=>e.kind==='expense'&&e.date===today()).reduce((a,e)=>a+Number(e.amount),0)),'','CUSTOMER DUES'];
+ const balances={};data.entries.forEach(e=>{if(e.customer&&(e.kind==='due'||e.kind==='payment'))balances[e.customer]=(balances[e.customer]||0)+(e.kind==='due'?1:-1)*Number(e.amount)});
+ Object.entries(balances).filter(([,v])=>v>0.009).forEach(([n,v])=>lines.push(n+': '+money(v)));
+ lines.push('','ALL TRANSACTIONS');
+ if(!data.entries.length)lines.push('No transactions yet.');
+ [...data.entries].sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>lines.push(e.date+' | '+label(e.kind)+' | '+e.description+' | '+money(e.amount)+(e.customer?' | '+e.customer:'')));
+ lines.push('','STOCK');
+ if(!data.products.length)lines.push('No products added.');
+ data.products.forEach(p=>lines.push(p.name+' | '+p.qty+' '+p.unit+' | Cost '+money(p.cost)));
+ lines.push('','Note: This statement is generated from records stored in this browser.');
+ return lines.join('\\n');
+}
+$('shareStatementBtn').addEventListener('click',async()=>{
+ const statement=makeStatement();
+ if(navigator.share){try{await navigator.share({title:'VYBORA Account Statement',text:statement})}catch(err){if(err.name!=='AbortError')alert('শেয়ার করা যায়নি। আবার চেষ্টা করুন।')}return}
+ if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(statement);alert('স্টেটমেন্ট কপি হয়েছে। এখন WhatsApp বা অন্য অ্যাপে পেস্ট করে পাঠান।');return}catch(err){}}
+ const blob=new Blob([statement],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vybora-account-statement-'+today()+'.txt';a.click();URL.revokeObjectURL(a.href);
+});
 $('clearBtn').addEventListener('click',()=>{if(confirm('সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।')){data={entries:[],products:[]};save()}});
 render();
 $('langSelect').value=currentLang;
