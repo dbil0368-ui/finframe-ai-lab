@@ -491,6 +491,7 @@ document.querySelectorAll(".growth-generate").forEach(button=>button.addEventLis
 }));
 
 function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button,.bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",creatorKit:"Creator Kit",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
+const requestedView=new URLSearchParams(window.location.search).get("view");if(requestedView==="billing")show("billing");
 
 const mobileMenuToggle=document.getElementById("mobileMenuToggle");
 const sideMenu=document.querySelector(".side");
