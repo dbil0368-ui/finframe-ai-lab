@@ -456,6 +456,10 @@ document.querySelectorAll("[data-vybora-theme-choice]").forEach(button=>button.a
  document.querySelectorAll("[data-vybora-theme-choice]").forEach(b=>b.setAttribute("aria-pressed",String(b===button)));
 }));
 document.addEventListener("keydown",event=>{if(event.key==="Escape")closeMobileMenu()});
+document.addEventListener("click",event=>{
+ if(!document.body.classList.contains("menu-open"))return;
+ if(!sideMenu.contains(event.target)&&!mobileMenuToggle.contains(event.target))closeMobileMenu();
+});
 document.querySelectorAll("#mainNav [data-view]").forEach(button=>button.addEventListener("click",closeMobileMenu));
 
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
