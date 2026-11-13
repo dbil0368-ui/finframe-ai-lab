@@ -112,6 +112,44 @@ body{background:radial-gradient(ellipse at 12% 0%,#26345a66 0,transparent 34%),r
 @media(max-width:850px){.hero{padding:25px 22px;border-radius:21px}.wrap{padding-top:22px}.side{background:#0c1220f5}.nav button.active{box-shadow:inset 0 -2px #a78bfa}}
 @media(max-width:480px){.hero{padding:21px 17px;gap:10px}.hero-art{width:76px;min-width:76px;border-radius:18px}.hero .heading{font-size:30px}.sub{font-size:14px}.tool-card{min-height:0}.grid{gap:9px}}
 
+
+/* Mobile navigation refinement */
+.nav{min-width:0}
+.nav button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media(max-width:850px){
+ .side{padding:12px 14px 10px}
+ .brand{padding:2px 6px 10px}
+ .nav{
+  display:flex;align-items:center;gap:8px;
+  overflow-x:auto;overflow-y:hidden;
+  padding:2px 1px 7px;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity;
+  overscroll-behavior-x:contain;
+ }
+ .nav::-webkit-scrollbar{display:none}
+ .nav button{
+  flex:0 0 auto;min-height:42px;
+  display:inline-flex;align-items:center;
+  white-space:nowrap;
+  padding:10px 14px;font-size:13px;line-height:1;
+  border:1px solid #ffffff12;
+  background:#141c2d;border-radius:999px;
+  scroll-snap-align:start;
+ }
+ .nav button.active{
+  background:linear-gradient(110deg,#9b83ff30,#5de1d220);
+  border-color:#a78bfa80;
+  box-shadow:inset 0 -2px #a78bfa,0 4px 14px #0003;
+ }
+}
+@media(max-width:480px){
+ .side{padding-left:12px;padding-right:12px}
+ .nav{gap:7px;margin-right:-12px;padding-right:12px}
+ .nav button{min-height:40px;padding:9px 12px;font-size:12px}
+}
+
 </style>
 </head>
 <body>
