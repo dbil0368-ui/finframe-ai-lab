@@ -150,6 +150,19 @@ body{background:radial-gradient(ellipse at 12% 0%,#26345a66 0,transparent 34%),r
  .nav button{min-height:40px;padding:9px 12px;font-size:12px}
 }
 
+
+/* Compact persistent creator login shortcut */
+.creator-login-fab{
+ position:fixed;right:16px;bottom:18px;z-index:40;
+ min-height:38px;padding:8px 15px;border-radius:999px;
+ border:1px solid #c4b5fd88;
+ background:linear-gradient(115deg,#a78bfa,#7463df);
+ color:#fff;font-size:12px;font-weight:800;letter-spacing:.2px;
+ box-shadow:0 7px 24px #0008,0 0 0 3px #a78bfa18;
+}
+.creator-login-fab:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:480px){.creator-login-fab{right:13px;bottom:14px;min-height:36px;padding:8px 13px}}
+
 </style>
 </head>
 <body>
@@ -165,6 +178,7 @@ body{background:radial-gradient(ellipse at 12% 0%,#26345a66 0,transparent 34%),r
  </nav>
  <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends, and plan original content. Live Google Trends data is available for supported regions. AI-powered creative briefs are enabled in Preview.</div>
 </aside>
+<button class="creator-login-fab" id="creatorLoginFab" type="button" aria-label="Open Creator Login">Creator Login</button>
 <main class="main">
  <header class="top"><div class="crumb">Workspace / <b id="crumb">Overview</b></div><div class="avatar">V</div></header>
  <div class="wrap">
@@ -226,7 +240,7 @@ body{background:radial-gradient(ellipse at 12% 0%,#26345a66 0,transparent 34%),r
 const supabaseClient=window.supabase.createClient("https://pxgoaygwtxrrqkftluut.supabase.co","sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh");
 let currentUser=null;
 let calendarCursor=new Date();
-document.getElementById("accountToggle").addEventListener("click",()=>{
+document.getElementById("creatorLoginFab").addEventListener("click",()=>{\n const content=document.getElementById("authContent"),button=document.getElementById("accountToggle");\n content.hidden=false;button.textContent="Hide account −";button.setAttribute("aria-expanded","true");\n document.getElementById("authPanel").scrollIntoView({behavior:"smooth",block:"center"});\n document.getElementById("authEmail").focus({preventScroll:true});\n});\ndocument.getElementById("accountToggle").addEventListener("click",()=>{
  const content=document.getElementById("authContent"),button=document.getElementById("accountToggle");
  content.hidden=!content.hidden;
  button.textContent=content.hidden?"Account details +":"Hide account −";
