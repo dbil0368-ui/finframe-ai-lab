@@ -543,7 +543,8 @@ function applyTranslations(){
 
 const KEY='vybora_shop_manager_v1';
 let data={entries:[],products:[],customers:[]};
-try{data=JSON.parse(localStorage.getItem(KEY))||data}catch(e){}\ndata.customers=Array.isArray(data.customers)?data.customers:[];
+try{data=JSON.parse(localStorage.getItem(KEY))||data}catch(e){};
+data.customers=Array.isArray(data.customers)?data.customers:[];
 const $=id=>document.getElementById(id);
 const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
 const today=()=>new Date().toISOString().slice(0,10);
