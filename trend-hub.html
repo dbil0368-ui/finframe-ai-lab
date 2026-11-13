@@ -228,6 +228,12 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
 }
 
 
+
+/* Creator Growth Toolkit */
+.growth-result{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+.growth-result .growth-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.growth-generate:disabled{opacity:.65;cursor:wait}
+@media(max-width:520px){#creatorGrowthTools .tool-card{padding:16px}}
 </style>
 </head>
 <body>
@@ -286,6 +292,13 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   <section class="view" id="studio">
    <div class="eyebrow">Create with intention</div><h1 class="heading">Creator Studio</h1><p class="sub">Start with a topic. Get a structured creative brief you can edit and develop into an original post or short video.</p>
    <div class="panel" style="max-width:780px;margin-top:22px"><label for="topic"><b>What's your topic?</b></label><input id="topic" class="field" style="margin:10px 0 14px" placeholder="e.g. a new film, local food, cricket moment…"><label for="format"><b>Content format</b></label><select id="format" class="field" style="margin:10px 0 14px"><option>Short video / Reel</option><option>Carousel post</option><option>Story</option><option>Creator thread</option></select><label for="audience"><b>Who is it for?</b></label><input id="audience" class="field" style="margin:10px 0 16px" placeholder="e.g. students in India, tech beginners…"><button class="primary" id="generate">Generate with VYBORA AI ✦</button><div class="result" id="brief" aria-live="polite"></div></div>
+
+   <div class="section-title"><h2>Creator Growth Tools</h2><span class="muted">AI-powered daily helpers</span></div>
+   <div class="tools" id="creatorGrowthTools">
+    <article class="tool-card"><div class="tool-icon">⚡</div><h3>Viral Hook Generator</h3><p>Generate scroll-stopping opening lines for your next post or video.</p><button class="primary growth-generate" type="button" data-growth-mode="hooks">Generate hooks ✦</button><div class="result growth-result" id="growthHooks" aria-live="polite"></div></article>
+    <article class="tool-card"><div class="tool-icon">🎬</div><h3>AI Video Script Writer</h3><p>Turn your topic into a ready-to-record script with scenes, voiceover and CTA.</p><button class="primary growth-generate" type="button" data-growth-mode="script">Write my script ✦</button><div class="result growth-result" id="growthScript" aria-live="polite"></div></article>
+    <article class="tool-card"><div class="tool-icon">#️⃣</div><h3>Caption & Hashtag AI</h3><p>Create platform-friendly captions, calls to action and relevant hashtags.</p><button class="primary growth-generate" type="button" data-growth-mode="caption">Create caption ✦</button><div class="result growth-result" id="growthCaption" aria-live="polite"></div></article>
+   </div>
    <div class="notice">Creator Studio uses a secure, server-side Google Gemini API connection. Your topic is sent securely for brief generation. API credentials are kept server-side and are never stored in this page.</div>
   </section>
   <section class="view" id="planner">
@@ -438,6 +451,27 @@ async function startVyboraCheckout(plan){
 }
 document.getElementById("buyStarter").addEventListener("click",()=>startVyboraCheckout("starter"));
 document.getElementById("buyPro").addEventListener("click",()=>startVyboraCheckout("pro"));
+
+const growthPrompts={
+ hooks:{label:"Viral Hook Generator",format:"Short-form hook options",instruction:"Create 12 original, curiosity-building opening hooks for the topic. Mix question, surprising angle, relatable pain point, bold-but-honest statement and story-led hooks. Keep each hook short, natural and suitable for the first 3 seconds. Avoid clickbait and unsupported claims. Add a one-line note explaining the strongest 3."},
+ script:{label:"AI Video Script",format:"Short video script",instruction:"Write a ready-to-record 45-60 second video script. Include a strong opening, timestamped scenes, spoken voiceover, simple visual/B-roll suggestions, on-screen text, a natural transition and a clear CTA. Keep production practical for a solo creator. Mark any facts that need checking."},
+ caption:{label:"Caption & Hashtag AI",format:"Social caption and hashtags",instruction:"Create 3 distinct caption options: friendly, punchy and informative. Include a natural CTA and 8-12 relevant, specific hashtags. Avoid spammy tag stuffing, guaranteed reach claims and fabricated facts. Adapt the wording to the selected platform."}
+};
+document.querySelectorAll(".growth-generate").forEach(button=>button.addEventListener("click",async()=>{
+ const mode=button.dataset.growthMode,config=growthPrompts[mode],topic=document.getElementById("topic").value.trim(),audience=document.getElementById("audience").value.trim()||"curious viewers",box=document.getElementById(mode==="hooks"?"growthHooks":mode==="script"?"growthScript":"growthCaption");
+ if(!topic){box.classList.add("show");box.textContent="Enter your topic above first, then try again.";document.getElementById("topic").focus();return}
+ button.disabled=true;const original=button.textContent;button.textContent="Creating…";box.classList.add("show");box.textContent="VYBORA AI is preparing your "+config.label.toLowerCase()+"…";
+ try{
+  const kit=getCreatorKit();const language=kit.language||"English";
+  const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({topic,format:config.format,audience,language,mode,instruction:config.instruction,platform:kit.platform||"Multiple platforms"})});
+  const data=await response.json();if(!response.ok)throw new Error(data.error||"AI generation failed.");
+  const output=String(data.brief||"");box.innerHTML='<b>'+escapeText(config.label)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.65">'+escapeText(output)+'</div><div class="growth-actions"><button class="ghost" type="button" data-growth-copy>Copy result</button><button class="ghost" type="button" data-growth-save>Save to Planner</button></div>';
+  box.querySelector("[data-growth-copy]").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(output);box.querySelector("[data-growth-copy]").textContent="Copied ✓"}catch(e){box.querySelector("[data-growth-copy]").textContent="Copy unavailable"}});
+  box.querySelector("[data-growth-save]").addEventListener("click",async()=>{await saveIdea(topic,config.label,output);show("planner")});
+ }catch(error){box.textContent=error.message}
+ finally{button.disabled=false;button.textContent=original}
+}));
+
 function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button,.bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",creatorKit:"Creator Kit",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
 
 const mobileMenuToggle=document.getElementById("mobileMenuToggle");
