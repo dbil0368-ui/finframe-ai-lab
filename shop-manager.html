@@ -548,7 +548,8 @@ function render(){
  const sum=(kind,filter)=>entries.filter(e=>e.kind===kind&&filter(e)).reduce((a,e)=>a+Number(e.amount),0);
  const sales=sum('sale',e=>e.date===t), expenses=sum('expense',e=>e.date===t), due=sum('due',()=>true), paid=sum('payment',()=>true);
  $('todaySales').textContent=money(sales);$('todayExpenses').textContent=money(expenses);$('todayNet').textContent=money(sales-expenses);$('todayNet').className=sales-expenses>=0?'positive':'negative';
- $('homeSummary').innerHTML='<div class="item"><span>মোট পাওনা বাকি</span><strong>'+money(due-paid)+'</strong></div><div class="item"><span>মোট পণ্য</span><strong>'+data.products.length+'টি</strong></div><div class="item"><span>আজকের হিসাব</span><strong>'+entries.filter(e=>e.date===t).length+'টি</strong></div>';
+ const countSuffix=currentLang==='bn'?'টি':'';
+ $('homeSummary').innerHTML='<div class="item"><span>মোট পাওনা বাকি</span><strong>'+money(due-paid)+'</strong></div><div class="item"><span>মোট পণ্য</span><strong>'+data.products.length+countSuffix+'</strong></div><div class="item"><span>আজকের হিসাব</span><strong>'+entries.filter(e=>e.date===t).length+countSuffix+'</strong></div>';
  const customers={};entries.forEach(e=>{if(e.customer&&(e.kind==='due'||e.kind==='payment')){customers[e.customer]=(customers[e.customer]||0)+(e.kind==='due'?1:-1)*Number(e.amount)}});
  const dues=Object.entries(customers).filter(x=>x[1]>0.009);
  $('dueList').innerHTML=dues.length?dues.map(([name,amt])=>'<div class="item"><div><strong>'+esc(name)+'</strong><small>ক্রেতার বাকি</small></div><strong class="negative">'+money(amt)+'</strong></div>').join(''):'<div class="empty">এখনও কোনো বাকি যোগ করা হয়নি।</div>';
