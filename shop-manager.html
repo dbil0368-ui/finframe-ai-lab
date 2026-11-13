@@ -27,7 +27,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
  <div class="stat"><small>আজকের নেট</small><strong id="todayNet">₹০</strong></div>
 </section>
 <nav>
- <button class="active" data-view="home">🏠 সারাংশ</button><button data-view="entry">＋ হিসাব যোগ</button><button data-view="dues">📒 বাকি খাতা</button><button data-view="stock">📦 পণ্যের স্টক</button><button data-view="history">🧾 সব হিসাব</button>
+ <button class="active" data-view="home">🏠 সারাংশ</button><button data-view="entry">＋ হিসাব যোগ</button><button data-view="dues">📒 বাকি খাতা</button><button data-view="stock">📦 পণ্যের স্টক</button><button data-view="history">🧾 সব হিসাব</button><button data-view="documents">📄 ছবি থেকে PDF</button>
 </nav>
 <section class="view active" id="home">
  <div class="grid">
@@ -62,6 +62,19 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
  <div class="grid"><div class="panel"><h2>পণ্য যোগ করুন</h2><form id="stockForm"><label>পণ্যের নাম</label><input id="productName" required placeholder="যেমন: চিনি ১ কেজি"><div class="row"><div><label>পরিমাণ</label><input id="productQty" type="number" min="0" step="1" required></div><div><label>একক</label><input id="productUnit" placeholder="পিস / কেজি / প্যাকেট" required></div></div><label>প্রতি এককের ক্রয়মূল্য (₹)</label><input id="productCost" type="number" min="0" step="0.01" placeholder="ঐচ্ছিক"><button class="btn primary">স্টকে যোগ করুন</button></form></div><div class="panel"><h2>স্টকের তালিকা</h2><div id="stockList" class="list"></div></div></div>
 </section>
 <section class="view" id="history"><div class="panel"><div class="head"><div><h2>সব হিসাব</h2><p>সাম্প্রতিক হিসাবগুলো এখানে দেখুন।</p></div><div class="actions"><button class="btn primary" id="shareStatementBtn">📤 হিসাব স্টেটমেন্ট শেয়ার</button><button class="btn ghost" id="clearBtn">সব মুছুন</button></div></div><div id="historyList" class="list"></div></div></section>
+<section class="view" id="documents">
+ <div class="panel">
+  <h2>ছবি তুলে PDF ডকুমেন্ট তৈরি করুন</h2>
+  <p>মোবাইলের ক্যামেরা দিয়ে বিল, রসিদ বা কাগজের ছবি তুলুন; একাধিক ছবিও যোগ করতে পারবেন।</p>
+  <label for="documentPhotos">কাগজের ছবি নির্বাচন / ক্যামেরা খুলুন</label>
+  <input id="documentPhotos" type="file" accept="image/*" capture="environment" multiple>
+  <label for="documentTitle">ডকুমেন্টের শিরোনাম (ঐচ্ছিক)</label>
+  <input id="documentTitle" type="text" placeholder="যেমন: কেনাকাটার বিল">
+  <div id="documentPreview" class="list" style="margin-top:12px"></div>
+  <button class="btn primary" id="makePdfBtn" type="button" style="margin-top:12px">📄 PDF তৈরি / প্রিন্ট</button>
+  <p class="note">PDF তৈরির পর প্রিন্ট অপশনে “Save as PDF / PDF হিসেবে সংরক্ষণ” বেছে নিন। ছবি এই ডিভাইসেই প্রক্রিয়া করা হয়; সার্ভারে আপলোড হয় না।</p>
+ </div>
+</section>
 <p class="note" id="languageNote" style="display:none">Language packs: English, Bengali, Hindi and Assamese have broader translations. The other 18 scheduled languages have translated main menus and key labels; some instructions and messages may still appear in English. Native-speaker review is recommended.</p><p class="note">গুরুত্বপূর্ণ: এটি প্রাথমিক বিনামূল্যের প্রোটোটাইপ, পূর্ণাঙ্গ হিসাবরক্ষণ বা কর-পরামর্শের বিকল্প নয়। ডেটা এখন শুধু এই ডিভাইসে সংরক্ষিত হয়; অনলাইন ব্যাকআপ, একাধিক কর্মীর অ্যাক্সেস বা পেমেন্ট এখনও যুক্ত হয়নি।</p>
 </main><footer>VYBORA Shop Manager • প্রথম পরীক্ষামূলক সংস্করণ</footer>
 <script>
@@ -597,6 +610,25 @@ $('shareStatementBtn').addEventListener('click',async()=>{
  const blob=new Blob([statement],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vybora-account-statement-'+today()+'.txt';a.click();URL.revokeObjectURL(a.href);
 });
 $('clearBtn').addEventListener('click',()=>{if(confirm('সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।')){data={entries:[],products:[],customers:[]};save()}});
+const documentPhotos=$('documentPhotos');
+documentPhotos.addEventListener('change',()=>{
+ const files=[...documentPhotos.files].filter(f=>f.type.startsWith('image/'));
+ $('documentPreview').innerHTML=files.length?files.map((f,i)=>'<div class="item"><span>'+esc(f.name)+'</span><small>'+Math.round(f.size/1024)+' KB</small></div>').join(''):'<div class="empty">এখনও কোনো ছবি নির্বাচন করা হয়নি।</div>';
+});
+$('makePdfBtn').addEventListener('click',()=>{
+ const files=[...documentPhotos.files].filter(f=>f.type.startsWith('image/'));
+ if(!files.length){alert('প্রথমে অন্তত একটি ছবি তুলুন বা নির্বাচন করুন।');return}
+ const win=window.open('','_blank');
+ if(!win){alert('পপ-আপ বন্ধ আছে। এই সাইটের জন্য পপ-আপ অনুমতি দিন, তারপর আবার চেষ্টা করুন।');return}
+ const title=$('documentTitle').value.trim()||'দোকানের ডকুমেন্ট';
+ const readers=files.map(file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve({src:reader.result,name:file.name});reader.onerror=reject;reader.readAsDataURL(file)}));
+ Promise.all(readers).then(images=>{
+  const safeTitle=esc(title);
+  win.document.open();
+  win.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>body{font-family:Arial,sans-serif;margin:24px;color:#111}h1{font-size:20px;margin:0 0 16px}.page{page-break-after:always;break-after:page;margin:0 0 20px}.page:last-child{page-break-after:auto;break-after:auto}img{display:block;max-width:100%;max-height:92vh;object-fit:contain;margin:auto}@page{margin:12mm}</style></head><body><h1>'+safeTitle+'</h1>'+images.map(x=>'<div class="page"><img src="'+x.src+'" alt="'+esc(x.name)+'"></div>').join('')+'<script>window.onload=function(){setTimeout(function(){window.focus();window.print()},500)};<\/script></body></html>');
+  win.document.close();
+ }).catch(()=>{win.close();alert('ছবি খোলা যায়নি। আবার চেষ্টা করুন।')});
+});
 render();
 $('langSelect').value=currentLang;
 $('langSelect').addEventListener('change',e=>{currentLang=e.target.value;localStorage.setItem(LANG_KEY,currentLang);location.reload()});
