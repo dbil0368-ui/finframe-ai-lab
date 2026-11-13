@@ -42,14 +42,22 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
     <label>হিসাবের ধরন</label><select id="kind"><option value="sale">বিক্রি</option><option value="expense">খরচ</option><option value="due">বাকি বিক্রি</option><option value="payment">বাকি আদায়</option></select>
     <label>বিবরণ</label><input id="description" placeholder="যেমন: চাল বিক্রি / দোকান ভাড়া" required>
     <div class="row"><div><label>টাকার পরিমাণ (₹)</label><input id="amount" type="number" min="0.01" step="0.01" required></div><div><label>তারিখ</label><input id="date" type="date" required></div></div>
-    <label>ক্রেতার নাম (বাকি বা আদায়ের জন্য)</label><input id="customer" placeholder="নাম লিখুন">
+    <label>ক্রেতার নাম (বাকি বা আদায়ের জন্য)</label><input id="customer" list="customerOptions" placeholder="নাম লিখুন"><datalist id="customerOptions"></datalist>
     <button class="btn primary" type="submit">হিসাব সংরক্ষণ করুন</button>
    </form>
   </div>
   <div class="panel"><h2>মনে রাখুন</h2><p>• বিক্রি: নগদ/ডিজিটাল বিক্রি।</p><p>• খরচ: দোকানের দৈনিক খরচ।</p><p>• বাকি বিক্রি: ক্রেতার কাছে পাওনা টাকা।</p><p>• বাকি আদায়: আগে দেওয়া বাকির টাকা ফেরত পাওয়া।</p><div class="note">এই প্রাথমিক সংস্করণে হিসাব এই ডিভাইসের ব্রাউজারে থাকে। ব্রাউজারের ডেটা মুছলে হিসাব হারাতে পারেন—নিয়মিত ডেটা ডাউনলোড করে রাখুন।</div></div>
  </div>
 </section>
-<section class="view" id="dues"><div class="panel"><h2>ক্রেতার বাকি খাতা</h2><p>যাদের কাছে টাকা পাওনা আছে, তাদের তালিকা।</p><div id="dueList" class="list"></div></div></section>
+<section class="view" id="dues">
+ <div class="grid">
+  <div class="panel"><h2>ক্রেতা যোগ করুন</h2><p>নাম ও মোবাইল নম্বর সেভ করুন। পরে তার হিসাব WhatsApp-এ পাঠাতে পারবেন।</p>
+   <form id="customerForm"><label>ক্রেতার নাম</label><input id="newCustomerName" required placeholder="নাম লিখুন"><label>মোবাইল নম্বর</label><input id="newCustomerPhone" type="tel" inputmode="tel" required placeholder="10-digit mobile number"><button class="btn primary" type="submit">ক্রেতা সংরক্ষণ করুন</button></form>
+  </div>
+  <div class="panel"><h2>ক্রেতার তালিকা</h2><div id="customerList" class="list"></div></div>
+ </div>
+ <div class="panel" style="margin-top:14px"><h2>ক্রেতার বাকি খাতা</h2><p>যাদের কাছে টাকা পাওনা আছে, তাদের তালিকা।</p><div id="dueList" class="list"></div></div>
+</section>
 <section class="view" id="stock">
  <div class="grid"><div class="panel"><h2>পণ্য যোগ করুন</h2><form id="stockForm"><label>পণ্যের নাম</label><input id="productName" required placeholder="যেমন: চিনি ১ কেজি"><div class="row"><div><label>পরিমাণ</label><input id="productQty" type="number" min="0" step="1" required></div><div><label>একক</label><input id="productUnit" placeholder="পিস / কেজি / প্যাকেট" required></div></div><label>প্রতি এককের ক্রয়মূল্য (₹)</label><input id="productCost" type="number" min="0" step="0.01" placeholder="ঐচ্ছিক"><button class="btn primary">স্টকে যোগ করুন</button></form></div><div class="panel"><h2>স্টকের তালিকা</h2><div id="stockList" class="list"></div></div></div>
 </section>
@@ -70,7 +78,7 @@ const translations={
  'এই প্রাথমিক সংস্করণে হিসাব এই ডিভাইসের ব্রাউজারে থাকে। ব্রাউজারের ডেটা মুছলে হিসাব হারাতে পারেন—নিয়মিত ডেটা ডাউনলোড করে রাখুন।':'In this version, records stay in this device’s browser. Clearing browser data may erase them—download backups regularly.',
  'ক্রেতার বাকি খাতা':'Customer dues','যাদের কাছে টাকা পাওনা আছে, তাদের তালিকা।':'List of customers who owe money.','পণ্য যোগ করুন':'Add product','পণ্যের নাম':'Product name','যেমন: চিনি ১ কেজি':'e.g. Sugar 1 kg','পরিমাণ':'Quantity','একক':'Unit','পিস / কেজি / প্যাকেট':'pcs / kg / pack','প্রতি এককের ক্রয়মূল্য (₹)':'Cost per unit (₹)','ঐচ্ছিক':'Optional','স্টকে যোগ করুন':'Add to stock','স্টকের তালিকা':'Stock list','সব হিসাব':'All records','সাম্প্রতিক হিসাবগুলো এখানে দেখুন।':'Recent transactions appear here.','সব মুছুন':'Clear all',
  'গুরুত্বপূর্ণ: এটি প্রাথমিক বিনামূল্যের প্রোটোটাইপ, পূর্ণাঙ্গ হিসাবরক্ষণ বা কর-পরামর্শের বিকল্প নয়। ডেটা এখন শুধু এই ডিভাইসে সংরক্ষিত হয়; অনলাইন ব্যাকআপ, একাধিক কর্মীর অ্যাক্সেস বা পেমেন্ট এখনও যুক্ত হয়নি।':'Important: This is an early free prototype, not a replacement for full accounting or tax advice. Data is stored only on this device; cloud backup, multi-staff access, and payments are not yet available.',
- 'VYBORA Shop Manager • প্রথম পরীক্ষামূলক সংস্করণ':'VYBORA Shop Manager • Early test version','মোট পাওনা বাকি':'Total customer dues','মোট পণ্য':'Products','আজকের হিসাব':'Entries today','ক্রেতার বাকি':'Customer balance','ক্রয়মূল্য':'Cost','এখনও কোনো বাকি যোগ করা হয়নি।':'No customer dues yet.','এখনও কোনো পণ্য যোগ করা হয়নি।':'No products added yet.','নতুন মোট পরিমাণ লিখুন:':'Enter the new total quantity:','সঠিক পরিমাণ লিখুন।':'Please enter a valid quantity.','সঠিক টাকার পরিমাণ লিখুন।':'Please enter a valid amount.','বাকি হিসাবের জন্য ক্রেতার নাম লিখুন।':'Enter the customer name for a credit entry.','হিসাব সংরক্ষণ হয়েছে।':'Entry saved.','পণ্য যোগ হয়েছে।':'Product added.','সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।':'Delete all entries and products? Download a backup first.','এখনও কোনো হিসাব নেই। “হিসাব যোগ” থেকে শুরু করুন।':'No entries yet. Start from “Add entry”.','পণ্যের পরিমাণ বদল':'Change quantity'
+ 'VYBORA Shop Manager • প্রথম পরীক্ষামূলক সংস্করণ':'VYBORA Shop Manager • Early test version','মোট পাওনা বাকি':'Total customer dues','ক্রেতা যোগ করুন':'Add customer','ক্রেতার তালিকা':'Customer list','ক্রেতার নাম':'Customer name','মোবাইল নম্বর':'Mobile number','ক্রেতা সংরক্ষণ করুন':'Save customer','WhatsApp-এ হিসাব পাঠান':'Share statement on WhatsApp','এখনও কোনো ক্রেতা যোগ করা হয়নি।':'No customers added yet.','সঠিক মোবাইল নম্বর লিখুন।':'Enter a valid mobile number.','ক্রেতার তথ্য সংরক্ষণ হয়েছে।':'Customer saved.','মোট পণ্য':'Products','আজকের হিসাব':'Entries today','ক্রেতার বাকি':'Customer balance','ক্রয়মূল্য':'Cost','এখনও কোনো বাকি যোগ করা হয়নি।':'No customer dues yet.','এখনও কোনো পণ্য যোগ করা হয়নি।':'No products added yet.','নতুন মোট পরিমাণ লিখুন:':'Enter the new total quantity:','সঠিক পরিমাণ লিখুন।':'Please enter a valid quantity.','সঠিক টাকার পরিমাণ লিখুন।':'Please enter a valid amount.','বাকি হিসাবের জন্য ক্রেতার নাম লিখুন।':'Enter the customer name for a credit entry.','হিসাব সংরক্ষণ হয়েছে।':'Entry saved.','পণ্য যোগ হয়েছে।':'Product added.','সব হিসাব ও পণ্যের তালিকা মুছে ফেলবেন? আগে ব্যাকআপ ডাউনলোড করুন।':'Delete all entries and products? Download a backup first.','এখনও কোনো হিসাব নেই। “হিসাব যোগ” থেকে শুরু করুন।':'No entries yet. Start from “Add entry”.','পণ্যের পরিমাণ বদল':'Change quantity'
  },
  hi:{
  'দোকানের হিসাব, এখন মোবাইলে':'दुकान का हिसाब, अब मोबाइल पर','সহজ বিক্রি • খরচ • বাকি • স্টক':'आसान बिक्री • खर्च • उधार • स्टॉक','ডেটা ডাউনলোড':'बैकअप डाउनलोड',
@@ -534,8 +542,8 @@ function applyTranslations(){
 }
 
 const KEY='vybora_shop_manager_v1';
-let data={entries:[],products:[]};
-try{data=JSON.parse(localStorage.getItem(KEY))||data}catch(e){}
+let data={entries:[],products:[],customers:[]};
+try{data=JSON.parse(localStorage.getItem(KEY))||data}catch(e){}\ndata.customers=Array.isArray(data.customers)?data.customers:[];
 const $=id=>document.getElementById(id);
 const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
 const today=()=>new Date().toISOString().slice(0,10);
@@ -550,8 +558,10 @@ function render(){
  $('todaySales').textContent=money(sales);$('todayExpenses').textContent=money(expenses);$('todayNet').textContent=money(sales-expenses);$('todayNet').className=sales-expenses>=0?'positive':'negative';
  const countSuffix=currentLang==='bn'?'টি':'';
  $('homeSummary').innerHTML='<div class="item"><span>মোট পাওনা বাকি</span><strong>'+money(due-paid)+'</strong></div><div class="item"><span>মোট পণ্য</span><strong>'+data.products.length+countSuffix+'</strong></div><div class="item"><span>আজকের হিসাব</span><strong>'+entries.filter(e=>e.date===t).length+countSuffix+'</strong></div>';
- const customers={};entries.forEach(e=>{if(e.customer&&(e.kind==='due'||e.kind==='payment')){customers[e.customer]=(customers[e.customer]||0)+(e.kind==='due'?1:-1)*Number(e.amount)}});
- const dues=Object.entries(customers).filter(x=>x[1]>0.009);
+ const balances={};entries.forEach(e=>{if(e.customer&&(e.kind==='due'||e.kind==='payment')){balances[e.customer]=(balances[e.customer]||0)+(e.kind==='due'?1:-1)*Number(e.amount)}});
+ $('customerOptions').innerHTML=data.customers.map(x=>'<option value="'+esc(x.name)+'"></option>').join('');
+ $('customerList').innerHTML=data.customers.length?data.customers.map((x,i)=>'<div class="item"><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.phone)+'</small></div><button class="btn ghost" onclick="shareCustomer('+i+')">WhatsApp-এ হিসাব পাঠান</button></div>').join(''):'<div class="empty">এখনও কোনো ক্রেতা যোগ করা হয়নি।</div>';
+ const dues=Object.entries(balances).filter(x=>x[1]>0.009);
  $('dueList').innerHTML=dues.length?dues.map(([name,amt])=>'<div class="item"><div><strong>'+esc(name)+'</strong><small>ক্রেতার বাকি</small></div><strong class="negative">'+money(amt)+'</strong></div>').join(''):'<div class="empty">এখনও কোনো বাকি যোগ করা হয়নি।</div>';
  $('stockList').innerHTML=data.products.length?data.products.map((p,i)=>'<div class="item"><div><strong>'+esc(p.name)+'</strong><small>'+p.qty+' '+esc(p.unit)+' • ক্রয়মূল্য '+money(p.cost)+'</small></div><button class="btn ghost" onclick="changeQty('+i+')">পরিমাণ বদল</button></div>').join(''):'<div class="empty">এখনও কোনো পণ্য যোগ করা হয়নি।</div>';
  const sorted=[...entries].sort((a,b)=>b.created-a.created);
@@ -560,7 +570,9 @@ function render(){
 }
 function label(k){return tr(({sale:'বিক্রি',expense:'খরচ',due:'বাকি বিক্রি',payment:'বাকি আদায়'}[k]||k))}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-$('entryForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number($('amount').value);if(!(amount>0))return alert('সঠিক টাকার পরিমাণ লিখুন।');const kind=$('kind').value,customer=$('customer').value.trim();if((kind==='due'||kind==='payment')&&!customer)return alert('বাকি হিসাবের জন্য ক্রেতার নাম লিখুন।');data.entries.push({kind,description:$('description').value.trim(),amount,date:$('date').value,customer,created:Date.now()});e.target.reset();$('date').value=today();save();showView('home');alert('হিসাব সংরক্ষণ হয়েছে।')});
+$('customerForm').addEventListener('submit',e=>{e.preventDefault();const name=$('newCustomerName').value.trim(),phone=$('newCustomerPhone').value.trim();if(!name||!phone)return;const digits=phone.replace(/\\D/g,'');if(digits.length<10||digits.length>15)return alert('সঠিক মোবাইল নম্বর লিখুন।');const existing=data.customers.find(x=>x.name.toLowerCase()===name.toLowerCase());if(existing){existing.phone=phone}else{data.customers.push({name,phone})}e.target.reset();save();alert('ক্রেতার তথ্য সংরক্ষণ হয়েছে।')});
+function shareCustomer(i){const customer=data.customers[i];if(!customer)return;let phone=customer.phone.replace(/\\D/g,'');if(phone.length===10)phone='91'+phone;const rows=data.entries.filter(e=>e.customer&&e.customer.toLowerCase()===customer.name.toLowerCase());let balance=0;rows.forEach(e=>{if(e.kind==='due')balance+=Number(e.amount);if(e.kind==='payment')balance-=Number(e.amount)});const lines=['VYBORA Shop Manager','Account statement for '+customer.name,'Mobile: '+customer.phone,'Generated: '+new Date().toLocaleString(),'','Outstanding balance: '+money(Math.max(0,balance)),'','TRANSACTIONS'];if(!rows.length)lines.push('No transactions recorded.');rows.sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>lines.push(e.date+' | '+label(e.kind)+' | '+e.description+' | '+money(e.amount)));lines.push('','Please contact the shop if you have any questions.');const url='https://wa.me/'+phone+'?text='+encodeURIComponent(lines.join('\\n'));window.open(url,'_blank','noopener,noreferrer')}
+$('entryForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number($('amount').value);if(!(amount>0))return alert('সঠিক টাকার পরিমাণ লিখুন।');const kind=$('kind').value,customer=$('customer').value.trim();if((kind==='due'||kind==='payment')&&!customer)return alert('বাকি হিসাবের জন্য ক্রেতার নাম লিখুন।');data.entries.push({kind,description:$('description').value.trim(),amount,date:$('date').value,customer,phone:(data.customers.find(x=>x.name.toLowerCase()===customer.toLowerCase())||{}).phone||'',created:Date.now()});e.target.reset();$('date').value=today();save();showView('home');alert('হিসাব সংরক্ষণ হয়েছে।')});
 $('stockForm').addEventListener('submit',e=>{e.preventDefault();data.products.push({name:$('productName').value.trim(),qty:Number($('productQty').value),unit:$('productUnit').value.trim(),cost:Number($('productCost').value||0)});e.target.reset();save();alert('পণ্য যোগ হয়েছে।')});
 function changeQty(i){const q=prompt('নতুন মোট পরিমাণ লিখুন:',data.products[i].qty);if(q===null)return;if(q.trim()===''||!Number.isFinite(Number(q))||Number(q)<0)return alert('সঠিক পরিমাণ লিখুন।');data.products[i].qty=Number(q);save()}
 $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vybora-shop-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)});
