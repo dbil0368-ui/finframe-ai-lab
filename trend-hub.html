@@ -194,6 +194,39 @@ body.login-open:after{content:"";position:fixed;inset:0;background:#030611c9;bac
 body[data-vybora-theme="midnight"]{--violet:#8197c9;--cyan:#9bb4d9;--pink:#8e9ab9}
 body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
 
+/* Persistent mobile workspace navigation */
+.bottom-nav{display:none}
+@media(max-width:850px){
+ .bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:1100;
+  display:flex;align-items:stretch;gap:2px;
+  padding:7px 7px calc(7px + env(safe-area-inset-bottom));
+  overflow-x:auto;overscroll-behavior-x:contain;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  background:#0c1220f2;border-top:1px solid #ffffff20;
+  box-shadow:0 -12px 35px #0008;backdrop-filter:blur(20px);
+ }
+ .bottom-nav::-webkit-scrollbar{display:none}
+ .bottom-nav button{
+  flex:1 0 67px;min-width:67px;min-height:54px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:5px 3px;border:1px solid transparent;border-radius:12px;
+  background:transparent;color:#aeb9d0;font-size:10px;font-weight:700;line-height:1.15;
+ }
+ .bottom-nav-icon{font-size:19px;line-height:1}
+ .bottom-nav-label{max-width:100%;text-align:center;white-space:normal}
+ .bottom-nav button.active{
+  color:#fff;background:linear-gradient(145deg,#9b83ff30,#5de1d220);
+  border-color:#a78bfa66;box-shadow:inset 0 -2px #a78bfa;
+ }
+ .wrap{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+ .creator-login-fab{bottom:calc(78px + env(safe-area-inset-bottom))}
+}
+@media(max-width:390px){
+ .bottom-nav{gap:0;padding-left:4px;padding-right:4px}
+ .bottom-nav button{flex-basis:64px;min-width:64px;font-size:9px}
+}
+
 
 </style>
 </head>
@@ -202,11 +235,6 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
 <aside class="side">
  <div class="brand"><div class="brand-name"><div class="mark">✦</div><div>VYBORA<small>TREND & CREATOR LAB</small></div></div><button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button></div>
  <nav class="nav" id="mainNav" aria-label="Main navigation">
-  <button class="active" data-view="overview">⌂ &nbsp; Overview</button>
-  <button data-view="trends">↗ &nbsp; Trend Radar</button>
-  <button data-view="studio">✧ &nbsp; Creator Studio</button>
-  <button data-view="planner">▦ &nbsp; Content Planner</button>
-  <button data-view="creatorKit">✦ &nbsp; Creator Kit</button>
   <button data-view="billing">₹ &nbsp; Plans & Billing</button>
   <button type="button" id="menuCreatorLogin">♙ &nbsp; Creator Login / My Account</button>
   <div class="menu-settings">
@@ -220,6 +248,13 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
  </nav>
  <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends, and plan original content. Live Google Trends data is available for supported regions. AI-powered creative briefs are enabled in Preview.</div>
 </aside>
+<nav class="bottom-nav" id="bottomNav" aria-label="Workspace navigation">
+ <button class="active" type="button" data-view="overview" aria-label="Workspace / Overview"><span class="bottom-nav-icon">⌂</span><span class="bottom-nav-label">Workspace / Overview</span></button>
+ <button type="button" data-view="trends"><span class="bottom-nav-icon">↗</span><span class="bottom-nav-label">Trend Radar</span></button>
+ <button type="button" data-view="studio"><span class="bottom-nav-icon">✧</span><span class="bottom-nav-label">Creator Studio</span></button>
+ <button type="button" data-view="planner"><span class="bottom-nav-icon">▦</span><span class="bottom-nav-label">Content Planner</span></button>
+ <button type="button" data-view="creatorKit"><span class="bottom-nav-icon">✦</span><span class="bottom-nav-label">Creator Kit</span></button>
+</nav>
 <button class="creator-login-fab" id="creatorLoginFab" type="button" aria-label="Open Creator Login">Creator Login</button>
 <main class="main">
  <header class="top"><div class="crumb">Workspace / <b id="crumb">Overview</b></div><div class="avatar">V</div></header>
@@ -403,7 +438,7 @@ async function startVyboraCheckout(plan){
 }
 document.getElementById("buyStarter").addEventListener("click",()=>startVyboraCheckout("starter"));
 document.getElementById("buyPro").addEventListener("click",()=>startVyboraCheckout("pro"));
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",creatorKit:"Creator Kit",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button,.bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",creatorKit:"Creator Kit",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
 
 const mobileMenuToggle=document.getElementById("mobileMenuToggle");
 const sideMenu=document.querySelector(".side");
