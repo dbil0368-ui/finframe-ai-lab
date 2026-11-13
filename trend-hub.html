@@ -206,6 +206,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   <button data-view="trends">↗ &nbsp; Trend Radar</button>
   <button data-view="studio">✧ &nbsp; Creator Studio</button>
   <button data-view="planner">▦ &nbsp; Content Planner</button>
+  <button data-view="creatorKit">✦ &nbsp; Creator Kit</button>
   <button data-view="billing">₹ &nbsp; Plans & Billing</button>
   <button type="button" id="menuCreatorLogin">♙ &nbsp; Creator Login / My Account</button>
   <div class="menu-settings">
@@ -236,6 +237,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <article class="tool-card"><div class="tool-icon">🔥</div><h3>Trend Radar</h3><p>Explore recent search trends by country, then turn a topic into an original content idea.</p><button class="ghost" data-go="trends">Open Trend Radar →</button></article>
     <article class="tool-card"><div class="tool-icon">✍️</div><h3>Creator Studio</h3><p>Shape a topic into a hook, short-form video outline and caption draft.</p><button class="ghost" data-go="studio">Open Studio →</button></article>
     <article class="tool-card"><div class="tool-icon">🗓️</div><h3>Content Planner</h3><p>Save ideas to your account, set publishing dates and track your content calendar.</p><button class="ghost" data-go="planner">Open Planner →</button></article>
+    <article class="tool-card"><div class="tool-icon">🎨</div><h3>Creator Kit</h3><p>Save your niche, platforms, language and creator voice as a reusable personal brand profile.</p><button class="ghost" data-go="creatorKit">Set up Creator Kit →</button></article>
     <article class="tool-card"><div class="tool-icon">🧭</div><h3>Our direction</h3><p>Independent creator intelligence—not an Instagram clone. Original identity, tools and workflow.</p><span class="tag">BUILDING IN PUBLIC</span></article>
    </div>
    <div class="notice"><b>New here? Start in 3 steps</b><br>1. Choose your country in Trend Radar and explore a topic.<br>2. Select “Create with this trend” or enter your own topic in Creator Studio, then generate a brief.<br>3. Save the brief to Content Planner, choose a publishing date and time, and save the schedule.</div>\n   <div class="notice">Data note: Trend Radar uses Google's public Trending Now RSS feed and may show a limited set of recent trends with approximate traffic labels. Creator Studio uses a secure, server-side Google Gemini API connection. Planner ideas sync to your account when you are signed in; otherwise, they are saved only in this browser.</div>
@@ -259,6 +261,26 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    <div class="section-title"><h2>Upcoming publishing queue</h2><span class="muted">Your next scheduled posts</span></div>
    <div class="upcoming-list" id="upcomingList"><p class="muted">Sign in to view your publishing schedule.</p></div>
    <div class="notice">Choose a date and time on an idea, then save its schedule. Scheduled ideas sync to your account and appear in the calendar on your other devices. VYBORA plans content; it does not automatically publish to social platforms yet.</div>
+  </section>
+  <section class="view" id="creatorKit">
+   <div class="eyebrow">Your creator identity</div><h1 class="heading">Creator Kit</h1>
+   <p class="sub">Build a reusable creator profile so your ideas stay consistent with your niche, audience and voice.</p>
+   <div class="panel" style="max-width:820px;margin-top:22px">
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0 0 14px">
+     <div><label for="creatorDisplayName"><b>Creator / brand name</b></label><input class="field" id="creatorDisplayName" placeholder="e.g. The Curious Creator"></div>
+     <div><label for="creatorNiche"><b>Your niche</b></label><input class="field" id="creatorNiche" placeholder="e.g. food, tech, education"></div>
+    </div>
+    <label for="creatorAudience"><b>Who do you create for?</b></label><input class="field" id="creatorAudience" style="margin:8px 0 14px" placeholder="e.g. students and young professionals">
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0 0 14px">
+     <div><label for="creatorPlatform"><b>Main platform</b></label><select class="field" id="creatorPlatform"><option>Instagram</option><option>YouTube</option><option>Facebook</option><option>TikTok</option><option>LinkedIn</option><option>Multiple platforms</option></select></div>
+     <div><label for="creatorLanguage"><b>Content language</b></label><select class="field" id="creatorLanguage"><option>English</option><option>বাংলা</option><option>Hindi</option><option>Assamese</option><option>English + বাংলা</option><option>English + Hindi</option></select></div>
+    </div>
+    <label for="creatorVoice"><b>Your creator voice</b></label><select class="field" id="creatorVoice" style="margin:8px 0 14px"><option>Friendly and helpful</option><option>Funny and energetic</option><option>Professional and clear</option><option>Educational and simple</option><option>Bold and inspirational</option><option>Calm and thoughtful</option></select>
+    <label for="creatorBio"><b>Short creator bio</b></label><textarea class="field" id="creatorBio" style="margin:8px 0 14px" placeholder="What do you make, and why should people follow you?"></textarea>
+    <div class="actions"><button class="primary" id="saveCreatorKit" type="button">Save Creator Kit</button><button class="ghost" id="useCreatorKit" type="button">Use profile in Creator Studio</button></div>
+    <p class="muted" id="creatorKitStatus" aria-live="polite" style="font-size:12px;margin-top:12px">Your profile is saved only in this browser on this device.</p>
+   </div>
+   <div class="notice">Creator Kit currently stores this profile locally in your browser. It is not public and is not synced to your account or social platforms.</div>
   </section>
   <section class="view" id="billing">
    <div class="eyebrow">Simple creator plans</div><h1 class="heading">Plans & Billing</h1>
@@ -381,7 +403,7 @@ async function startVyboraCheckout(plan){
 }
 document.getElementById("buyStarter").addEventListener("click",()=>startVyboraCheckout("starter"));
 document.getElementById("buyPro").addEventListener("click",()=>startVyboraCheckout("pro"));
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",creatorKit:"Creator Kit",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
 
 const mobileMenuToggle=document.getElementById("mobileMenuToggle");
 const sideMenu=document.querySelector(".side");
@@ -461,6 +483,30 @@ async function renderPlans(){
 document.getElementById("calendarPrev").addEventListener("click",()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()-1,1);renderPlans()});
 document.getElementById("calendarNext").addEventListener("click",()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+1,1);renderPlans()});
 document.getElementById("addPlan").addEventListener("click",async()=>{const el=document.getElementById("planInput"),v=el.value.trim();if(!v)return;if(currentUser){await saveIdea(v,"General idea",v)}else{addLocalPlan(v)}el.value=""});
+function getCreatorKit(){
+ try{return JSON.parse(localStorage.getItem("vybora_creator_kit")||"{}")}catch(e){return {}}
+}
+function loadCreatorKit(){
+ const p=getCreatorKit();
+ [["creatorDisplayName","name"],["creatorNiche","niche"],["creatorAudience","audience"],["creatorPlatform","platform"],["creatorLanguage","language"],["creatorVoice","voice"],["creatorBio","bio"]].forEach(([id,key])=>{const el=document.getElementById(id);if(el&&p[key]!==undefined)el.value=p[key]});
+}
+document.getElementById("saveCreatorKit").addEventListener("click",()=>{
+ const p={name:document.getElementById("creatorDisplayName").value.trim(),niche:document.getElementById("creatorNiche").value.trim(),audience:document.getElementById("creatorAudience").value.trim(),platform:document.getElementById("creatorPlatform").value,language:document.getElementById("creatorLanguage").value,voice:document.getElementById("creatorVoice").value,bio:document.getElementById("creatorBio").value.trim()};
+ localStorage.setItem("vybora_creator_kit",JSON.stringify(p));
+ document.getElementById("creatorKitStatus").textContent="Creator Kit saved on this device ✓";
+});
+document.getElementById("useCreatorKit").addEventListener("click",()=>{
+ const p=getCreatorKit();
+ if(!p.niche&&!p.audience){document.getElementById("creatorKitStatus").textContent="Save your niche and audience first.";return}
+ const context=[p.niche&&"Niche: "+p.niche,p.audience&&"Audience: "+p.audience,p.voice&&"Voice: "+p.voice,p.language&&"Language: "+p.language,p.platform&&"Platform: "+p.platform].filter(Boolean).join(". ");
+ const audience=document.getElementById("audience");
+ audience.value=p.audience||"";
+ const topic=document.getElementById("topic");
+ topic.value=topic.value?topic.value+"\n\nCreator direction: "+context:"Create content using this creator direction: "+context;
+ show("studio");
+ document.getElementById("creatorKitStatus").textContent="Profile details added to Creator Studio. Review before generating.";
+});
+loadCreatorKit();
 renderPlans();
 refreshAuth();
 </script>
