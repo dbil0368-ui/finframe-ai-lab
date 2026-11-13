@@ -207,7 +207,8 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   box-shadow:0 -12px 35px #0008;backdrop-filter:blur(20px);
  }
  .bottom-nav::-webkit-scrollbar{display:none}
- .bottom-nav button{
+ .bottom-nav .bottom-social-link{flex:1 0 67px;min-width:67px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:5px 3px;border:1px solid #67e8d566;border-radius:12px;background:#173c4333;color:#8debdc;text-decoration:none;font-size:10px;font-weight:800;line-height:1.15}
+.bottom-nav button{
   flex:1 0 67px;min-width:67px;min-height:54px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   padding:5px 3px;border:1px solid transparent;border-radius:12px;
@@ -276,6 +277,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
  <button type="button" data-view="studio"><span class="bottom-nav-icon">✧</span><span class="bottom-nav-label">Creator Studio</span></button>
  <button type="button" data-view="planner"><span class="bottom-nav-icon">▦</span><span class="bottom-nav-label">Content Planner</span></button>
  <button type="button" data-view="creatorKit"><span class="bottom-nav-icon">✦</span><span class="bottom-nav-label">Creator Kit</span></button>
+ <a class="bottom-social-link" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
 </nav>
 <button class="creator-login-fab" id="creatorLoginFab" type="button" aria-label="Open Creator Login">Creator Login</button>
 <main class="main">
