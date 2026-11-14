@@ -354,7 +354,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    <div class="notice" id="billingStatus" aria-live="polite">Sign in to view your plan or start a subscription.</div>
    <div class="panel" style="margin-top:16px;max-width:900px">
     <div class="eyebrow">Invite creators · Earn Pro</div><h2 style="margin:8px 0">Refer & Earn</h2>
-    <p class="muted" style="line-height:1.6">Share your personal link. When a referred friend completes their first successful Starter or Pro payment, you earn 7 days of Pro Premium. Earn up to 35 days from 5 paid referrals. Sign-up alone does not unlock Pro.</p>
+    <p class="muted" style="line-height:1.6">Referral rewards are not active yet. We are finishing secure referral attribution and payment verification before enabling rewards. No referral link or Pro reward is issued in this Preview.</p>
     <div id="referralStatus" class="muted" aria-live="polite" style="font-size:13px">Sign in to create your personal referral link.</div>
     <div id="referralLinkRow" hidden style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><input class="field" id="referralLink" readonly aria-label="Your referral link" style="flex:1;min-width:200px"><button class="primary" id="copyReferralLink" type="button">Copy link</button></div>
     <div id="referralStats" class="grid" hidden style="grid-template-columns:repeat(3,minmax(0,1fr));margin:16px 0 0"><div class="stat"><small>Friends joined</small><div class="n" id="refJoined">0</div></div><div class="stat"><small>Paid referrals</small><div class="n" id="refPaid">0</div></div><div class="stat"><small>Pro days earned</small><div class="n" id="refDays">0</div></div></div>
@@ -387,14 +387,9 @@ document.getElementById("accountToggle").addEventListener("click",()=>{
 document.addEventListener("keydown",event=>{if(event.key==="Escape"){document.getElementById("authPanel").hidden=true;document.body.classList.remove("login-open")}});
 async function loadReferralSummary(){
  const status=document.getElementById("referralStatus"),row=document.getElementById("referralLinkRow"),stats=document.getElementById("referralStats");
- if(!currentUser){status.textContent="Sign in to create your personal referral link.";row.hidden=true;stats.hidden=true;return}
- status.textContent="Loading your referral details…";
- const {data,error}=await supabaseClient.rpc("vybora_my_referral_summary");
- if(error||!data||!data.length){status.textContent="Referral details could not be loaded. Please refresh and try again.";row.hidden=true;stats.hidden=true;return}
- const r=data[0];document.getElementById("referralLink").value=location.origin+location.pathname+"?ref="+encodeURIComponent(r.referral_code)+"#billing";
- row.hidden=false;stats.hidden=false;document.getElementById("refJoined").textContent=r.joined_count||0;document.getElementById("refPaid").textContent=r.paid_count||0;document.getElementById("refDays").textContent=r.rewarded_days||0;
- status.textContent="Your referral code: "+r.referral_code+" · Share this link with friends.";
- document.getElementById("referralRewardExpiry").textContent=r.active_pro_until?"Your latest active referral Pro reward expires: "+new Date(r.active_pro_until).toLocaleString():"No active referral Pro reward yet.";
+ row.hidden=true;stats.hidden=true;
+ status.textContent="Referral rewards are temporarily unavailable while secure referral tracking is being completed.";
+ document.getElementById("referralRewardExpiry").textContent="";
 }
 document.getElementById("copyReferralLink").addEventListener("click",async()=>{const f=document.getElementById("referralLink");try{await navigator.clipboard.writeText(f.value);document.getElementById("referralStatus").textContent="Referral link copied. Share it with a friend."}catch(e){f.focus();f.select();document.getElementById("referralStatus").textContent="Select and copy your referral link."}});
 async function refreshAuth(){
@@ -419,7 +414,7 @@ async function authAction(kind){
  if(!email||password.length<8){status.textContent="Enter a valid email and a password with at least 8 characters.";return}
  status.textContent=kind==="signup"?"Creating your account…":"Signing in…";
  const result=kind==="signup"
-  ? await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.href,data:{referral_code:(new URLSearchParams(location.search).get("ref")||"").trim().toUpperCase()}}})
+  ? await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.href,data:{}}})
   : await supabaseClient.auth.signInWithPassword({email,password});
  if(result.error){status.textContent=result.error.message;return}
  if(kind==="signup"&&!result.data.session){status.textContent="Account created. Check your email to confirm your address, then sign in."}
