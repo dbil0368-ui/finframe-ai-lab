@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://vybora-trend-hub.vercel.app/sitemap.xml
