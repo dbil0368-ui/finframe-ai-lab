@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     return send(res, 405, { error: "Use POST for Creator Studio." });
   }
 
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return send(res, 401, { error: "Please sign in to use VYBORA AI." });
   const authResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
     headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token }
