@@ -41,6 +41,16 @@ export default async function handler(req, res) {
     if (activeRewards.length && planKey !== "pro") planKey = "pro";
     const dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
 
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return send(res, 503, { error: "Gemini is not configured yet. Add GEMINI_API_KEY to the Vercel Preview environment." });
+
+    const body = req.body || {};
+    const topic = typeof body.topic === "string" ? body.topic.trim().slice(0, 240) : "";
+    const format = typeof body.format === "string" ? body.format.slice(0, 60) : "Short video";
+    const audience = typeof body.audience === "string" ? body.audience.trim().slice(0, 160) : "curious viewers";
+    const language = typeof body.language === "string" ? body.language.slice(0, 40) : "English";
+    if (!topic) return send(res, 400, { error: "Please enter a topic." });
+
     const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
       method: "POST",
       headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
@@ -55,16 +65,6 @@ export default async function handler(req, res) {
         quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: 0 }
       });
     }
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return send(res, 503, { error: "Gemini is not configured yet. Add GEMINI_API_KEY to the Vercel Preview environment." });
-
-    const body = req.body || {};
-    const topic = typeof body.topic === "string" ? body.topic.trim().slice(0, 240) : "";
-    const format = typeof body.format === "string" ? body.format.slice(0, 60) : "Short video";
-    const audience = typeof body.audience === "string" ? body.audience.trim().slice(0, 160) : "curious viewers";
-    const language = typeof body.language === "string" ? body.language.slice(0, 40) : "English";
-    if (!topic) return send(res, 400, { error: "Please enter a topic." });
 
     const mode = typeof body.mode === "string" ? body.mode.slice(0, 30) : "brief";
     const instruction = typeof body.instruction === "string" ? body.instruction.slice(0, 1200) : "";
