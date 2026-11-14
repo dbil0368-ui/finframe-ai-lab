@@ -410,6 +410,7 @@ async function refreshAuth(){
  document.getElementById("signIn").hidden=!!currentUser;
  document.getElementById("signUp").hidden=!!currentUser;
  renderPlans();
+ loadReferralSummary();
 }
 async function authAction(kind){
  const email=document.getElementById("authEmail").value.trim();
