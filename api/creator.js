@@ -32,7 +32,13 @@ export default async function handler(req, res) {
     });
     if (!subResponse.ok) throw new Error("Could not check your VYBORA plan.");
     const subscriptions = await subResponse.json();
-    const planKey = subscriptions[0]?.plan_key || "free";
+    let planKey = subscriptions[0]?.plan_key || "free";
+    const rewardResponse = await fetch(SUPABASE_URL + "/rest/v1/vybora_referral_rewards?select=id&referrer_user_id=eq." + encodeURIComponent(user.id) + "&expires_at=gt." + encodeURIComponent(new Date().toISOString()) + "&limit=1", {
+      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
+    });
+    if (!rewardResponse.ok) throw new Error("Could not check your referral Premium reward.");
+    const activeRewards = await rewardResponse.json();
+    if (activeRewards.length && planKey !== "pro") planKey = "pro";
     const dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
 
     const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
