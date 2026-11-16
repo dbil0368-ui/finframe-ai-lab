@@ -352,7 +352,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   </section>
   <section class="view" id="billing">
    <div class="eyebrow">Simple creator plans</div><h1 class="heading">Plans & Billing</h1>
-   <p class="sub">Choose a VYBORA plan. Checkout is currently connected to Razorpay Test Mode, so test payments do not move real money.</p>
+   <p class="sub">Choose Free or explore VYBORA Premium at ₹299 per month. Paid checkout is not enabled yet.</p>
    <div class="notice" id="billingStatus" aria-live="polite">Sign in to view your plan or start a subscription.</div>
    <div class="panel" style="margin-top:16px;max-width:900px">
     <div class="eyebrow">Invite creators · Earn Pro</div><h2 style="margin:8px 0">Refer & Earn</h2>
@@ -363,10 +363,10 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <p class="muted" id="referralRewardExpiry" style="font-size:12px;margin-bottom:0"></p>
    </div>
    <div class="tools" style="margin-top:18px">
-    <article class="tool-card"><div class="tool-icon">✦</div><h3>Starter</h3><p><strong style="font-size:28px;color:#fff">₹199</strong> / month</p><p>For growing creators: 15 AI generations per day, plus an expanded creator workflow.</p><button class="primary" id="buyStarter" type="button">Choose Starter · ₹199/month</button></article>
-    <article class="tool-card"><div class="tool-icon">✧</div><h3>Pro</h3><p><strong style="font-size:28px;color:#fff">₹499</strong> / month</p><p>For serious creators: 50 AI generations per day and access to all Creator Studio tools.</p><button class="primary" id="buyPro" type="button">Choose Pro · ₹499/month</button></article>
+    <article class="tool-card"><div class="tool-icon">✦</div><h3>Free</h3><p><strong style="font-size:28px;color:#fff">₹0</strong> / forever</p><p>3 AI generations per day, core creator workspace, trend discovery and content planning.</p><a class="ghost" href="#overview" style="display:inline-block;padding:10px 14px;border-radius:10px">Continue Free</a></article>
+    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">₹299</strong> / month</p><p>Expanded creator workflow for hooks, scripts, captions and content planning.</p><button class="primary" id="premiumComingSoon" type="button" disabled aria-disabled="true">Premium checkout coming soon</button></article>
    </div>
-   <div class="notice">Billing note: These are monthly recurring plans configured for up to 12 monthly billing cycles. This Preview uses Razorpay Test Mode only. Do not enter real card or bank details into a test checkout. Live payments will remain unavailable until Razorpay approves your website and the live integration is separately configured.</div>
+   <div class="notice">Premium price preview: ₹299/month. Checkout is not enabled yet. The billing plan and payment provider configuration must be updated and verified before accepting any payment. This Preview does not take real payments.</div>
    <p class="muted" style="font-size:12px">By continuing, you agree to the <a href="/terms.html" style="color:var(--violet)">Terms of Use</a> and acknowledge the <a href="/privacy.html" style="color:var(--violet)">Privacy Notice</a>.</p>
   </section>
   <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.2 · <a href="/privacy.html" style="color:var(--muted)">Privacy</a> · <a href="/terms.html" style="color:var(--muted)">Terms</a></footer>
@@ -442,7 +442,7 @@ async function loadBillingStatus(){
   if(!response.ok)throw new Error(result.error||"Could not load billing status.");
   const sub=result.subscription;
   if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
-  const label={starter:"Starter",pro:"Pro"}[sub.plan_key]||sub.plan_key;
+  const label={starter:"Legacy Starter",pro:"Legacy Pro",premium:"Premium"}[sub.plan_key]||sub.plan_key;
   const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
   box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
  }catch(error){box.textContent=error.message}
