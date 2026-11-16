@@ -63,6 +63,23 @@ export default async function handler(req, res) {
       instruction || "Create a concise creative brief with a big idea, hooks, content structure, caption, CTA, hashtags, and fact-check notes."
     ].join("\\n");
 
+    // Reserve one daily AI allowance before contacting Gemini so concurrent or repeated
+    // requests cannot incur provider costs before the server enforces the user's quota.
+    const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
+      method: "POST",
+      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: dailyLimit })
+    });
+    const usageRows = await usageResponse.json().catch(() => []);
+    if (!usageResponse.ok || !Array.isArray(usageRows) || !usageRows[0]) throw new Error("Could not check your daily AI allowance.");
+    const usage = usageRows[0];
+    if (!usage.allowed) {
+      return send(res, 429, {
+        error: "আজকের " + dailyLimit + "টি AI generation শেষ। আরও ব্যবহার করতে Starter (₹১৯৯/মাস) বা Pro Premium (₹৪৯৯/মাস) নিন।",
+        quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: 0 }
+      });
+    }
+
     let lastError;
     for (const model of MODELS) {
       for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -85,20 +102,6 @@ export default async function handler(req, res) {
           }
           const brief = (data?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\\n").trim();
           if (!brief) return send(res, 502, { error: "Gemini returned an empty brief. Please try again." });
-          const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
-            method: "POST",
-            headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
-            body: JSON.stringify({ p_user_id: user.id, p_daily_limit: dailyLimit })
-          });
-          const usageRows = await usageResponse.json().catch(() => []);
-          if (!usageResponse.ok || !Array.isArray(usageRows) || !usageRows[0]) throw new Error("Could not check your daily AI allowance.");
-          const usage = usageRows[0];
-          if (!usage.allowed) {
-            return send(res, 429, {
-              error: "আজকের " + dailyLimit + "টি AI generation শেষ। আরও ব্যবহার করতে Starter (₹১৯৯/মাস) বা Pro Premium (₹৪৯৯/মাস) নিন।",
-              quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: 0 }
-            });
-          }
           return send(res, 200, { brief, model, quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: usage.remaining } });
         } catch (error) {
           lastError = error;
