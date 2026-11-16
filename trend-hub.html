@@ -373,7 +373,6 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
  </div>
 </main>
 </div>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const supabaseClient=window.supabase.createClient("https://pxgoaygwtxrrqkftluut.supabase.co","sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh");
@@ -433,61 +432,9 @@ async function loadTrends(){const region=document.getElementById("trendRegion").
 document.getElementById("refreshTrends").addEventListener("click",loadTrends);document.getElementById("trendRegion").addEventListener("change",loadTrends);loadTrends();
 async function loadBillingStatus(){
  const box=document.getElementById("billingStatus");
- if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
- box.textContent="Loading your billing status…";
- try{
-  const {data}=await supabaseClient.auth.getSession();
-  const response=await fetch("/api/billing/status",{headers:{Authorization:"Bearer "+(data.session?.access_token||"")}});
-  const result=await response.json();
-  if(!response.ok)throw new Error(result.error||"Could not load billing status.");
-  const sub=result.subscription;
-  if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
-  const label={starter:"Legacy Starter",pro:"Legacy Pro",premium:"Premium"}[sub.plan_key]||sub.plan_key;
-  const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
-  box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
- }catch(error){box.textContent=error.message}
+ if(box) box.textContent="Free Preview · Billing status is not connected in this no-cost Preview. Premium checkout is disabled; no payment will be taken.";
 }
-async function startVyboraCheckout(plan){
- if(!currentUser){document.getElementById("authContent").hidden=false;document.getElementById("accountToggle").textContent="Hide account −";document.getElementById("authStatus").textContent="Please sign in before choosing a plan.";show("overview");return}
- const button=document.getElementById(plan==="starter"?"buyStarter":"buyPro");
- button.disabled=true;button.textContent="Opening secure checkout…";
- try{
-  const {data}=await supabaseClient.auth.getSession();
-  const token=data.session?.access_token;
-  if(!token)throw new Error("Your session expired. Please sign in again.");
-  const response=await fetch("/api/billing/create-subscription",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({plan})});
-  const result=await response.json();
-  if(!response.ok)throw new Error(result.error||"Could not start checkout.");
-  if(typeof Razorpay==="undefined")throw new Error("Secure checkout did not load. Refresh the page and try again.");
-  const checkout=new Razorpay({
-   key:result.keyId,
-   subscription_id:result.subscriptionId,
-   name:"VYBORA",
-   description:(plan==="starter"?"Starter":"Pro")+" · ₹"+(plan==="starter"?"199":"499")+" per month",
-   image:"",
-   prefill:{email:result.customerEmail||""},
-   notes:{plan:plan,product:"VYBORA Trend Hub"},
-   theme:{color:"#9c7bff"},
-   handler:async function(payment){
-    button.textContent="Verifying payment…";
-    const verifyResponse=await fetch("/api/billing/verify-subscription",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify(payment)});
-    const verified=await verifyResponse.json();
-    if(!verifyResponse.ok)throw new Error(verified.error||"Payment verification failed.");
-    document.getElementById("billingStatus").textContent=verified.message||"Payment received. Checking subscription status…";
-    await loadBillingStatus();
-   },
-   modal:{ondismiss:function(){button.disabled=false;button.textContent=plan==="starter"?"Choose Starter":"Choose Pro";}}
-  });
-  checkout.on("payment.failed",function(){document.getElementById("billingStatus").textContent="Test payment failed or was cancelled. No plan was activated.";button.disabled=false;button.textContent=plan==="starter"?"Choose Starter":"Choose Pro";});
-  checkout.open();
- }catch(error){
-  document.getElementById("billingStatus").textContent=error.message;
-  button.disabled=false;button.textContent=plan==="starter"?"Choose Starter":"Choose Pro";
- }
-}
-document.getElementById("buyStarter").addEventListener("click",()=>startVyboraCheckout("starter"));
-document.getElementById("buyPro").addEventListener("click",()=>startVyboraCheckout("pro"));
-
+ 
 const growthPrompts={
  hooks:{label:"Viral Hook Generator",format:"Short-form hook options",instruction:"Create 12 original, curiosity-building opening hooks for the topic. Mix question, surprising angle, relatable pain point, bold-but-honest statement and story-led hooks. Keep each hook short, natural and suitable for the first 3 seconds. Avoid clickbait and unsupported claims. Add a one-line note explaining the strongest 3."},
  script:{label:"AI Video Script",format:"Short video script",instruction:"Write a ready-to-record 45-60 second video script. Include a strong opening, timestamped scenes, spoken voiceover, simple visual/B-roll suggestions, on-screen text, a natural transition and a clear CTA. Keep production practical for a solo creator. Mark any facts that need checking."},
