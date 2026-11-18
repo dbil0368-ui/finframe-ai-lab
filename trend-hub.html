@@ -497,18 +497,19 @@ function toggleSavedTrend(title){
 }
 function visibleTrendItems(){
  const query=document.getElementById("trendSearch").value.trim().toLocaleLowerCase();
- return trendItems.filter(item=>(!showSavedOnly||isTrendSaved(item.title))&&String(item.title||"").toLocaleLowerCase().includes(query));
+ const source=showSavedOnly?getSavedTrends().map((item,index)=>({title:item.title,region:item.region,rank:index+1,traffic:"Saved by you",published:"Saved"})):trendItems;
+ return source.filter(item=>String(item.title||"").toLocaleLowerCase().includes(query));
 }
 function renderTrendItems(){
  const list=document.getElementById("trendList"),count=document.getElementById("trendCount");
  const items=visibleTrendItems();
  updateSavedTrendCount();
- count.textContent=items.length+" of "+trendItems.length+" trends"+(showSavedOnly?" · saved only":"");
+ count.textContent=showSavedOnly?items.length+" saved trends":items.length+" of "+trendItems.length+" trends";
  if(!items.length){
   list.innerHTML='<div class="panel muted">'+(trendItems.length?'No trends match your search. Try another word.':'No trends to show yet.')+'</div>';
   return;
  }
- list.innerHTML=items.map((item,index)=>'<div class="trend"><div class="emoji">'+escapeText(String(item.rank||index+1))+'</div><div><strong>'+escapeText(item.title)+'</strong><small>Approx. searches: '+escapeText(item.traffic||"Not provided")+' · '+escapeText(item.published||"Recent")+'</small></div><div class="trend-actions"><button class="ghost trend-save '+(isTrendSaved(item.title)?"is-saved":"")+'" type="button" data-save-trend="'+escapeText(item.title)+'">'+(isTrendSaved(item.title)?"★ Saved":"☆ Save")+'</button><a class="ghost" href="https://trends.google.com/trends/explore?geo='+encodeURIComponent(trendRegionCode)+'&q='+encodeURIComponent(item.title)+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Explore ↗</a><button class="primary" type="button" data-create-trend="'+escapeText(item.title)+'">Create with this trend ✧</button></div></div>').join("");
+ list.innerHTML=items.map((item,index)=>'<div class="trend"><div class="emoji">'+escapeText(String(item.rank||index+1))+'</div><div><strong>'+escapeText(item.title)+'</strong><small>Approx. searches: '+escapeText(item.traffic||"Not provided")+' · '+escapeText(item.published||"Recent")+'</small></div><div class="trend-actions"><button class="ghost trend-save '+(isTrendSaved(item.title)?"is-saved":"")+'" type="button" data-save-trend="'+escapeText(item.title)+'">'+(isTrendSaved(item.title)?"★ Saved":"☆ Save")+'</button><a class="ghost" href="https://trends.google.com/trends/explore?geo='+encodeURIComponent(item.region||trendRegionCode)+'&q='+encodeURIComponent(item.title)+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Explore ↗</a><button class="primary" type="button" data-create-trend="'+escapeText(item.title)+'">Create with this trend ✧</button></div></div>').join("");
  list.querySelectorAll("[data-save-trend]").forEach(button=>button.addEventListener("click",()=>toggleSavedTrend(button.dataset.saveTrend||"")));
  list.querySelectorAll("[data-create-trend]").forEach(button=>button.addEventListener("click",()=>{
   const topic=button.dataset.createTrend||"";
