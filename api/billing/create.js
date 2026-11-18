@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     return send(res, 405, { error: "Use POST." });
   }
 
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return send(res, 401, { error: "Sign in to start Premium." });
 
   const keyId = process.env.RAZORPAY_KEY_ID;
