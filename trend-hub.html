@@ -333,6 +333,11 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   <section class="view" id="trends">
    <div class="eyebrow">Live search signals</div><h1 class="heading">Trend Radar</h1><p class="sub">See Google's public Trending Now RSS feed for a selected country. Search volume is an approximate bucket, not an exact count.</p>
    <div class="panel" style="margin:20px 0"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label for="trendRegion"><b>Region</b></label><select id="trendRegion" class="field" style="width:auto;min-width:150px"><option value="IN">India</option><option value="BD">Bangladesh</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="SG">Singapore</option><option value="DE">Germany</option><option value="FR">France</option><option value="JP">Japan</option></select><button class="primary" id="refreshTrends">Refresh trends ↻</button><span id="trendStatus" class="muted" aria-live="polite">Not loaded yet</span></div></div>
+   <div class="trend-tools" style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0">
+    <input id="trendSearch" class="field" type="search" placeholder="Search trends in this country…" aria-label="Search trends" style="flex:1;min-width:190px;max-width:420px">
+    <button class="ghost" id="copyTrendList" type="button">Copy trend titles</button>
+    <span id="trendCount" class="muted" aria-live="polite">Waiting for trends…</span>
+   </div>
    <div class="trend-list" id="trendList"><div class="panel muted">Loading current trends…</div></div>
    <div class="notice">Source: Google Trends public RSS. This feed currently provides a limited set of recent trends and approximate traffic labels. It is not the full Trends dataset and VYBORA is not affiliated with Google.</div>
   </section>
@@ -469,8 +474,61 @@ document.getElementById("saveNewPassword").addEventListener("click",async()=>{co
 document.getElementById("signOut").addEventListener("click",async()=>{await supabaseClient.auth.signOut();await refreshAuth()});
 supabaseClient.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY"){document.getElementById("authContent").hidden=false;document.getElementById("accountToggle").textContent="Hide account −";document.getElementById("accountToggle").setAttribute("aria-expanded","true");document.getElementById("passwordResetBox").hidden=false;document.getElementById("authStatus").textContent="Choose a new password for your VYBORA account."}setTimeout(refreshAuth,0)});
 function escapeText(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-async function loadTrends(){const region=document.getElementById("trendRegion").value;const list=document.getElementById("trendList"),status=document.getElementById("trendStatus"),btn=document.getElementById("refreshTrends");btn.disabled=true;status.textContent="Fetching Google Trends…";list.innerHTML='<div class="panel muted">Loading current trends…</div>';try{const response=await fetch("/api/trends?geo="+encodeURIComponent(region),{headers:{Accept:"application/json"}});const data=await response.json();if(!response.ok)throw new Error(data.error||"Trend feed unavailable");if(!data.items||!data.items.length)throw new Error("No trends were returned for this region.");list.innerHTML=data.items.map(item=>'<div class="trend"><div class="emoji">↗</div><div><strong>'+escapeText(item.title)+'</strong><small>Approx. searches: '+escapeText(item.traffic||"Not provided")+' · '+escapeText(item.published||"Recent")+'</small></div><button class="ghost" type="button" data-create-trend="'+escapeText(item.title)+'">Create with this trend ✧</button></div>').join("");list.querySelectorAll("[data-create-trend]").forEach(button=>button.addEventListener("click",()=>{document.getElementById("topic").value=button.dataset.createTrend||"";show("studio");document.getElementById("topic").focus()}));status.textContent="Updated "+new Date(data.updatedAt).toLocaleTimeString()+" · "+data.region;}catch(error){list.innerHTML='<div class="panel"><b>Could not load live trends</b><p class="muted">'+escapeText(error.message)+'</p><button class="ghost" onclick="loadTrends()">Try again</button></div>';status.textContent="Feed unavailable";}finally{btn.disabled=false}}
-document.getElementById("refreshTrends").addEventListener("click",loadTrends);document.getElementById("trendRegion").addEventListener("change",loadTrends);loadTrends();
+let trendItems = [];
+let trendRegionCode = "IN";
+const trendMarketNames = {IN:"India",BD:"Bangladesh",US:"United States",GB:"United Kingdom",CA:"Canada",AU:"Australia",SG:"Singapore",DE:"Germany",FR:"France",JP:"Japan"};
+function visibleTrendItems(){
+ const query=document.getElementById("trendSearch").value.trim().toLocaleLowerCase();
+ return trendItems.filter(item=>String(item.title||"").toLocaleLowerCase().includes(query));
+}
+function renderTrendItems(){
+ const list=document.getElementById("trendList"),count=document.getElementById("trendCount");
+ const items=visibleTrendItems();
+ count.textContent=items.length+" of "+trendItems.length+" trends";
+ if(!items.length){
+  list.innerHTML='<div class="panel muted">'+(trendItems.length?'No trends match your search. Try another word.':'No trends to show yet.')+'</div>';
+  return;
+ }
+ list.innerHTML=items.map((item,index)=>'<div class="trend"><div class="emoji">'+escapeText(String(item.rank||index+1))+'</div><div><strong>'+escapeText(item.title)+'</strong><small>Approx. searches: '+escapeText(item.traffic||"Not provided")+' · '+escapeText(item.published||"Recent")+'</small></div><button class="ghost" type="button" data-create-trend="'+escapeText(item.title)+'">Create with this trend ✧</button></div>').join("");
+ list.querySelectorAll("[data-create-trend]").forEach(button=>button.addEventListener("click",()=>{
+  const topic=button.dataset.createTrend||"";
+  document.getElementById("topic").value=topic;
+  const audience=document.getElementById("audience");
+  if(!audience.value.trim()) audience.value="Creators and social media audiences in "+(trendMarketNames[trendRegionCode]||trendRegionCode);
+  show("studio");document.getElementById("topic").focus();
+ }));
+}
+async function loadTrends(){
+ const region=document.getElementById("trendRegion").value;
+ const list=document.getElementById("trendList"),status=document.getElementById("trendStatus"),btn=document.getElementById("refreshTrends");
+ btn.disabled=true;status.textContent="Fetching Google Trends…";list.innerHTML='<div class="panel muted">Loading current trends…</div>';
+ try{
+  const response=await fetch("/api/trends?geo="+encodeURIComponent(region),{headers:{Accept:"application/json"}});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Trend feed unavailable");
+  if(!data.items||!data.items.length)throw new Error("No trends were returned for this region.");
+  trendItems=data.items;trendRegionCode=data.region||region;renderTrendItems();
+  status.textContent="Updated "+new Date(data.updatedAt).toLocaleTimeString()+" · "+(trendMarketNames[trendRegionCode]||trendRegionCode);
+ }catch(error){
+  trendItems=[];document.getElementById("trendCount").textContent="Trend list unavailable";
+  list.innerHTML='<div class="panel"><b>Could not load live trends</b><p class="muted">'+escapeText(error.message)+'</p><button class="ghost" onclick="loadTrends()">Try again</button></div>';
+  status.textContent="Feed unavailable";
+ }finally{btn.disabled=false}
+}
+document.getElementById("refreshTrends").addEventListener("click",loadTrends);
+document.getElementById("trendRegion").addEventListener("change",loadTrends);
+document.getElementById("trendSearch").addEventListener("input",renderTrendItems);
+document.getElementById("copyTrendList").addEventListener("click",async()=>{
+ const items=visibleTrendItems();
+ const button=document.getElementById("copyTrendList");
+ if(!items.length){button.textContent="No trends to copy";return}
+ try{
+  await navigator.clipboard.writeText(items.map((item,index)=>(index+1)+". "+item.title).join("\n"));
+  button.textContent="Copied ✓";
+ }catch(error){button.textContent="Copy unavailable"}
+ setTimeout(()=>{button.textContent="Copy trend titles"},1800);
+});
+loadTrends();
 async function loadBillingStatus(){
  const box=document.getElementById("billingStatus");
  if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
