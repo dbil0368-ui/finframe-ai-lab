@@ -543,7 +543,7 @@ document.getElementById("showSavedTrends").addEventListener("click",()=>{
  const button=document.getElementById("showSavedTrends");
  button.classList.toggle("active",showSavedOnly);
  button.setAttribute("aria-pressed",String(showSavedOnly));
- button.innerHTML=(showSavedOnly?"★ All trends":"★ Saved")+" <span id="savedTrendCount">"+getSavedTrends().length+"</span>";
+ button.innerHTML=(showSavedOnly?"★ All trends":"★ Saved")+' <span id="savedTrendCount">'+getSavedTrends().length+'</span>';
  renderTrendItems();
 });
 updateSavedTrendCount();
