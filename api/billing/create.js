@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     });
     if (!userResponse.ok) return send(res, 401, { error: "Please sign in again." });
     const user = await userResponse.json();
-    if (!user.id || !user.email) return send(res, 401, { error: "A verified account email is required." });
+    if (!user.id || !user.email || !user.email_confirmed_at) return send(res, 403, { error: "Confirm your VYBORA account email before subscribing." });
 
     const plans = await supabaseRequest("billing_plans?select=razorpay_plan_id,amount_paise,currency,total_count,active&plan_key=eq.pro_usd&limit=1");
     const plan = plans[0];
