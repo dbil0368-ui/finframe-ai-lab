@@ -583,8 +583,12 @@ async function loadBillingStatus(){
   const result=await response.json();
   if(!response.ok)throw new Error(result.error||"Could not load billing status.");
   const checkoutButton=document.getElementById("startPremiumCheckout");
-  if(checkoutButton){checkoutButton.disabled=!result.checkout_ready;checkoutButton.textContent=result.checkout_ready?"Subscribe securely · $5/month":"Premium setup in progress";}
   const sub=result.subscription;
+  const subscriptionInProgress=!!sub&&["created","authenticated","active","pending","halted"].includes(sub.status);
+  if(checkoutButton){
+   checkoutButton.disabled=!result.checkout_ready||subscriptionInProgress;
+   checkoutButton.textContent=subscriptionInProgress?"Subscription already started":result.checkout_ready?"Subscribe securely · $5/month":"Premium setup in progress";
+  }
   if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
   const label={starter:"Starter",pro:"Pro",pro_usd:"Premium ($5/month)"}[sub.plan_key]||sub.plan_key;
   const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
