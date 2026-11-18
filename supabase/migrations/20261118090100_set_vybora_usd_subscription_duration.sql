@@ -1,0 +1,1 @@
+update public.billing_plans set total_count = 1200, updated_at = now() where plan_key = 'pro_usd' and currency = 'USD' and amount_paise = 500;
