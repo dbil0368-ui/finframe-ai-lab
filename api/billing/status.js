@@ -7,7 +7,7 @@ function send(res, status, body) {
 }
 export default async function handler(req, res) {
   if (req.method !== "GET") { res.setHeader("Allow", "GET"); return send(res, 405, { error: "Use GET." }); }
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return send(res, 401, { error: "Sign in to view billing." });
   const userResponse = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token } });
   if (!userResponse.ok) return send(res, 401, { error: "Please sign in again." });
