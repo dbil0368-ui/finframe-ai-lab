@@ -557,6 +557,7 @@ function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;","
 function getPlans(){try{return JSON.parse(localStorage.getItem("vybora_creator_plans")||"[]")}catch(e){return []}}
 function addLocalPlan(value){const plans=getPlans();plans.unshift({text:value,done:false});localStorage.setItem("vybora_creator_plans",JSON.stringify(plans));renderPlans()}
 let editingAffiliateId=null;
+function isAmazonUSLink(value){try{const u=new URL(value);return (u.hostname==="amazon.com"||u.hostname.endsWith(".amazon.com"))&&!!u.searchParams.get("tag")}catch(e){return false}}
 async function renderAffiliateLinks(){
  const el=document.getElementById("affiliateLinksList"),status=document.getElementById("affiliateStatusText");
  if(!currentUser){el.innerHTML='<p class="muted">Sign in to save and view your affiliate links across devices.</p>';return}
@@ -585,7 +586,7 @@ async function renderAffiliateLinks(){
   const row=data.find(x=>x.id===button.dataset.affiliateToggle);let item={};try{item=JSON.parse(row.brief||"{}")}catch(e){}
   const next=button.dataset.next;
   if(next==="Published"&&!item.affiliateUrl){status.textContent="Add a valid affiliate tracking URL before activating.";return}
-  if(next==="Published"&&item.program==="Amazon US"&&!/[?&]tag=[^&]+/.test(item.affiliateUrl)){status.textContent="Amazon US links need your Associate tag parameter (tag=...) before activation.";return}
+  if(next==="Published"&&item.program==="Amazon US"&&!isAmazonUSLink(item.affiliateUrl)){status.textContent="Amazon US links need your Associate tag parameter (tag=...) before activation.";return}
   const {error}=await supabaseClient.from("trend_hub_ideas").update({status:next}).eq("id",row.id).eq("user_id",currentUser.id);
   if(error){status.textContent="Could not update link: "+error.message;return}status.textContent="Link status updated.";renderAffiliateLinks();
  }));
@@ -602,7 +603,7 @@ document.getElementById("saveAffiliateLink").addEventListener("click",async()=>{
  if(!validUrl(destination)||(affiliateUrl&&!validUrl(affiliateUrl))){status.textContent="Use valid HTTPS URLs only.";return}
  if(program==="Amazon US"&&!/^(https?:\/\/)?([a-z0-9-]+\.)?amazon\.com\//i.test(destination)){status.textContent="For Amazon US, use an amazon.com product page URL.";return}
  if(requested==="Published"&&!affiliateUrl){status.textContent="Add your approved affiliate tracking URL before marking this Active.";return}
- if(requested==="Published"&&program==="Amazon US"&&!/[?&]tag=[^&]+/.test(affiliateUrl)){status.textContent="Amazon US affiliate URLs must include your Associate tag parameter (tag=...).";return}
+ if(requested==="Published"&&program==="Amazon US"&&!isAmazonUSLink(affiliateUrl)){status.textContent="Amazon US affiliate URLs must include your Associate tag parameter (tag=...).";return}
  const payload={program,category,destination,affiliateUrl};
  let error;
  if(editingAffiliateId){const result=await supabaseClient.from("trend_hub_ideas").update({topic:product,brief:JSON.stringify(payload),status:requested}).eq("id",editingAffiliateId).eq("user_id",currentUser.id);error=result.error}
