@@ -325,6 +325,20 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   <section class="view" id="planner">
    <div class="eyebrow">Make ideas happen</div><h1 class="heading">Content Planner</h1><p class="sub">Save ideas, set publishing dates and keep your content schedule in one place.</p>
    <div class="panel" style="max-width:900px;margin-top:22px"><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="field" id="planInput" placeholder="Add a content idea…" style="flex:1;min-width:180px"><button class="primary" id="addPlan">Add idea +</button></div><div id="planList" style="margin-top:16px"></div></div>
+   <div class="section-title"><h2>Affiliate Link Manager</h2><span class="muted">Your product links · US market</span></div>
+   <div class="panel" style="max-width:900px;margin:18px 0">
+    <p class="sub" style="margin-top:0">Save product destinations and approved affiliate URLs in one place. Links are private to your signed-in account. Start with Draft until your affiliate program approves you.</p>
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+     <div><label for="affiliateProgram"><b>Affiliate program</b></label><select class="field" id="affiliateProgram"><option>Amazon US</option><option>Other program</option></select></div>
+     <div><label for="affiliateCategory"><b>Category</b></label><select class="field" id="affiliateCategory"><option>Tech Gadgets</option><option>Home & Kitchen</option><option>Fashion & Accessories</option></select></div>
+    </div>
+    <label for="affiliateProduct"><b>Product / link label</b></label><input class="field" id="affiliateProduct" placeholder="e.g. compact USB-C travel charger" style="margin:8px 0 12px">
+    <label for="affiliateDestination"><b>Product page URL</b></label><input class="field" id="affiliateDestination" type="url" placeholder="https://www.amazon.com/dp/..." style="margin:8px 0 12px">
+    <label for="affiliateTracking"><b>Affiliate tracking URL (optional until approved)</b></label><input class="field" id="affiliateTracking" type="url" placeholder="Paste the special tagged link from your affiliate dashboard" style="margin:8px 0 12px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><select class="field" id="affiliateStatus" style="max-width:180px"><option value="Idea">Draft — not active</option><option value="Published">Active — approved link</option></select><button class="primary" id="saveAffiliateLink" type="button">Save affiliate link</button><span id="affiliateStatusText" class="muted" aria-live="polite"></span></div>
+    <div id="affiliateLinksList" style="margin-top:18px"><p class="muted">Sign in to manage your saved links.</p></div>
+   </div>
+   <div class="notice">Amazon disclosure: “As an Amazon Associate I earn from qualifying purchases.” Place a clear disclosure such as “(paid link)” or “#ad” close to each affiliate link. Only mark an Amazon link Active after approval and after confirming it contains your correct US Associate tracking tag.</div>
    <div class="calendar-head"><h2>Publishing calendar</h2><div class="calendar-nav"><button id="calendarPrev" aria-label="Previous month">←</button><strong id="calendarMonth">Month</strong><button id="calendarNext" aria-label="Next month">→</button></div></div>
    <div class="panel" style="padding:12px"><div class="calendar-grid" id="calendarGrid"></div></div>
    <div class="section-title"><h2>Upcoming publishing queue</h2><span class="muted">Your next scheduled posts</span></div>
@@ -542,6 +556,45 @@ document.getElementById("generate").addEventListener("click",async()=>{const top
 function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function getPlans(){try{return JSON.parse(localStorage.getItem("vybora_creator_plans")||"[]")}catch(e){return []}}
 function addLocalPlan(value){const plans=getPlans();plans.unshift({text:value,done:false});localStorage.setItem("vybora_creator_plans",JSON.stringify(plans));renderPlans()}
+async function renderAffiliateLinks(){
+ const el=document.getElementById("affiliateLinksList"),status=document.getElementById("affiliateStatusText");
+ if(!currentUser){el.innerHTML='<p class="muted">Sign in to save and view your affiliate links across devices.</p>';return}
+ const {data,error}=await supabaseClient.from("trend_hub_ideas").select("id,topic,brief,status,created_at").eq("content_format","Affiliate Link").order("created_at",{ascending:false});
+ if(error){el.innerHTML='<p class="muted">Could not load saved links: '+escapeText(error.message)+'</p>';return}
+ if(!data.length){el.innerHTML='<p class="muted">No links saved yet. Add your first product destination above.</p>';return}
+ el.innerHTML=data.map(row=>{let item={};try{item=JSON.parse(row.brief||"{}")}catch(e){}
+ const active=row.status==="Published"&&!!item.affiliateUrl;
+ const href=active?item.affiliateUrl:item.destination;
+ return '<div class="idea"><strong>'+escapeText(row.topic)+'</strong><small class="muted"> · '+escapeText(item.category||"")+' · '+escapeText(item.program||"")+'</small><p><span class="tag">'+(active?'Active affiliate link':'Draft — not active')+'</span></p><p><a href="'+escapeText(href||"#")+'" target="_blank" rel="noopener noreferrer sponsored">'+escapeText(active?'Open tracked affiliate link':'Open product destination')+' ↗</a></p><small class="muted">'+(active?'Paid link · disclose near the link':'No affiliate link is active yet')+'</small><div style="margin-top:10px"><button class="ghost" type="button" data-affiliate-toggle="'+row.id+'" data-next="'+(active?'Idea':'Published')+'">'+(active?'Move to Draft':'Mark Active')+'</button> <button class="ghost" type="button" data-affiliate-remove="'+row.id+'">Remove</button></div></div>';
+ }).join("");
+ el.querySelectorAll("[data-affiliate-toggle]").forEach(button=>button.addEventListener("click",async()=>{
+  const row=data.find(x=>x.id===button.dataset.affiliateToggle);let item={};try{item=JSON.parse(row.brief||"{}")}catch(e){}
+  const next=button.dataset.next;
+  if(next==="Published"&&!item.affiliateUrl){status.textContent="Add a valid affiliate tracking URL before activating.";return}
+  if(next==="Published"&&item.program==="Amazon US"&&!/[?&]tag=[^&]+/.test(item.affiliateUrl)){status.textContent="Amazon US links need your Associate tag parameter (tag=...) before activation.";return}
+  const {error}=await supabaseClient.from("trend_hub_ideas").update({status:next}).eq("id",row.id).eq("user_id",currentUser.id);
+  if(error){status.textContent="Could not update link: "+error.message;return}status.textContent="Link status updated.";renderAffiliateLinks();
+ }));
+ el.querySelectorAll("[data-affiliate-remove]").forEach(button=>button.addEventListener("click",async()=>{
+  const {error}=await supabaseClient.from("trend_hub_ideas").delete().eq("id",button.dataset.affiliateRemove).eq("user_id",currentUser.id);
+  if(error){status.textContent="Could not remove link: "+error.message;return}renderAffiliateLinks();
+ }));
+}
+document.getElementById("saveAffiliateLink").addEventListener("click",async()=>{
+ const status=document.getElementById("affiliateStatusText"),program=document.getElementById("affiliateProgram").value,category=document.getElementById("affiliateCategory").value,product=document.getElementById("affiliateProduct").value.trim(),destination=document.getElementById("affiliateDestination").value.trim(),affiliateUrl=document.getElementById("affiliateTracking").value.trim(),requested=document.getElementById("affiliateStatus").value;
+ if(!currentUser){status.textContent="Please sign in first to save links.";return}
+ if(!product||!destination){status.textContent="Enter a product label and product page URL.";return}
+ const validUrl=value=>{try{const u=new URL(value);return u.protocol==="https:"}catch(e){return false}};
+ if(!validUrl(destination)||(affiliateUrl&&!validUrl(affiliateUrl))){status.textContent="Use valid HTTPS URLs only.";return}
+ if(program==="Amazon US"&&!/^(https?:\/\/)?([a-z0-9-]+\.)?amazon\.com\//i.test(destination)){status.textContent="For Amazon US, use an amazon.com product page URL.";return}
+ if(requested==="Published"&&!affiliateUrl){status.textContent="Add your approved affiliate tracking URL before marking this Active.";return}
+ if(requested==="Published"&&program==="Amazon US"&&!/[?&]tag=[^&]+/.test(affiliateUrl)){status.textContent="Amazon US affiliate URLs must include your Associate tag parameter (tag=...).";return}
+ const payload={program,category,destination,affiliateUrl};
+ const {error}=await supabaseClient.from("trend_hub_ideas").insert({user_id:currentUser.id,topic:product,content_format:"Affiliate Link",brief:JSON.stringify(payload),status:requested});
+ if(error){status.textContent="Could not save link: "+error.message;return}
+ document.getElementById("affiliateProduct").value="";document.getElementById("affiliateDestination").value="";document.getElementById("affiliateTracking").value="";document.getElementById("affiliateStatus").value="Idea";
+ status.textContent="Saved securely to your account.";renderAffiliateLinks();
+});
 async function saveIdea(topic,format,brief){
  if(!currentUser){addLocalPlan(topic+" — "+format+" — "+brief.slice(0,180));document.getElementById("authStatus").textContent="Saved on this device. Sign in to sync ideas to your account.";return}
  const {error}=await supabaseClient.from("trend_hub_ideas").insert({user_id:currentUser.id,topic,content_format:format,brief});
@@ -572,7 +625,7 @@ function renderCalendar(items){
 async function renderPlans(){
  const el=document.getElementById("planList");
  if(currentUser){
-  const {data,error}=await supabaseClient.from("trend_hub_ideas").select("id,topic,content_format,brief,created_at,scheduled_for,status").order("created_at",{ascending:false});
+  const {data,error}=await supabaseClient.from("trend_hub_ideas").select("id,topic,content_format,brief,created_at,scheduled_for,status").neq("content_format","Affiliate Link").order("created_at",{ascending:false});
   if(error){el.innerHTML='<p class="muted">Could not load Cloud Planner: '+escapeText(error.message)+'</p>';renderCalendar([]);return}
   el.innerHTML=data.length?data.map(p=>'<div class="idea"><strong>'+escapeText(p.topic)+'</strong><small class="muted"> · '+escapeText(p.content_format)+'</small><p style="white-space:pre-wrap;line-height:1.55">'+escapeText(p.brief.slice(0,360))+(p.brief.length>360?'…':'')+'</p><small class="muted">Synced to your account'+(p.scheduled_for?' · '+new Date(p.scheduled_for).toLocaleString():'')+'</small><div class="schedule-controls"><input class="field" type="datetime-local" aria-label="Publishing date and time" data-schedule-date="'+p.id+'" value="'+localDateTimeValue(p.scheduled_for)+'"><select class="field" aria-label="Publishing status" data-schedule-status="'+p.id+'"><option value="Idea" '+(p.status==="Idea"?'selected':'')+'>Idea</option><option value="Scheduled" '+(p.status==="Scheduled"?'selected':'')+'>Scheduled</option><option value="Published" '+(p.status==="Published"?'selected':'')+'>Published</option></select><button class="ghost" data-save-schedule="'+p.id+'">Save schedule</button><button class="ghost" data-cloud-remove="'+p.id+'">Remove</button></div></div>').join(""):'<p class="muted">No cloud ideas yet. Create one in Creator Studio.</p>';
   el.querySelectorAll("[data-save-schedule]").forEach(b=>b.addEventListener("click",async()=>{
@@ -585,6 +638,7 @@ async function renderPlans(){
   }));
   el.querySelectorAll("[data-cloud-remove]").forEach(b=>b.addEventListener("click",async()=>{const {error}=await supabaseClient.from("trend_hub_ideas").delete().eq("id",b.dataset.cloudRemove).eq("user_id",currentUser.id);if(error)alert(error.message);else renderPlans()}));
   renderCalendar(data);
+  renderAffiliateLinks();
   return;
  }
  const plans=getPlans();
