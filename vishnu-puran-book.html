@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173d2c"><title>শ্রী বিষ্ণু পুরাণ | পাতা উল্টে পড়ুন</title>
+<style>
+:root{--ink:#352719;--gold:#b88636;--paper:#fff8e9;--green:#173d2c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#42634a,#12271d 70%);font-family:system-ui,"Noto Sans Bengali",sans-serif;color:#fff;min-height:100vh;padding:22px 14px}
+header{text-align:center;margin:4px auto 18px}h1{margin:0;color:#ffe5a6;font-size:clamp(24px,5vw,38px)}header p{margin:7px 0;color:#e5d8bd}
+.book-wrap{max-width:900px;margin:auto;perspective:1800px}
+.book{position:relative;display:grid;grid-template-columns:1fr 1fr;min-height:490px;filter:drop-shadow(0 18px 22px #07140f99)}
+.page{background:var(--paper);color:var(--ink);padding:clamp(20px,4vw,42px);position:relative;min-height:490px;line-height:1.9;border:1px solid #d8c49b}
+.page.left{border-radius:12px 0 0 12px;background:linear-gradient(90deg,#ead9b6,var(--paper) 9%)}
+.page.right{border-radius:0 12px 12px 0;background:linear-gradient(270deg,#ead9b6,var(--paper) 9%)}
+.page h2{color:#74491c;text-align:center;font-size:23px;margin:10px 0 20px}
+.page p{font-size:17px;white-space:pre-line}
+.page .ornament{text-align:center;color:var(--gold);font-size:30px;margin:12px}
+.page-no{position:absolute;bottom:12px;color:#8e7756;font-size:13px}.left .page-no{left:25px}.right .page-no{right:25px}
+.controls{display:flex;justify-content:center;align-items:center;gap:14px;margin:20px auto;flex-wrap:wrap}
+button{border:0;border-radius:30px;padding:12px 22px;background:#f0cc7c;color:#352719;font-weight:700;font-size:16px;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}.count{color:#fff1ce;min-width:110px;text-align:center}
+.hint{text-align:center;color:#e6dfce;font-size:14px;margin:4px auto 20px}
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(145deg,#174b36,#0d2b20);color:#fbe4aa;border:5px double #c99b4d;border-radius:10px;min-height:490px;padding:28px}
+.cover .symbol{font-size:82px}.cover h2{font-size:30px;color:#ffe2a1}.cover p{color:#f4e6c8}
+@media(max-width:650px){.book{grid-template-columns:1fr;min-height:0}.page{min-height:410px;border-radius:10px!important}.page.left{display:none}.cover{min-height:410px}.page p{font-size:16px}}
+</style></head>
+<body>
+<header><h1>শ্রী বিষ্ণু পুরাণ</h1><p>সহজ বাংলায় পুরাণকথা · ডিজিটাল পুঁথি</p></header>
+<main class="book-wrap"><div class="book" id="book">
+<section class="page left" id="left"><div class="ornament">❀</div><h2 id="lt">মঙ্গলাচরণ</h2><p id="lc">ওঁ নমো ভগবতে বাসুদেবায়।</p><span class="page-no" id="ln">১</span></section>
+<section class="page right" id="right"><div class="ornament">ॐ</div><h2 id="rt">শুভ সূচনা</h2><p id="rc">পাতা উল্টিয়ে পড়া শুরু করুন।</p><span class="page-no" id="rn">২</span></section>
+</div></main>
+<div class="controls"><button id="prev">← আগের পাতা</button><span class="count" id="count">প্রচ্ছদ</span><button id="next">পরের পাতা →</button></div>
+<p class="hint">মোবাইলে আঙুল দিয়ে বাঁ বা ডান দিকে সোয়াইপ করুন, অথবা বোতামে চাপ দিন।</p>
+<script>
+const pages=[
+{title:"মঙ্গলাচরণ",text:"ওঁ নমো ভগবতে বাসুদেবায়।\n\nপরমেশ্বর ভগবান বিষ্ণুর চরণে প্রণাম জানিয়ে এই সহজ বাংলা পাঠের সূচনা।"},
+{title:"বিষ্ণু পুরাণ পরিচয়",text:"বিষ্ণু পুরাণ হিন্দুধর্মের আঠারোটি মহাপুরাণের একটি। এতে সৃষ্টি, পালন, রাজবংশ, ঋষি-মুনি, ভক্তি, ধর্ম ও ভগবান বিষ্ণুর অবতারের কথা বর্ণিত হয়েছে।\n\nএই বইটি মূল সংস্কৃত গ্রন্থের হুবহু অনুবাদ নয়; প্রচলিত কাহিনির সহজ বাংলা পুনর্কথন।"},
+{title:"পরাশর ও মৈত্রেয়",text:"মহর্ষি পরাশরের কাছে তাঁর শিষ্য মৈত্রেয় এসে জগতের সৃষ্টি, স্থিতি ও লয়ের রহস্য জানতে চাইলেন। তিনি জানতে চাইলেন—এই বিশ্ব কোথা থেকে এলো, আর কে এর পালনকর্তা?\n\nপরাশর তাঁকে বিষ্ণুর মহিমা ও সৃষ্টির কাহিনি শোনাতে শুরু করলেন।"},
+{title:"সৃষ্টির আদিকথা",text:"পুরাণের বর্ণনায়, সৃষ্টির পূর্বে চারদিকে ছিল অনন্ত জলরাশি। ভগবান বিষ্ণু অনন্তনাগের উপর যোগনিদ্রায় শয়ান ছিলেন। তাঁর নাভি থেকে এক দিব্য পদ্মের উদ্ভব হয়।\n\nসেই পদ্মে ব্রহ্মার আবির্ভাব ঘটে। ব্রহ্মা সৃষ্টির কাজ শুরু করেন—এভাবেই জগতের প্রকাশের কাহিনি বলা হয়েছে।"},
+{title:"সৃষ্টি ও পালন",text:"পুরাণে ব্রহ্মাকে সৃষ্টির, বিষ্ণুকে পালনের এবং শিবকে সংহারের সঙ্গে যুক্ত করে ব্যাখ্যা করা হয়েছে। এই তিন শক্তির মাধ্যমে জগতের চক্র চলতে থাকে।\n\nজীবন, প্রকৃতি ও সময়—সবই পরিবর্তনশীল বলে পুরাণ আমাদের স্মরণ করায়।"},
+{title:"ধর্মের অর্থ",text:"ধর্ম মানে শুধু আচার নয়; সত্য বলা, অন্যায় না করা, দয়া দেখানো, নিজের কর্তব্য পালন করা এবং অন্যের মঙ্গল চাওয়াও ধর্মের অংশ।\n\nযে মানুষ অহংকার ত্যাগ করে ন্যায়ের পথে চলে, সে জীবনে শান্তি খুঁজে পায়—পুরাণের কাহিনিগুলিতে এই শিক্ষা বারবার ফিরে আসে।"},
+{title:"মৎস্য অবতার",text:"প্রচলিত কাহিনি অনুসারে, প্রলয়ের সময় ভগবান বিষ্ণু মৎস্যরূপে আবির্ভূত হয়ে মনুকে বিপদের পূর্বাভাস দেন এবং জীবনের বীজ ও জ্ঞান রক্ষায় সহায়তা করেন।\n\nএই কাহিনি বিপদের সময় জ্ঞান, ধৈর্য ও প্রস্তুতির গুরুত্ব বোঝায়।"},
+{title:"কূর্ম অবতার",text:"সমুদ্র মন্থনের সময় মন্দর পর্বত ডুবে যেতে থাকলে ভগবান বিষ্ণু কূর্ম বা কচ্ছপরূপ ধারণ করে পর্বতকে নিজের পিঠে ধারণ করেন।\n\nএই কাহিনির শিক্ষা—বড় কাজে স্থিরতা, সহযোগিতা ও ধৈর্য প্রয়োজন।"},
+{title:"বরাহ অবতার",text:"পুরাণের কাহিনিতে, অসুর হিরণ্যাক্ষ পৃথিবীকে গভীর জলে লুকিয়ে রাখে। তখন বিষ্ণু বরাহরূপে আবির্ভূত হয়ে পৃথিবীকে উদ্ধার করেন।\n\nএই কাহিনি অশুভ শক্তির বিরুদ্ধে ন্যায় প্রতিষ্ঠার প্রতীক হিসেবে বিবেচিত।"},
+{title:"নৃসিংহ অবতার",text:"প্রহ্লাদ ছিলেন বিষ্ণুর একনিষ্ঠ ভক্ত। তাঁর পিতা হিরণ্যকশিপু ভক্তিকে নিষেধ করলেও প্রহ্লাদ বিশ্বাসে অটল থাকেন। তখন বিষ্ণু নৃসিংহরূপে আবির্ভূত হয়ে প্রহ্লাদকে রক্ষা করেন।\n\nশিক্ষা: সত্য ও বিশ্বাসের পথে সাহস ধরে রাখতে হয়।"},
+{title:"বামন অবতার",text:"রাজা বলির যজ্ঞে এক ক্ষুদ্র ব্রাহ্মণ বালকের রূপে বিষ্ণু উপস্থিত হন। তিনি তিন পা জমি চান। পরে তাঁর বিরাট রূপে তিন পদে সমগ্র বিশ্ব পরিমাপের কাহিনি বর্ণিত হয়েছে।\n\nএই কাহিনি দান, বিনয় ও অহংকারের পরিণতি নিয়ে ভাবতে শেখায়।"},
+{title:"পরশুরাম অবতার",text:"পরশুরামকে বিষ্ণুর অবতার হিসেবে বর্ণনা করা হয়। তাঁর কাহিনিতে অন্যায় ও অত্যাচারের বিরুদ্ধে কঠোর প্রতিরোধের কথা উঠে আসে।\n\nশিক্ষা: ক্ষমতা কখনো অন্যায়ের কাজে ব্যবহার করা উচিত নয়।"},
+{title:"শ্রীরাম অবতার",text:"রামায়ণের পরিচিত কাহিনিতে শ্রীরাম সত্য, কর্তব্য, সংযম ও ন্যায়ের আদর্শ। বনবাস, সীতা হরণ, হনুমানের ভক্তি এবং রাবণের বিরুদ্ধে যুদ্ধ তাঁর জীবনের প্রধান পর্ব।\n\nরামের কাহিনি কর্তব্য ও ন্যায়ের পথে থাকার শিক্ষা দেয়।"},
+{title:"শ্রীকৃষ্ণ অবতার",text:"শ্রীকৃষ্ণের জীবনকাহিনিতে জন্ম, গোকুলের শৈশব, বৃন্দাবনের লীলা, কংসবধ এবং মহাভারতের কুরুক্ষেত্রের উপদেশ বিশেষভাবে উল্লেখযোগ্য।\n\nগীতায় কৃষ্ণ কর্ম, জ্ঞান, ভক্তি ও কর্তব্যের কথা বলেছেন।"},
+{title:"বুদ্ধ অবতার",text:"কিছু পুরাণীয় দশাবতার তালিকায় বুদ্ধকে বিষ্ণুর অবতার হিসেবে গণ্য করা হয়। তাঁর শিক্ষায় করুণা, অহিংসা, সংযম ও দুঃখ থেকে মুক্তির পথের ওপর গুরুত্ব দেওয়া হয়েছে।"},
+{title:"কল্কি অবতার",text:"পুরাণীয় বিশ্বাস অনুসারে, কলিযুগের অন্তিম পর্বে বিষ্ণু কল্কিরূপে আবির্ভূত হবেন এবং অধর্মের অবসান ঘটিয়ে ধর্ম প্রতিষ্ঠা করবেন। এটি ভবিষ্যৎ অবতারের কাহিনি।"},
+{title:"ভক্তির মাহাত্ম্য",text:"বিষ্ণু পুরাণে ভক্তি, স্মরণ, সৎকর্ম ও ঈশ্বরের প্রতি নিষ্ঠার গুরুত্ব বলা হয়েছে। ভক্তি মানে শুধু প্রার্থনা নয়; জীবনে দয়া, সততা ও বিনয় ধারণ করাও তার প্রকাশ।"},
+{title:"শেষ কথা",text:"এই ডিজিটাল বইয়ে বিষ্ণু পুরাণের কয়েকটি পরিচিত বিষয় সহজ ভাষায় তুলে ধরা হয়েছে। মূল বিষ্ণু পুরাণে আরও বহু বিস্তৃত কাহিনি, বংশপরিচয়, তীর্থ, আচার ও দর্শন রয়েছে।\n\nপাঠ শেষ করার জন্য ধন্যবাদ।\n\nওঁ নমো নারায়ণায়।"}
+];
+let page=0;const $=id=>document.getElementById(id);
+function render(){if(page===0){$("left").style.display=innerWidth>650?"block":"none";$("lt").textContent="মঙ্গলাচরণ";$("lc").textContent="ওঁ নমো ভগবতে বাসুদেবায়।";$("ln").textContent="১";$("rt").textContent="শ্রী বিষ্ণু পুরাণ";$("rc").textContent="সহজ বাংলা পুনর্কথন\n\nপাতা উল্টিয়ে পড়া শুরু করুন।";$("rn").textContent="২";$("count").textContent="প্রচ্ছদ";}else{let a=pages[(page-1)*2]||pages[0],b=pages[(page-1)*2+1];$("left").style.display=innerWidth>650?"block":"none";$("lt").textContent=a.title;$("lc").textContent=a.text;$("ln").textContent=String(page*2+1);$("rt").textContent=b?b.title:"সমাপ্তি";$("rc").textContent=b?b.text:"ওঁ নমো নারায়ণায়।";$("rn").textContent=String(page*2+2);$("count").textContent="খোলা পাতা "+page+" / "+Math.ceil(pages.length/2);} $("prev").disabled=page===0;$("next").disabled=page>=Math.ceil(pages.length/2);}
+$("prev").onclick=()=>{page=Math.max(0,page-1);render()};$("next").onclick=()=>{page=Math.min(Math.ceil(pages.length/2),page+1);render()};
+let sx=0;$("book").addEventListener("touchstart",e=>sx=e.changedTouches[0].screenX,{passive:true});$("book").addEventListener("touchend",e=>{let dx=e.changedTouches[0].screenX-sx;if(Math.abs(dx)>45){page=Math.max(0,Math.min(Math.ceil(pages.length/2),page+(dx<0?1:-1)));render()}},{passive:true});window.addEventListener("resize",render);render();
+</script></body></html>
