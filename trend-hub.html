@@ -645,6 +645,7 @@ async function renderPlans(){
  el.innerHTML=plans.length?plans.map((p,i)=>'<div class="trend"><div class="emoji">✧</div><div><strong>'+escapeText(p.text)+'</strong><small>Saved on this device</small></div><button class="ghost" data-remove="'+i+'">Remove</button></div>').join(""):'<p class="muted">No ideas saved yet. Sign in to sync ideas across devices.</p>';
  el.querySelectorAll("[data-remove]").forEach(x=>x.addEventListener("click",()=>{const a=getPlans();a.splice(+x.dataset.remove,1);localStorage.setItem("vybora_creator_plans",JSON.stringify(a));renderPlans()}));
  renderCalendar([]);
+ renderAffiliateLinks();
 }
 document.getElementById("calendarPrev").addEventListener("click",()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()-1,1);renderPlans()});
 document.getElementById("calendarNext").addEventListener("click",()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+1,1);renderPlans()});
