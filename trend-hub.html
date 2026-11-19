@@ -556,6 +556,7 @@ document.getElementById("generate").addEventListener("click",async()=>{const top
 function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function getPlans(){try{return JSON.parse(localStorage.getItem("vybora_creator_plans")||"[]")}catch(e){return []}}
 function addLocalPlan(value){const plans=getPlans();plans.unshift({text:value,done:false});localStorage.setItem("vybora_creator_plans",JSON.stringify(plans));renderPlans()}
+let editingAffiliateId=null;
 async function renderAffiliateLinks(){
  const el=document.getElementById("affiliateLinksList"),status=document.getElementById("affiliateStatusText");
  if(!currentUser){el.innerHTML='<p class="muted">Sign in to save and view your affiliate links across devices.</p>';return}
@@ -565,8 +566,21 @@ async function renderAffiliateLinks(){
  el.innerHTML=data.map(row=>{let item={};try{item=JSON.parse(row.brief||"{}")}catch(e){}
  const active=row.status==="Published"&&!!item.affiliateUrl;
  const href=active?item.affiliateUrl:item.destination;
- return '<div class="idea"><strong>'+escapeText(row.topic)+'</strong><small class="muted"> · '+escapeText(item.category||"")+' · '+escapeText(item.program||"")+'</small><p><span class="tag">'+(active?'Active affiliate link':'Draft — not active')+'</span></p><p><a href="'+escapeText(href||"#")+'" target="_blank" rel="noopener noreferrer sponsored">'+escapeText(active?'Open tracked affiliate link':'Open product destination')+' ↗</a></p><small class="muted">'+(active?'Paid link · disclose near the link':'No affiliate link is active yet')+'</small><div style="margin-top:10px"><button class="ghost" type="button" data-affiliate-toggle="'+row.id+'" data-next="'+(active?'Idea':'Published')+'">'+(active?'Move to Draft':'Mark Active')+'</button> <button class="ghost" type="button" data-affiliate-remove="'+row.id+'">Remove</button></div></div>';
+ return '<div class="idea"><strong>'+escapeText(row.topic)+'</strong><small class="muted"> · '+escapeText(item.category||"")+' · '+escapeText(item.program||"")+'</small><p><span class="tag">'+(active?'Active affiliate link':'Draft — not active')+'</span></p><p><a href="'+escapeText(href||"#")+'" target="_blank" rel="noopener noreferrer sponsored">'+escapeText(active?'Open tracked affiliate link':'Open product destination')+' ↗</a></p><small class="muted">'+(active?'Paid link · disclose near the link':'No affiliate link is active yet')+'</small><div style="margin-top:10px"><button class="ghost" type="button" data-affiliate-edit="'+row.id+'">Edit</button> <button class="ghost" type="button" data-affiliate-toggle="'+row.id+'" data-next="'+(active?'Idea':'Published')+'">'+(active?'Move to Draft':'Mark Active')+'</button> <button class="ghost" type="button" data-affiliate-remove="'+row.id+'">Remove</button></div></div>';
  }).join("");
+ el.querySelectorAll("[data-affiliate-edit]").forEach(button=>button.addEventListener("click",()=>{
+  const row=data.find(x=>x.id===button.dataset.affiliateEdit);if(!row)return;let item={};try{item=JSON.parse(row.brief||"{}")}catch(e){}
+  editingAffiliateId=row.id;
+  document.getElementById("affiliateProgram").value=item.program||"Other program";
+  document.getElementById("affiliateCategory").value=item.category||"Tech Gadgets";
+  document.getElementById("affiliateProduct").value=row.topic||"";
+  document.getElementById("affiliateDestination").value=item.destination||"";
+  document.getElementById("affiliateTracking").value=item.affiliateUrl||"";
+  document.getElementById("affiliateStatus").value=row.status||"Idea";
+  document.getElementById("saveAffiliateLink").textContent="Update affiliate link";
+  status.textContent="Editing saved link. Save to apply changes.";
+  document.getElementById("affiliateProduct").focus();
+ }));
  el.querySelectorAll("[data-affiliate-toggle]").forEach(button=>button.addEventListener("click",async()=>{
   const row=data.find(x=>x.id===button.dataset.affiliateToggle);let item={};try{item=JSON.parse(row.brief||"{}")}catch(e){}
   const next=button.dataset.next;
@@ -590,9 +604,11 @@ document.getElementById("saveAffiliateLink").addEventListener("click",async()=>{
  if(requested==="Published"&&!affiliateUrl){status.textContent="Add your approved affiliate tracking URL before marking this Active.";return}
  if(requested==="Published"&&program==="Amazon US"&&!/[?&]tag=[^&]+/.test(affiliateUrl)){status.textContent="Amazon US affiliate URLs must include your Associate tag parameter (tag=...).";return}
  const payload={program,category,destination,affiliateUrl};
- const {error}=await supabaseClient.from("trend_hub_ideas").insert({user_id:currentUser.id,topic:product,content_format:"Affiliate Link",brief:JSON.stringify(payload),status:requested});
+ let error;
+ if(editingAffiliateId){const result=await supabaseClient.from("trend_hub_ideas").update({topic:product,brief:JSON.stringify(payload),status:requested}).eq("id",editingAffiliateId).eq("user_id",currentUser.id);error=result.error}
+ else{const result=await supabaseClient.from("trend_hub_ideas").insert({user_id:currentUser.id,topic:product,content_format:"Affiliate Link",brief:JSON.stringify(payload),status:requested});error=result.error}
  if(error){status.textContent="Could not save link: "+error.message;return}
- document.getElementById("affiliateProduct").value="";document.getElementById("affiliateDestination").value="";document.getElementById("affiliateTracking").value="";document.getElementById("affiliateStatus").value="Idea";
+ editingAffiliateId=null;document.getElementById("affiliateProduct").value="";document.getElementById("affiliateDestination").value="";document.getElementById("affiliateTracking").value="";document.getElementById("affiliateStatus").value="Idea";document.getElementById("saveAffiliateLink").textContent="Save affiliate link";
  status.textContent="Saved securely to your account.";renderAffiliateLinks();
 });
 async function saveIdea(topic,format,brief){
