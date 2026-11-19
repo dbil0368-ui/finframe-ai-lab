@@ -1157,6 +1157,7 @@ window.closeMobileMenu=function(){
  document.body.classList.remove('menu-open');
  if(menuButton)menuButton.setAttribute('aria-expanded','false');
 };
+window.vyShowAccount=function(){const card=document.getElementById('vyCloudAuth');if(!card)return;card.hidden=false;card.style.display='block';card.scrollIntoView({behavior:'smooth',block:'start'});card.style.outline='2px solid #b78cff';setTimeout(()=>{card.style.outline='';},2200);};
 window.toggleMobileMenu=function(){
  let menuButton=document.querySelector('.menu-toggle');
  if(document.body.classList.contains('vybora-mode')){
@@ -1164,7 +1165,7 @@ window.toggleMobileMenu=function(){
   let menu=document.getElementById('vyMenuPopover');
   if(!menu){
    menu=document.createElement('div');menu.id='vyMenuPopover';menu.className='vy-menu-popover';menu.hidden=true;
-   menu.innerHTML="<button type='button' onclick=\"window.vyNavigate('settings');window.toggleMobileMenu()\">⚙️ Settings</button><button type='button' onclick=\"window.vyNavigate('profile');window.toggleMobileMenu()\">◉ Profile</button><button type='button' onclick=\"window.vyNavigate('notifications');window.toggleMobileMenu()\">♡ Activity</button>";
+   menu.innerHTML="<button type='button' onclick=\"window.vyShowAccount();window.toggleMobileMenu()\">🔐 Account / Log in</button><button type='button' onclick=\"window.vyNavigate('settings');window.toggleMobileMenu()\">⚙️ Settings</button><button type='button' onclick=\"window.vyNavigate('profile');window.toggleMobileMenu()\">◉ Profile</button><button type='button' onclick=\"window.vyNavigate('notifications');window.toggleMobileMenu()\">♡ Activity</button>";
    document.getElementById('vybora')?.appendChild(menu);
   }
   const opened=menu.hidden;menu.hidden=!opened;
