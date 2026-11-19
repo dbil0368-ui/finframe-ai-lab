@@ -1961,7 +1961,7 @@ function resetPreferences(){
   let captchaToken;try{captchaToken=await getCaptchaToken();}catch(error){say(error.message);return;}
   say('Logging in…');
   try{
-   const r=await withTimeout(db.auth.signInWithPassword({email:email,password:password},{captchaToken:captchaToken}),15000,'Login request');
+   const r=await withTimeout(db.auth.signInWithPassword({email:email,password:password,options:{captchaToken:captchaToken}}),15000,'Login request');
    if(captchaWidgetId!==null)window.hcaptcha.reset(captchaWidgetId);
    if(r.error){say(r.error.message);return;}
    currentUser=r.data.user;
