@@ -405,7 +405,7 @@ body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card>.vy-video{height:au
 body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card>.vy-reel-media{height:auto!important;min-height:0!important;flex:1 1 auto!important;width:100%!important;object-fit:cover}
 body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-head,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-actions,body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-caption{flex-shrink:0!important}
 @media(max-width:520px){body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card{flex-basis:100%!important;height:100%!important;min-height:100%!important;max-height:100%!important}}
-body.vybora-mode #vyCloudAuth{display:none!important}
+/* Keep the VYBORA account and hCaptcha sign-in panel visible in standalone mode. */
 
 /* Consolidated mobile drawer fix: keep the menu above the page and fully interactive. */
 @media(max-width:900px){
@@ -818,16 +818,17 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     <input id="vyAuthName" type="text" placeholder="Your name (for sign up)" autocomplete="name">
     <input id="vyAuthEmail" type="email" placeholder="Email address" autocomplete="email">
     <input id="vyAuthPassword" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
-    <button class="primary-btn" type="button" onclick="vySignUp()">Create account</button>
+    <button class="primary-btn" id="vyCreateAccountBtn" type="button" onclick="(function(){var s=document.getElementById('vyCloudStatus');if(s)s.textContent='Signup button received the tap. Starting account check…';if(typeof window.vySignUp==='function'){window.vySignUp().catch(function(e){if(s)s.textContent='Signup error: '+(e&&e.message?e.message:'Unknown error');});}else if(s){s.textContent='Account script is not ready. Please refresh and try again.';}})()">Create account</button>
     <button class="secondary-btn" type="button" onclick="vySignIn()">Log in</button>
     <button class="secondary-btn" type="button" onclick="vyResetPassword()">Forgot password?</button>
    </div>
-   <div id="vyRecoveryForm" hidden style="display:grid;gap:8px;margin-top:10px">
+   <div id="vyCaptchaWidget" aria-label="Human verification" style="margin-top:10px"></div>
+   <div id="vyRecoveryForm" hidden style="display:none;gap:8px;margin-top:10px">
     <p class="small">Set a new password for your VYBORA account.</p>
     <input id="vyNewPassword" type="password" placeholder="New password (min. 6 characters)" autocomplete="new-password">
     <button class="primary-btn" type="button" onclick="vySaveNewPassword()">Save new password</button>
    </div>
-   <div id="vyAuthSignedIn" hidden style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
+   <div id="vyAuthSignedIn" hidden style="display:none;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
   </div>
   <div id="vyCloudFeed" style="max-width:980px;margin:0 auto"></div>
   <style>
@@ -1156,6 +1157,7 @@ window.closeMobileMenu=function(){
  document.body.classList.remove('menu-open');
  if(menuButton)menuButton.setAttribute('aria-expanded','false');
 };
+window.vyShowAccount=function(){const card=document.getElementById('vyCloudAuth');if(!card)return;card.hidden=false;card.style.display='block';card.scrollIntoView({behavior:'smooth',block:'start'});card.style.outline='2px solid #b78cff';setTimeout(()=>{card.style.outline='';},2200);};
 window.toggleMobileMenu=function(){
  let menuButton=document.querySelector('.menu-toggle');
  if(document.body.classList.contains('vybora-mode')){
@@ -1163,7 +1165,7 @@ window.toggleMobileMenu=function(){
   let menu=document.getElementById('vyMenuPopover');
   if(!menu){
    menu=document.createElement('div');menu.id='vyMenuPopover';menu.className='vy-menu-popover';menu.hidden=true;
-   menu.innerHTML="<button type='button' onclick=\"window.vyNavigate('settings');window.toggleMobileMenu()\">⚙️ Settings</button><button type='button' onclick=\"window.vyNavigate('profile');window.toggleMobileMenu()\">◉ Profile</button><button type='button' onclick=\"window.vyNavigate('notifications');window.toggleMobileMenu()\">♡ Activity</button>";
+   menu.innerHTML="<button type='button' onclick=\"window.vyShowAccount();window.toggleMobileMenu()\">🔐 Account / Log in</button><button type='button' onclick=\"window.vyNavigate('settings');window.toggleMobileMenu()\">⚙️ Settings</button><button type='button' onclick=\"window.vyNavigate('profile');window.toggleMobileMenu()\">◉ Profile</button><button type='button' onclick=\"window.vyNavigate('notifications');window.toggleMobileMenu()\">♡ Activity</button>";
    document.getElementById('vybora')?.appendChild(menu);
   }
   const opened=menu.hidden;menu.hidden=!opened;
@@ -1865,7 +1867,39 @@ function resetPreferences(){
  let currentUser=null, channel=null, recoveryMode=(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery');
  const el=id=>document.getElementById(id);
  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
  const say=t=>{if(el('vyCloudStatus'))el('vyCloudStatus').textContent=t;};
+ let captchaWidgetId=null, captchaScriptPromise=null, captchaPending=null;
+ function loadHCaptcha(){
+  if(window.hcaptcha)return Promise.resolve();
+  if(!captchaScriptPromise)captchaScriptPromise=new Promise((resolve,reject)=>{
+   const existing=document.querySelector('script[data-hcaptcha-api]');
+   if(existing){existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return;}
+   const script=document.createElement('script');script.src='https://js.hcaptcha.com/1/api.js?render=explicit';script.async=true;script.defer=true;script.dataset.hcaptchaApi='1';
+   script.onload=resolve;script.onerror=()=>reject(new Error('Could not load human verification. Check your connection and try again.'));
+   document.head.appendChild(script);
+  });
+  return captchaScriptPromise;
+ }
+ async function getCaptchaToken(){
+  await loadHCaptcha();
+  if(captchaWidgetId===null){
+   captchaWidgetId=window.hcaptcha.render('vyCaptchaWidget',{
+    sitekey:'7f00a4aa-f2a4-4eb8-bafe-667ab5f0c99e',
+    size:'invisible',
+    callback:token=>{if(captchaPending){captchaPending.resolve(token);captchaPending=null;}},
+    'error-callback':()=>{if(captchaPending){captchaPending.reject(new Error('Human verification failed. Please try again.'));captchaPending=null;}},
+    'expired-callback':()=>{if(captchaPending){captchaPending.reject(new Error('Verification expired. Please try again.'));captchaPending=null;}}
+   });
+  }
+  if(captchaPending)throw new Error('Verification is already in progress. Please wait.');
+  const tokenPromise=new Promise((resolve,reject)=>{captchaPending={resolve,reject};});
+  try{
+   window.hcaptcha.execute(captchaWidgetId);
+   return await tokenPromise;
+  }catch(error){captchaPending=null;throw error;}
+ }
+
  const withTimeout=(promise,ms,label)=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error(label+' timed out. Check your internet connection and try again.')),ms);Promise.resolve(promise).then(v=>{clearTimeout(timer);resolve(v);},e=>{clearTimeout(timer);reject(e);});});
  async function profileFor(user){
   const name=(user.user_metadata&&user.user_metadata.full_name)||((user.email||'creator').split('@')[0]);
@@ -1875,8 +1909,11 @@ function resetPreferences(){
  window.vySignUp=async function(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
   if(!email||password.length<6){say('Enter a valid email and a password with at least 6 characters.');return;}
+  say('Complete human verification…');
+  let captchaToken;try{captchaToken=await getCaptchaToken();}catch(error){say(error.message);return;}
   say('Creating your account…');
-  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://finframe-ai-lab.vercel.app/'}});
+  let r;try{r=await db.auth.signUp({email:email,password:password,options:{captchaToken:captchaToken,data:{full_name:name},emailRedirectTo:'https://finframe-ai-lab.vercel.app/'}});}catch(error){say('Signup request failed: '+(error&&error.message?error.message:'Network or browser error.'));return;}
+  if(captchaWidgetId!==null)window.hcaptcha.reset(captchaWidgetId);
   if(r.error){say(r.error.message);return;}
   if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
   else say('Account created. Check your email for the confirmation link, then log in here.');
@@ -1884,8 +1921,11 @@ function resetPreferences(){
  window.vyResetPassword=async function(){
   const email=el('vyAuthEmail').value.trim();
   if(!email){say('Enter your account email first, then tap Forgot password?');return;}
+  say('Complete human verification…');
+  let captchaToken;try{captchaToken=await getCaptchaToken();}catch(error){say(error.message);return;}
   say('Sending password reset email…');
-  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://finframe-ai-lab.vercel.app/'});
+  const r=await db.auth.resetPasswordForEmail(email,{captchaToken:captchaToken,redirectTo:'https://finframe-ai-lab.vercel.app/'});
+  if(captchaWidgetId!==null)window.hcaptcha.reset(captchaWidgetId);
   if(r.error){say(r.error.message);return;}
   say('Password reset email sent. Open the link in your inbox, then set a new password here.');
  };
@@ -1918,9 +1958,12 @@ function resetPreferences(){
  window.vySignIn=async function(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value;
   if(!email||!password){say('Enter your email and password first.');return;}
+  say('Complete human verification…');
+  let captchaToken;try{captchaToken=await getCaptchaToken();}catch(error){say(error.message);return;}
   say('Logging in…');
   try{
-   const r=await withTimeout(db.auth.signInWithPassword({email:email,password:password}),15000,'Login request');
+   const r=await withTimeout(db.auth.signInWithPassword({email:email,password:password,options:{captchaToken:captchaToken}}),15000,'Login request');
+   if(captchaWidgetId!==null)window.hcaptcha.reset(captchaWidgetId);
    if(r.error){say(r.error.message);return;}
    currentUser=r.data.user;
    say('Login successful. Connecting your VYBORA account…');
