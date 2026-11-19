@@ -823,12 +823,12 @@ body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-head,body.vybor
     <button class="secondary-btn" type="button" onclick="vyResetPassword()">Forgot password?</button>
    </div>
    <div id="vyCaptchaWidget" aria-label="Human verification" style="margin-top:10px"></div>
-   <div id="vyRecoveryForm" hidden style="display:grid;gap:8px;margin-top:10px">
+   <div id="vyRecoveryForm" hidden style="display:none;gap:8px;margin-top:10px">
     <p class="small">Set a new password for your VYBORA account.</p>
     <input id="vyNewPassword" type="password" placeholder="New password (min. 6 characters)" autocomplete="new-password">
     <button class="primary-btn" type="button" onclick="vySaveNewPassword()">Save new password</button>
    </div>
-   <div id="vyAuthSignedIn" hidden style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
+   <div id="vyAuthSignedIn" hidden style="display:none;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
   </div>
   <div id="vyCloudFeed" style="max-width:980px;margin:0 auto"></div>
   <style>
