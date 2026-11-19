@@ -1860,7 +1860,17 @@ function resetPreferences(){
  const URL='https://pxgoaygwtxrrqkftluut.supabase.co';
  const KEY='sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh';
  if(!window.supabase || !window.supabase.createClient){
-  const s=document.getElementById('vyCloudStatus'); if(s)s.textContent='The VYBORA connection library did not load. Refresh the page and try again.'; return;
+  const status=document.getElementById('vyCloudStatus');
+  if(status)status.textContent='Loading VYBORA connection library…';
+  if(!window.__vySupabaseFallbackStarted){
+   window.__vySupabaseFallbackStarted=true;
+   const fallback=document.createElement('script');
+   fallback.src='https://unpkg.com/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js';
+   fallback.onload=()=>{if(window.supabase&&window.supabase.createClient){if(status)status.textContent='Connection library loaded. Refreshing…';location.reload();}else if(status)status.textContent='Connection library loaded incorrectly. Please refresh once.';};
+   fallback.onerror=()=>{if(status)status.textContent='Could not load the VYBORA connection library from either CDN. Check your connection or browser content blocker, then refresh.';};
+   document.head.appendChild(fallback);
+  }
+  return;
  }
  const db=window.supabase.createClient(URL,KEY);
  window.vyClient=db;
