@@ -818,7 +818,7 @@ body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-head,body.vybor
     <input id="vyAuthName" type="text" placeholder="Your name (for sign up)" autocomplete="name">
     <input id="vyAuthEmail" type="email" placeholder="Email address" autocomplete="email">
     <input id="vyAuthPassword" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
-    <button class="primary-btn" id="vyCreateAccountBtn" type="button">Create account</button>
+    <button class="primary-btn" id="vyCreateAccountBtn" type="button" onclick="(function(){var s=document.getElementById('vyCloudStatus');if(s)s.textContent='Signup button received the tap. Starting account check…';if(typeof window.vySignUp==='function'){window.vySignUp().catch(function(e){if(s)s.textContent='Signup error: '+(e&&e.message?e.message:'Unknown error');});}else if(s){s.textContent='Account script is not ready. Please refresh and try again.';}})()">Create account</button>
     <button class="secondary-btn" type="button" onclick="vySignIn()">Log in</button>
     <button class="secondary-btn" type="button" onclick="vyResetPassword()">Forgot password?</button>
    </div>
@@ -1917,11 +1917,6 @@ function resetPreferences(){
   if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
   else say('Account created. Check your email for the confirmation link, then log in here.');
  };
- const createAccountButton=el('vyCreateAccountBtn');
- if(createAccountButton)createAccountButton.addEventListener('click',()=>{
-  if(typeof window.vySignUp!=='function'){say('VYBORA account script did not initialize. Refresh the page and try again.');return;}
-  Promise.resolve(window.vySignUp()).catch(error=>say('Signup failed: '+(error&&error.message?error.message:'Unknown error. Please try again.')));
- });
  window.vyResetPassword=async function(){
   const email=el('vyAuthEmail').value.trim();
   if(!email){say('Enter your account email first, then tap Forgot password?');return;}
