@@ -703,8 +703,16 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <label>Enter your script</label><textarea id="voiceText" placeholder="Write something to speak..."></textarea>
    <label>Voice</label><select id="voiceSelect"><option value="">Default voice</option></select>
    <label>Speed</label><input type="range" id="voiceRate" min="0.5" max="2" step="0.1" value="1">
-   <div class="actions"><button onclick="speakText()">▶ Speak</button><button class="secondary-btn" onclick="stopSpeak()">■ Stop</button></div>
-   <p id="voiceStatus">Voice availability depends on your browser and device.</p>
+   <div class="actions"><button onclick="speakText()">▶ Browser Voice Preview</button><button class="secondary-btn" onclick="stopSpeak()">■ Stop</button></div>
+   <div class="card" style="margin-top:14px">
+    <h3>✨ AI Voiceover</h3>
+    <label>AI voice</label><select id="aiVoiceSelect"><option>Kore</option><option>Aoede</option><option>Zephyr</option><option>Puck</option><option>Charon</option><option>Fenrir</option><option>Leda</option><option>Orus</option><option>Callirrhoe</option><option>Enceladus</option></select>
+    <label>Voice style</label><select id="aiVoiceStyle"><option>Natural, clear, warm and confident</option><option>Energetic and upbeat advertisement</option><option>Calm, reassuring and friendly</option><option>Professional documentary narration</option><option>Expressive storytelling with gentle emotion</option></select>
+    <div class="actions"><button id="aiVoiceButton" onclick="generateAiVoiceover()">✨ Generate AI Voiceover</button></div>
+    <audio id="aiVoiceAudio" controls style="display:none;width:100%;margin-top:12px"></audio>
+    <div class="actions"><a id="aiVoiceDownload" class="secondary-btn" download="vybora-ai-voiceover.wav" style="display:none">⬇ Download Voiceover</a></div>
+   </div>
+   <p id="voiceStatus">Browser voice preview is available. Sign in to generate downloadable AI voiceovers.</p>
   </div>
  </section>
 
@@ -1635,6 +1643,23 @@ function speakText(){
  speechSynthesis.speak(utter);
  $('voiceStatus').textContent='Speaking...';
  saveRecent('voice');
+}
+async function generateAiVoiceover(){
+ const text=$('voiceText').value.trim(),status=$('voiceStatus'),button=$('aiVoiceButton');
+ if(!text){status.textContent='Enter a script first.';return;}
+ button.disabled=true;button.textContent='Generating AI voice…';status.textContent='Gemini is generating your voiceover…';
+ try{
+  const sessionResult=await window.vyClient?.auth?.getSession();
+  const token=sessionResult?.data?.session?.access_token;
+  if(!token)throw new Error('Please sign in to generate an AI voiceover.');
+  const response=await fetch('/api/voice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({text,voice:$('aiVoiceSelect').value,style:$('aiVoiceStyle').value}),signal:AbortSignal.timeout(60000)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'AI voice generation failed.');
+  if(typeof data.audio!=='string'||!data.audio.startsWith('data:audio/'))throw new Error('Gemini returned no playable audio.');
+  const audio=$('aiVoiceAudio'),download=$('aiVoiceDownload');audio.src=data.audio;audio.style.display='block';download.href=data.audio;download.style.display='inline-block';
+  status.textContent='AI voiceover generated. Play it or download the WAV file.';saveRecent('voice');
+ }catch(error){status.textContent=error.message||'Could not generate the AI voiceover.';}
+ finally{button.disabled=false;button.textContent='✨ Generate AI Voiceover';}
 }
 function stopSpeak(){
  if('speechSynthesis' in window)speechSynthesis.cancel();
