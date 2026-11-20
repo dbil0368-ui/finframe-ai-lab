@@ -40,6 +40,8 @@ export default async function handler(req, res) {
   }
 
   const deploymentEnv = process.env.VERCEL_ENV || "preview";
+  const billingEnvironment = deploymentEnv === "production" ? "live" : "test";
+  const razorpayPlanId = process.env.RAZORPAY_USD_PLAN_ID;
   if (deploymentEnv === "production" && !keyId.startsWith("rzp_live_")) {
     return send(res, 503, { error: "Live Premium checkout is not configured for this production deployment." });
   }
@@ -55,13 +57,13 @@ export default async function handler(req, res) {
     const user = await userResponse.json();
     if (!user.id || !user.email || !user.email_confirmed_at) return send(res, 403, { error: "Confirm your VYBORA account email before subscribing." });
 
-    const plans = await supabaseRequest("billing_plans?select=razorpay_plan_id,amount_paise,currency,total_count,active&plan_key=eq.pro_usd&limit=1");
+    const plans = await supabaseRequest("billing_plans?select=amount_paise,currency,total_count,active&plan_key=eq.pro_usd&limit=1");
     const plan = plans[0];
-    if (!plan?.active || plan.currency !== "USD" || Number(plan.amount_paise) !== 500 || !plan.razorpay_plan_id) {
+    if (!plan?.active || plan.currency !== "USD" || Number(plan.amount_paise) !== 500 || !razorpayPlanId) {
       return send(res, 503, { error: "The USD $5 monthly plan is awaiting Razorpay setup." });
     }
 
-    const existing = await supabaseRequest("billing_subscriptions?select=status&user_id=eq." + encodeURIComponent(user.id) + "&limit=1");
+    const existing = await supabaseRequest("billing_subscriptions?select=status&user_id=eq." + encodeURIComponent(user.id) + "&environment=eq." + billingEnvironment + "&limit=1");
     const existingStatus = existing[0]?.status;
     if (["created", "authenticated", "active", "pending", "halted"].includes(existingStatus)) {
       return send(res, 409, { error: "You already have a subscription in progress or active. Check Plans & Billing." });
@@ -74,7 +76,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        plan_id: plan.razorpay_plan_id,
+        plan_id: razorpayPlanId,
         total_count: Number(plan.total_count) || 1200,
         quantity: 1,
         customer_notify: 1,
@@ -87,11 +89,12 @@ export default async function handler(req, res) {
       return send(res, 502, { error: "Razorpay could not create the subscription link. Please try again later." });
     }
 
-    await supabaseRequest("billing_subscriptions?on_conflict=user_id", {
+    await supabaseRequest("billing_subscriptions?on_conflict=user_id,environment", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify({
         user_id: user.id,
+        environment: billingEnvironment,
         plan_key: "pro_usd",
         razorpay_subscription_id: subscription.id,
         status: subscription.status || "created",
