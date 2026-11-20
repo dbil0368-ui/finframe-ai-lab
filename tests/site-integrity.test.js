@@ -11,7 +11,12 @@ async function checkInlineScripts(path) {
     const attrs = match[1] || "";
     const source = match[2] || "";
     if (/\bsrc\s*=/.test(attrs) || /application\/ld\+json/i.test(attrs)) continue;
-    new vm.Script(source, { filename: path + "#inline-script-" + (++checked) });
+    checked += 1;
+    try {
+      new vm.Script(source, { filename: path + "#inline-script-" + checked });
+    } catch (error) {
+      throw new Error(path + " inline script " + checked + " failed to parse: " + error.message + "\\n" + source.slice(0, 700));
+    }
   }
   return { html, checked };
 }
