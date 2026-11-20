@@ -1,4 +1,4 @@
-const ALLOWED = new Set(["IN", "US", "GB", "CA", "AU", "BD", "DE", "FR", "JP", "SG"]);
+const ALLOWED = new Set(["IN","US","GB","CA","AU","BD","DE","FR","JP","SG","BR","MX","ES","IT","NL","NZ","ZA","NG","IE","KR","PH","ID","MY","PK","AE","SA","TH","VN","TR","SE","NO","DK","PL"]);
 
 function decodeXml(value = "") {
   return value
