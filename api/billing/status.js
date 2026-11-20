@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   try {
     const [subscriptionResponse, plansResponse] = await Promise.all([
       fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status,current_start,current_end,charge_at,paid_count,total_count,updated_at&user_id=eq." + encodeURIComponent(user.id) + "&limit=1", { headers, signal: AbortSignal.timeout(8000) }),
-      fetch(SUPABASE_URL + "/rest/v1/billing_plans?select=plan_key,amount_paise,currency,period,interval_count,daily_limit&active=eq.true&plan_key=in.(starter,pro)&order=amount_paise.asc", { headers, signal: AbortSignal.timeout(8000) })
+      fetch(SUPABASE_URL + "/rest/v1/billing_plans?select=plan_key,amount_paise,currency,period,interval_count&active=eq.true&plan_key=in.(starter,pro)&order=amount_paise.asc", { headers, signal: AbortSignal.timeout(8000) })
     ]);
     if (!subscriptionResponse.ok || !plansResponse.ok) return send(res, 503, { error: "Could not load your billing details." });
     const subscriptions = await subscriptionResponse.json();
