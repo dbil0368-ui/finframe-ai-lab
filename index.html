@@ -514,7 +514,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     </button>
     <button class="tool-card" data-search="photo image enhancer edit brightness" onclick="openTool('photo')">
      <div class="tool-icon">📸</div><strong>Photo Enhancer</strong>
-     <span>Adjust brightness, contrast and saturation.</span>
+     <span>Use AI enhancement or adjust brightness, contrast and saturation.</span>
     </button>
     <button class="tool-card" data-search="product visual design image" onclick="openTool('product')">
      <div class="tool-icon">💎</div><strong>Product Studio</strong>
@@ -522,7 +522,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     </button>
     <button class="tool-card" data-search="poster maker design image" onclick="openTool('poster')">
      <div class="tool-icon">🖼️</div><strong>Poster Maker</strong>
-     <span>Design custom posters with your own text.</span>
+     <span>Create promotional poster artwork with AI or manual controls.</span>
     </button>
     <button class="tool-card" data-search="creative caption voice video tryon" onclick="openTool('creative')">
      <div class="tool-icon">🎨</div><strong>Creative Studio</strong>
@@ -538,7 +538,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     </button>
     <button class="tool-card" data-search="voice audio speech voiceover" onclick="openTool('voice')">
      <div class="tool-icon">🎙️</div><strong>Voiceover Studio</strong>
-     <span>Read your text aloud using browser voices.</span>
+     <span>Preview with browser voices or generate AI voiceovers.</span>
     </button>
     <button class="tool-card" data-search="video promo animation" onclick="openTool('video')">
      <div class="tool-icon">🎬</div><strong>Promo Video Maker</strong>
@@ -565,22 +565,25 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 
 
  <section id="privacy">
-  <div class="page-title"><h2>🔐 Privacy & Security</h2><p>Your privacy matters. Here is what this browser-based prototype does and does not store.</p></div>
+  <div class="page-title"><h2>🔐 Privacy & Security</h2><p>How VYBORA handles your account, workspace data and AI requests.</p></div>
   <div class="card">
-   <h3>What this version stores</h3>
-   <p>VYBORA currently saves a short list of recently opened tool names and timestamps in this browser's local storage. It does not save your prompts, uploaded images, generated files, passwords or payment details there.</p>
-   <p>Uploaded images are processed in your browser for the selected tool. This static version does not upload them to a VYBORA image-processing server.</p>
-   <h3>What this version does not provide</h3>
-   <p>This prototype has no user accounts, cloud sync, server-side encryption, or payment processing. Your browser/device and any browser extensions remain outside our control. Do not enter sensitive personal, financial, medical or confidential information.</p>
+   <h3>Account and cloud data</h3>
+   <p>VYBORA uses Supabase Auth for account registration, login and password recovery. Cloud features may store your profile, posts, follows, likes, comments, messages, notifications and account-related usage records in the VYBORA Supabase project. Row-level security policies restrict access to private account data.</p>
+   <h3>Data saved on this device</h3>
+   <p>Workspace preferences, recent tool activity, brand settings and some drafts may be saved in this browser's local storage. Clearing browser site data can remove locally saved items. Export a backup before resetting this browser if you want to keep them.</p>
+   <h3>AI processing</h3>
+   <p>When you choose an AI feature, the relevant prompt and any reference images you selected are sent securely to the VYBORA server and then to Google Gemini for processing. Images are resized in your browser before upload. The VYBORA API returns generated results to your browser and does not intentionally save the image payloads as files. Google's API data handling terms and privacy policy apply to content sent to Gemini.</p>
+   <h3>What you should protect</h3>
+   <p>Use a unique password. Do not upload images you do not have permission to use, and do not enter highly sensitive personal, medical, financial or confidential information into prompts. Never paste API keys or passwords into prompts, project descriptions or public content.</p>
    <h3>Control your recent activity</h3>
-   <p>You can clear the recent-tool history saved by this site on this browser. This does not clear your browser history, downloads, or other website data.</p>
+   <p>You can clear the recent-tool history saved by this site on this browser. This does not delete cloud posts, account data, browser history, downloads or other website data.</p>
    <button class="secondary-btn" onclick="clearRecentHistory()">🗑️ Clear Recent Activity</button>
-   <p id="privacyStatus" class="small" role="status" aria-live="polite">No account or personal profile is required in this prototype.</p>
+   <p id="privacyStatus" class="small" role="status" aria-live="polite">Your account and workspace data are managed through VYBORA and its connected service providers.</p>
   </div>
   <div class="card">
-   <h3>Privacy-first promise</h3>
-   <p>We aim to collect only what is needed. Before adding accounts, analytics, cloud storage or AI services, we will explain what data is involved and provide appropriate controls. Never place private API keys in this public website.</p>
-   <p class="small">This is an informational privacy notice for the current prototype, not a guarantee of absolute security or a substitute for a legally reviewed privacy policy.</p>
+   <h3>Privacy notice</h3>
+   <p>AI features process content only after you actively submit a request. Review Google's current privacy and API terms before sending personal images or confidential material. For account or data removal requests, use the account support channel provided by VYBORA.</p>
+   <p class="small">This in-app notice summarizes the current implementation. It is not legal advice or a substitute for a complete, legally reviewed privacy policy.</p>
   </div>
  </section>
 
@@ -674,7 +677,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   <div class="card">
    <h2>🎨 Creative Studio</h2><p>Explore your creative tools.</p>
    <div class="tool-grid">
-    <button class="tool-card" onclick="openTool('tryon')"><div class="tool-icon">👗</div><strong>Virtual Try-On</strong><span>Image composition tool</span></button>
+    <button class="tool-card" onclick="openTool('tryon')"><div class="tool-icon">👗</div><strong>Virtual Try-On</strong><span>AI outfit fitting and manual preview.</span></button>
     <button class="tool-card" onclick="openTool('product')"><div class="tool-icon">💎</div><strong>Product Visuals</strong><span>Product design tool</span></button>
     <button class="tool-card" onclick="openTool('video')"><div class="tool-icon">🎬</div><strong>Promo Videos</strong><span>Simple video maker</span></button>
     <button class="tool-card" onclick="openTool('poster')"><div class="tool-icon">🖼️</div><strong>Posters</strong><span>Poster design</span></button>
