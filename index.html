@@ -1779,7 +1779,8 @@ async function generateAiVoiceover(){
  if(!text){status.textContent='Enter a script first.';return;}
  button.disabled=true;button.textContent='Generating AI voice…';status.textContent='Gemini is generating your voiceover…';
  try{
-  const sessionResult=await window.vyClient?.auth?.getSession();
+  const client=await getVyboraAIClient();
+  const sessionResult=await client.auth.getSession();
   const token=sessionResult?.data?.session?.access_token;
   if(!token)throw new Error('Please sign in to generate an AI voiceover.');
   const response=await fetch('/api/voice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({text,voice:$('aiVoiceSelect').value,style:$('aiVoiceStyle').value}),signal:AbortSignal.timeout(60000)});
