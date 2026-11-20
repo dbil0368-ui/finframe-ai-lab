@@ -1966,7 +1966,7 @@ function resetPreferences(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
   if(!email||password.length<6){say('Enter a valid email and a password with at least 6 characters.');return;}
   say('Creating your account…');
-  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://finframe-ai-lab.vercel.app/'}});
+  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://vybora-trend-hub.vercel.app/'}});
   if(r.error){say(r.error.message);return;}
   if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
   else say('Account created. Check your email for the confirmation link, then log in here.');
@@ -1975,7 +1975,7 @@ function resetPreferences(){
   const email=el('vyAuthEmail').value.trim();
   if(!email){say('Enter your account email first, then tap Forgot password?');return;}
   say('Sending password reset email…');
-  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://finframe-ai-lab.vercel.app/'});
+  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://vybora-trend-hub.vercel.app/'});
   if(r.error){say(r.error.message);return;}
   say('Password reset email sent. Open the link in your inbox, then set a new password here.');
  };
