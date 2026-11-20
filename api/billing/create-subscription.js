@@ -58,7 +58,7 @@ export default async function handler(req, res) {
   const user = await authUser(req);
   if (!user?.id) return send(res, 401, { error: "Please sign in to VYBORA first." });
   const planKey = req.body?.plan;
-  if (!["starter", "pro"].includes(planKey)) return send(res, 400, { error: "Choose a valid plan." });
+  if (!["starter", "pro", "pro_usd"].includes(planKey)) return send(res, 400, { error: "Choose a valid plan." });
 
   try {
     const existing = await db("billing_subscriptions?select=razorpay_subscription_id,status,plan_key&user_id=eq." + encodeURIComponent(user.id) + "&order=updated_at.desc&limit=1");
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
         item: {
           name: "VYBORA " + (planKey === "starter" ? "Starter" : "Pro"),
           amount: plan.amount_paise,
-          currency: "INR",
+          currency: plan.currency || "INR",
           description: "VYBORA " + (planKey === "starter" ? "Starter" : "Pro") + " monthly creator tools plan"
         },
         notes: { vybora_plan_key: planKey }

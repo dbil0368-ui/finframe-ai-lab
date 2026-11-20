@@ -401,9 +401,9 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    </div>
    <div class="tools" style="margin-top:18px">
     <article class="tool-card"><div class="tool-icon">✦</div><h3>Free</h3><p><strong style="font-size:28px;color:#fff">₹0</strong> / forever</p><p>Explore the creator workspace with 3 AI generations per day.</p><span class="tag">AVAILABLE</span></article>
-    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">₹299</strong> / month</p><p>Planned expanded access for creators who need more room to build.</p><button class="ghost" type="button" disabled>Checkout coming soon</button></article>
+    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">$5</strong> / month</p><p>Premium creator tools with monthly recurring billing. Cancel according to the subscription terms.</p><button class="primary" id="startPremiumCheckout" type="button" disabled>Premium setup in progress</button></article>
    </div>
-   <div class="notice">Premium is planned at ₹299/month. Checkout is disabled and no payment is collected. Premium generation limits and subscription terms will be confirmed before launch.</div>
+   <div class="notice">Premium is planned at $5 USD/month for international card subscriptions. Checkout remains unavailable until Razorpay international-card approval, the USD plan, secure credentials and webhook verification are complete. No payment is collected in this preview.</div>
    <p class="muted" style="font-size:12px">By continuing, you agree to the <a href="/terms.html" style="color:var(--violet)">Terms of Use</a> and acknowledge the <a href="/privacy.html" style="color:var(--violet)">Privacy Notice</a>.</p>
   </section>
   
@@ -417,7 +417,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    <h3>Plan a consistent publishing routine</h3>
    <p>Content Planner lets you save ideas and organise planned publishing dates. Creator Kit stores your niche, audience and preferred voice in your browser so you can keep your creative direction consistent.</p>
    <h3>Free creator tools and Premium</h3>
-   <p>VYBORA offers a Free plan at ₹0 with 3 AI generations per day. A Premium plan is planned at ₹299 per month. Premium checkout is not active and no payment is currently collected. See <a href="premium.html" style="color:var(--cyan)">VYBORA plans and pricing</a> for the latest details.</p>
+   <p>VYBORA offers a Free plan at ₹0 with 3 AI generations per day. A Premium plan is planned at $5 USD per month. Premium checkout is not active and no payment is currently collected. See <a href="premium.html" style="color:var(--cyan)">VYBORA plans and pricing</a> for the latest details.</p>
    <p>Explore the <a href="electrical-a2z.html" style="color:var(--cyan)">Electrical A to Z learning guide</a> or return to the <a href="trend-hub.html" style="color:var(--cyan)">VYBORA Trend Hub</a>.</p>
   </section>
   <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.2 · <a href="/privacy.html" style="color:var(--muted)">Privacy</a> · <a href="/terms.html" style="color:var(--muted)">Terms</a></footer>
@@ -559,18 +559,38 @@ document.getElementById("copyTrendList").addEventListener("click",async()=>{
  setTimeout(()=>{button.textContent="Copy trend titles"},1800);
 });
 loadTrends();
+document.getElementById("startPremiumCheckout").addEventListener("click",async()=>{
+ const button=document.getElementById("startPremiumCheckout"),box=document.getElementById("billingStatus");
+ if(!currentUser){box.textContent="Please sign in before subscribing.";return}
+ button.disabled=true;button.textContent="Opening secure checkout…";
+ try{
+  const {data}=await supabaseClient.auth.getSession();
+  const response=await fetch("/api/billing/create",{method:"POST",headers:{Authorization:"Bearer "+(data.session?.access_token||""),Accept:"application/json"}});
+  const result=await response.json();
+  if(!response.ok)throw new Error(result.error||"Could not start checkout.");
+  if(!/^https:\/\/rzp\.io\//i.test(result.checkout_url||""))throw new Error("Razorpay returned an invalid checkout link.");
+  window.location.assign(result.checkout_url);
+ }catch(error){box.textContent=error.message;button.disabled=false;button.textContent="Try Premium checkout again"}
+});
+
 async function loadBillingStatus(){
  const box=document.getElementById("billingStatus");
- if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
+ if(!currentUser){const checkoutButton=document.getElementById("startPremiumCheckout");if(checkoutButton){checkoutButton.disabled=true;checkoutButton.textContent="Sign in to subscribe";}box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
  box.textContent="Loading your billing status…";
  try{
   const {data}=await supabaseClient.auth.getSession();
   const response=await fetch("/api/billing/status",{headers:{Authorization:"Bearer "+(data.session?.access_token||"")}});
   const result=await response.json();
   if(!response.ok)throw new Error(result.error||"Could not load billing status.");
+  const checkoutButton=document.getElementById("startPremiumCheckout");
   const sub=result.subscription;
+  const subscriptionInProgress=!!sub&&["created","authenticated","active","pending","halted"].includes(sub.status);
+  if(checkoutButton){
+   checkoutButton.disabled=!result.checkout_ready||subscriptionInProgress;
+   checkoutButton.textContent=subscriptionInProgress?"Subscription already started":result.checkout_ready?"Subscribe securely · $5/month":"Premium setup in progress";
+  }
   if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
-  const label={starter:"Starter",pro:"Pro"}[sub.plan_key]||sub.plan_key;
+  const label={starter:"Starter",pro:"Pro",pro_usd:"Premium ($5/month)"}[sub.plan_key]||sub.plan_key;
   const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
   box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
  }catch(error){box.textContent=error.message}
