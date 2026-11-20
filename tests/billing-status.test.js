@@ -42,7 +42,7 @@ test("billing status exposes only a test-mode readiness boolean", async () => {
   assert.equal(res.body.checkoutAvailable, true);
   assert.equal(res.body.checkoutMode, "test");
   assert.equal(res.body.subscription, null);
-  assert.match(subscriptionRequestUrl, /environment=eq\\.test/);
+  assert.match(subscriptionRequestUrl, /environment=eq\.test/);
   assert.equal("keyId" in res.body, false);
 });
 
