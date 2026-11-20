@@ -1403,14 +1403,14 @@ async function resizeImageFile(file,maxSide=1024){
  canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
  return canvas.toDataURL('image/jpeg',0.82);
 }
-async function callVyboraImageAI({prompt,imageData='',aspectRatio='1:1'}){
+async function callVyboraImageAI({prompt,imageData='',referenceImages=[],aspectRatio='1:1',mode='image'}){
  const client=window.vyClient;
  if(!client||!client.auth)throw new Error('VYBORA account service is still loading. Refresh the page and try again.');
  const sessionResult=await client.auth.getSession();
  if(sessionResult.error)throw sessionResult.error;
  const token=sessionResult.data?.session?.access_token;
  if(!token)throw new Error('Please sign in to use VYBORA AI Studio.');
- const response=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({prompt,imageData,aspectRatio}),signal:AbortSignal.timeout(120000)});
+ const response=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({prompt,imageData,referenceImages,aspectRatio,mode}),signal:AbortSignal.timeout(60000)});
  const data=await response.json().catch(()=>({}));
  if(!response.ok)throw new Error(data.error||'VYBORA image generation failed.');
  if(typeof data.image!=='string'||!data.image.startsWith('data:image/'))throw new Error('VYBORA AI returned no usable image.');
@@ -1758,21 +1758,12 @@ async function generateAiTryon(){
  if(!person||!garment){status.textContent="Please choose both a person's photo and a separate clothing photo first.";return;}
  if(!person.type.startsWith('image/')||!garment.type.startsWith('image/')){status.textContent='Please select image files only.';return;}
  if(person.size>10*1024*1024||garment.size>10*1024*1024){status.textContent='Each image must be 10 MB or smaller.';return;}
- const form=new FormData();form.append('person',person);form.append('garment',garment);
- button.disabled=true;button.textContent='Generating…';status.textContent='Sending images securely to the configured AI service…';wrap.classList.add('hidden');
+ button.disabled=true;button.textContent='Generating…';status.textContent='Gemini AI is fitting the selected clothing to your portrait…';wrap.classList.add('hidden');
  try{
-  const sessionResult=await window.vyClient?.auth?.getSession();
-  const token=sessionResult?.data?.session?.access_token;
-  if(!token)throw new Error('Please sign in to use AI Virtual Try-On.');
-  const response=await fetch('./api/tryon',{method:'POST',headers:{Authorization:'Bearer '+token},body:form});
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error||'AI service is not configured yet. Please connect a compatible provider on the secure backend.');
-  let image=data.imageUrl||data.image_url||data.imageBase64||data.image_base64||data.output;
-  if(Array.isArray(image))image=image[0];
-  if(typeof image==='string'&&!image.startsWith('data:')&&!/^https?:\/\//i.test(image)&&!image.startsWith('/'))image='data:image/png;base64,'+image;
-  if(!image){throw new Error('The AI provider responded, but did not return an image in imageUrl, imageBase64, or output.');}
+  const personData=await resizeImageFile(person,1024),garmentData=await resizeImageFile(garment,1024);
+  const image=await callVyboraImageAI({prompt:'Create a realistic virtual try-on image. Reference image 1 is the person; reference image 2 is the garment. Dress the person in the exact garment from reference image 2, preserving its color, pattern, cut and material as closely as possible. Preserve the person identity, face, body proportions, pose and background. Make the garment fit naturally with realistic folds, lighting and shadows. Return one photorealistic image, no captions, no watermark.',referenceImages:[personData,garmentData],aspectRatio:'3:4',mode:'tryon'});
   const img=$('aiTryonResult');img.src=image;$('aiTryonDownload').href=image;wrap.classList.remove('hidden');
-  status.textContent='AI try-on image generated. Check the result before saving.';saveRecent('AI Virtual Try-On');
+  status.textContent='AI virtual try-on generated. Check the result before saving.';saveRecent('AI Virtual Try-On');
  }catch(error){status.textContent=error.message||'Could not generate the AI try-on. Please try again.';}
  finally{button.disabled=false;button.textContent='✨ Generate AI Try-On';}
 }
