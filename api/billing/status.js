@@ -26,8 +26,10 @@ export default async function handler(req, res) {
   if (!secret) return send(res, 200, { subscription: null, checkout_ready: false, setup_required: true });
 
   const headers = { apikey: secret, Authorization: "Bearer " + secret };
+  const billingEnvironment = process.env.VERCEL_ENV === "production" ? "live" : "test";
+  const razorpayPlanId = process.env.RAZORPAY_USD_PLAN_ID;
   const [subscriptionResponse, planResponse] = await Promise.all([
-    fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status,current_start,current_end,charge_at,paid_count,total_count,updated_at&user_id=eq." + encodeURIComponent(user.id) + "&limit=1", { headers }),
+    fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status,current_start,current_end,charge_at,paid_count,total_count,updated_at&user_id=eq." + encodeURIComponent(user.id) + "&environment=eq." + billingEnvironment + "&limit=1", { headers }),
     fetch(SUPABASE_URL + "/rest/v1/billing_plans?select=razorpay_plan_id,amount_paise,currency,active&plan_key=eq.pro_usd&limit=1", { headers })
   ]);
 
@@ -45,7 +47,7 @@ export default async function handler(req, res) {
     plan?.active &&
     plan?.currency === "USD" &&
     Number(plan?.amount_paise) === 500 &&
-    plan?.razorpay_plan_id &&
+    razorpayPlanId &&
     keyId &&
     process.env.RAZORPAY_KEY_SECRET &&
     process.env.RAZORPAY_WEBHOOK_SECRET &&
