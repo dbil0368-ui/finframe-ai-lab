@@ -27,7 +27,8 @@ export default async function handler(req, res) {
   if (!serviceKey) return send(res, 503, { error: "Usage limits are not configured yet." });
 
   try {
-    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
+    const billingEnvironment = process.env.VERCEL_ENV === "production" ? "live" : "test";
+    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status&user_id=eq." + encodeURIComponent(user.id) + "&environment=eq." + billingEnvironment + "&status=eq.active&limit=1", {
       headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
     });
     if (!subResponse.ok) throw new Error("Could not check your VYBORA plan.");
