@@ -27,7 +27,8 @@ export default async function handler(req, res) {
   if (!serviceKey) return send(res, 503, { error: "Usage limits are not configured yet." });
 
   try {
-    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
+    const billingEnvironment = process.env.VERCEL_ENV === "production" ? "live" : "test";
+    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status&user_id=eq." + encodeURIComponent(user.id) + "&environment=eq." + billingEnvironment + "&status=eq.active&limit=1", {
       headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
     });
     if (!subResponse.ok) throw new Error("Could not check your VYBORA plan.");
@@ -39,10 +40,10 @@ export default async function handler(req, res) {
     if (!rewardResponse.ok) throw new Error("Could not check your referral Premium reward.");
     const activeRewards = await rewardResponse.json();
     if (activeRewards.length && planKey !== "pro") planKey = "pro";
-    const dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
+    const dailyLimit = ["pro", "pro_usd"].includes(planKey) ? 50 : planKey === "starter" ? 15 : 3;
 
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return send(res, 503, { error: "Gemini is not configured yet. Add GEMINI_API_KEY to the Vercel Preview environment." });
+    if (!apiKey) return send(res, 503, { error: "AI generation is temporarily unavailable because the server-side Gemini key is not configured. Please try again later." });
 
     const body = req.body || {};
     const topic = typeof body.topic === "string" ? body.topic.trim().slice(0, 240) : "";

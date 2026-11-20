@@ -303,14 +303,14 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    </div>
   </div>
  </nav>
- <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends, and plan original content. Live Google Trends data is available for supported regions. AI-powered creative briefs are enabled in Preview.</div>
+ <div class="side-note"><b>Early access workspace</b><br>Build ideas, explore trends, and plan original content. Live Google Trends data is available for supported regions. AI-powered creative briefs require server-side AI configuration and an account sign-in.</div>
 </aside>
 <nav class="bottom-nav" id="bottomNav" aria-label="Workspace navigation">
  <button type="button" data-view="trends"><span class="bottom-nav-icon">↗</span><span class="bottom-nav-label">Trend Radar</span></button>
  <button type="button" data-view="studio"><span class="bottom-nav-icon">✧</span><span class="bottom-nav-label">Creator Studio</span></button>
  <button type="button" data-view="planner"><span class="bottom-nav-icon">▦</span><span class="bottom-nav-label">Content Planner</span></button>
  <button type="button" data-view="creatorKit"><span class="bottom-nav-icon">✦</span><span class="bottom-nav-label">Creator Kit</span></button>
- <a class="bottom-social-link" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
+ <a class="bottom-social-link" href="/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
 </nav>
 <button class="creator-login-fab" id="creatorLoginFab" type="button" aria-label="Open Creator Login">Creator Login</button>
 <main class="main">
@@ -336,7 +336,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   </section>
   <section class="view" id="trends">
    <div class="eyebrow">Live search signals</div><h1 class="heading">Trend Radar</h1><p class="sub">See Google's public Trending Now RSS feed for a selected country. Search volume is an approximate bucket, not an exact count.</p>
-   <div class="panel" style="margin:20px 0"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label for="trendRegion"><b>Region</b></label><select id="trendRegion" class="field" style="width:auto;min-width:150px"><option value="IN">India</option><option value="BD">Bangladesh</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="SG">Singapore</option><option value="DE">Germany</option><option value="FR">France</option><option value="JP">Japan</option></select><button class="primary" id="refreshTrends">Refresh trends ↻</button><span id="trendStatus" class="muted" aria-live="polite">Not loaded yet</span></div></div>
+   <div class="panel" style="margin:20px 0"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label for="trendRegion"><b>Region</b></label><select id="trendRegion" class="field" style="width:auto;min-width:150px"><option value="IN">India</option><option value="BD">Bangladesh</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="SG">Singapore</option><option value="DE">Germany</option><option value="FR">France</option><option value="JP">Japan</option><option value="BR">Brazil</option><option value="MX">Mexico</option><option value="ES">Spain</option><option value="IT">Italy</option><option value="NL">Netherlands</option><option value="NZ">New Zealand</option><option value="ZA">South Africa</option><option value="NG">Nigeria</option><option value="IE">Ireland</option><option value="KR">South Korea</option><option value="PH">Philippines</option><option value="ID">Indonesia</option><option value="MY">Malaysia</option><option value="PK">Pakistan</option><option value="AE">United Arab Emirates</option><option value="SA">Saudi Arabia</option><option value="TH">Thailand</option><option value="VN">Vietnam</option><option value="TR">Türkiye</option><option value="SE">Sweden</option><option value="NO">Norway</option><option value="DK">Denmark</option><option value="PL">Poland</option></select><button class="primary" id="refreshTrends">Refresh trends ↻</button><span id="trendStatus" class="muted" aria-live="polite">Not loaded yet</span></div></div>
    <div class="trend-tools" style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0">
     <input id="trendSearch" class="field" type="search" placeholder="Search trends in this country…" aria-label="Search trends" style="flex:1;min-width:190px;max-width:420px">
     <button class="ghost" id="copyTrendList" type="button">Copy trend titles</button>
@@ -355,6 +355,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <article class="tool-card"><div class="tool-icon">⚡</div><h3>Viral Hook Generator</h3><p>Generate scroll-stopping opening lines for your next post or video.</p><button class="primary growth-generate" type="button" data-growth-mode="hooks">Generate hooks ✦</button><div class="result growth-result" id="growthHooks" aria-live="polite"></div></article>
     <article class="tool-card"><div class="tool-icon">🎬</div><h3>AI Video Script Writer</h3><p>Turn your topic into a ready-to-record script with scenes, voiceover and CTA.</p><button class="primary growth-generate" type="button" data-growth-mode="script">Write my script ✦</button><div class="result growth-result" id="growthScript" aria-live="polite"></div></article>
     <article class="tool-card"><div class="tool-icon">#️⃣</div><h3>Caption & Hashtag AI</h3><p>Create platform-friendly captions, calls to action and relevant hashtags.</p><button class="primary growth-generate" type="button" data-growth-mode="caption">Create caption ✦</button><div class="result growth-result" id="growthCaption" aria-live="polite"></div></article>
+    <article class="tool-card"><div class="tool-icon">📣</div><h3>Business Campaign Brief</h3><p>Build a practical campaign angle, audience message, offer framing and content sequence for a product or service.</p><button class="primary growth-generate" type="button" data-growth-mode="campaign">Build campaign brief ✦</button><div class="result growth-result" id="growthCampaign" aria-live="polite"></div></article>
    </div>
    <div class="notice">Creator Studio uses a secure, server-side Google Gemini API connection. Your topic is sent securely for brief generation. API credentials are kept server-side and are never stored in this page.</div>
   </section>
@@ -383,13 +384,13 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <label for="creatorVoice"><b>Your creator voice</b></label><select class="field" id="creatorVoice" style="margin:8px 0 14px"><option>Friendly and helpful</option><option>Funny and energetic</option><option>Professional and clear</option><option>Educational and simple</option><option>Bold and inspirational</option><option>Calm and thoughtful</option></select>
     <label for="creatorBio"><b>Short creator bio</b></label><textarea class="field" id="creatorBio" style="margin:8px 0 14px" placeholder="What do you make, and why should people follow you?"></textarea>
     <div class="actions"><button class="primary" id="saveCreatorKit" type="button">Save Creator Kit</button><button class="ghost" id="useCreatorKit" type="button">Use profile in Creator Studio</button></div>
-    <p class="muted" id="creatorKitStatus" aria-live="polite" style="font-size:12px;margin-top:12px">Your profile is saved only in this browser on this device.</p>
+    <p class="muted" id="creatorKitStatus" aria-live="polite" style="font-size:12px;margin-top:12px">Saved on this device; sign in to sync your Creator Kit across devices.</p>
    </div>
-   <div class="notice">Creator Kit currently stores this profile locally in your browser. It is not public and is not synced to your account or social platforms.</div>
+   <div class="notice">Creator Kit is saved locally and, when you sign in, synced privately to your VYBORA account across devices.</div>
   </section>
   <section class="view" id="billing">
    <div class="eyebrow">Simple creator plans</div><h1 class="heading">Plans & Billing</h1>
-   <p class="sub">Start with Free or explore the planned Premium membership. Payments are not enabled yet.</p>
+   <p class="sub">Start free, then upgrade to Premium when secure international checkout is configured. Premium is planned at $5 USD per month.</p>
    <div class="notice" id="billingStatus" aria-live="polite">Sign in to view your plan or start a subscription.</div>
    <div class="panel" style="margin-top:16px;max-width:900px">
     <div class="eyebrow">Invite creators · Earn Pro</div><h2 style="margin:8px 0">Refer & Earn</h2>
@@ -401,9 +402,9 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    </div>
    <div class="tools" style="margin-top:18px">
     <article class="tool-card"><div class="tool-icon">✦</div><h3>Free</h3><p><strong style="font-size:28px;color:#fff">₹0</strong> / forever</p><p>Explore the creator workspace with 3 AI generations per day.</p><span class="tag">AVAILABLE</span></article>
-    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">₹299</strong> / month</p><p>Planned expanded access for creators who need more room to build.</p><button class="ghost" type="button" disabled>Checkout coming soon</button></article>
+    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">$5</strong> USD / month</p><p>50 AI generations per day, Creator Studio, business campaign briefs and cloud planning.</p><button class="primary" id="startPremiumCheckout" type="button" disabled>Premium setup in progress</button><p><a href="/premium.html" style="color:var(--cyan)">View plan details →</a></p></article>
    </div>
-   <div class="notice">Premium is planned at ₹299/month. Checkout is disabled and no payment is collected. Premium generation limits and subscription terms will be confirmed before launch.</div>
+   <div class="notice">Premium is planned at $5 USD/month. Checkout stays disabled until Preview testing, Razorpay international-card approval, matching Live credentials, the USD plan ID and webhook verification are complete. No payment is collected until setup passes.</div>
    <p class="muted" style="font-size:12px">By continuing, you agree to the <a href="/terms.html" style="color:var(--violet)">Terms of Use</a> and acknowledge the <a href="/privacy.html" style="color:var(--violet)">Privacy Notice</a>.</p>
   </section>
   
@@ -415,9 +416,9 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    <h3>Turn a topic into a content brief</h3>
    <p>Creator Studio helps structure a topic into a hook, short-form video outline or caption direction. Review and fact-check every draft, add your own experience, and make the final content original before publishing.</p>
    <h3>Plan a consistent publishing routine</h3>
-   <p>Content Planner lets you save ideas and organise planned publishing dates. Creator Kit stores your niche, audience and preferred voice in your browser so you can keep your creative direction consistent.</p>
+   <p>Content Planner lets you save ideas and organise planned publishing dates. Creator Kit stores your niche, audience and preferred voice locally and can sync privately to your VYBORA account when signed in.</p>
    <h3>Free creator tools and Premium</h3>
-   <p>VYBORA offers a Free plan at ₹0 with 3 AI generations per day. A Premium plan is planned at ₹299 per month. Premium checkout is not active and no payment is currently collected. See <a href="premium.html" style="color:var(--cyan)">VYBORA plans and pricing</a> for the latest details.</p>
+   <p>VYBORA offers a Free plan at ₹0 with 3 AI generations per day. Premium is planned at $5 USD per month with an expanded daily AI allowance. Premium checkout remains disabled until payment provider approval and security checks are complete. See <a href="premium.html" style="color:var(--cyan)">VYBORA plans and pricing</a> for the latest details.</p>
    <p>Explore the <a href="electrical-a2z.html" style="color:var(--cyan)">Electrical A to Z learning guide</a> or return to the <a href="trend-hub.html" style="color:var(--cyan)">VYBORA Trend Hub</a>.</p>
   </section>
   <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.2 · <a href="/privacy.html" style="color:var(--muted)">Privacy</a> · <a href="/terms.html" style="color:var(--muted)">Terms</a></footer>
@@ -457,6 +458,7 @@ async function refreshAuth(){
  document.getElementById("signIn").hidden=!!currentUser;
  document.getElementById("signUp").hidden=!!currentUser;
  renderPlans();
+ loadCreatorKitFromCloud();
  loadReferralSummary();
 }
 async function authAction(kind){
@@ -482,7 +484,7 @@ function escapeText(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;",
 let trendItems = [];
 let trendRegionCode = "IN";
 let showSavedOnly = false;
-const trendMarketNames = {IN:"India",BD:"Bangladesh",US:"United States",GB:"United Kingdom",CA:"Canada",AU:"Australia",SG:"Singapore",DE:"Germany",FR:"France",JP:"Japan"};
+const trendMarketNames = {IN:"India",BD:"Bangladesh",US:"United States",GB:"United Kingdom",CA:"Canada",AU:"Australia",SG:"Singapore",DE:"Germany",FR:"France",JP:"Japan",BR:"Brazil",MX:"Mexico",ES:"Spain",IT:"Italy",NL:"Netherlands",NZ:"New Zealand",ZA:"South Africa",NG:"Nigeria",IE:"Ireland",KR:"South Korea",PH:"Philippines",ID:"Indonesia",MY:"Malaysia",PK:"Pakistan",AE:"United Arab Emirates",SA:"Saudi Arabia",TH:"Thailand",VN:"Vietnam",TR:"Türkiye",SE:"Sweden",NO:"Norway",DK:"Denmark",PL:"Poland"};
 function getSavedTrends(){
  try{return JSON.parse(localStorage.getItem("vybora_saved_trends")||"[]")}catch(error){return []}
 }
@@ -559,9 +561,22 @@ document.getElementById("copyTrendList").addEventListener("click",async()=>{
  setTimeout(()=>{button.textContent="Copy trend titles"},1800);
 });
 loadTrends();
+document.getElementById("startPremiumCheckout").addEventListener("click",async()=>{
+ const button=document.getElementById("startPremiumCheckout"),box=document.getElementById("billingStatus");
+ if(!currentUser){box.textContent="Please sign in before subscribing.";return}
+ button.disabled=true;button.textContent="Opening secure checkout…";
+ try{
+  const {data}=await supabaseClient.auth.getSession(),token=data.session?.access_token;
+  if(!token)throw new Error("Your session expired. Please sign in again.");
+  const response=await fetch("/api/billing/create",{method:"POST",headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
+  const result=await response.json();if(!response.ok)throw new Error(result.error||"Could not start checkout.");
+  if(!/^https:\/\/rzp\.io\//i.test(result.checkout_url||""))throw new Error("Razorpay returned an invalid checkout link.");
+  window.location.assign(result.checkout_url);
+ }catch(error){box.textContent=error.message;button.disabled=false;button.textContent="Try Premium checkout again"}
+});
 async function loadBillingStatus(){
- const box=document.getElementById("billingStatus");
- if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
+ const box=document.getElementById("billingStatus"),button=document.getElementById("startPremiumCheckout");
+ if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";if(button){button.disabled=true;button.textContent="Sign in to subscribe"}return}
  box.textContent="Loading your billing status…";
  try{
   const {data}=await supabaseClient.auth.getSession();
@@ -569,24 +584,27 @@ async function loadBillingStatus(){
   const result=await response.json();
   if(!response.ok)throw new Error(result.error||"Could not load billing status.");
   const sub=result.subscription;
-  if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
-  const label={starter:"Starter",pro:"Pro"}[sub.plan_key]||sub.plan_key;
+  const activeOrPending=!!sub&&["created","authenticated","active","pending","halted"].includes(sub.status);
+  if(button){button.disabled=!result.checkout_ready||activeOrPending;button.textContent=activeOrPending?"Subscription already started":result.checkout_ready?"Subscribe securely · $5/month":"Premium setup in progress"}
+  if(!sub){box.textContent="Current plan: Free · No paid subscription yet.";return}
+  const label={starter:"Starter",pro:"Pro",pro_usd:"Premium ($5 USD/month)"}[sub.plan_key]||sub.plan_key;
   const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
   box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
- }catch(error){box.textContent=error.message}
+ }catch(error){if(button){button.disabled=true;button.textContent="Premium setup in progress"}box.textContent=error.message}
 }
 const growthPrompts={
  hooks:{label:"Viral Hook Generator",format:"Short-form hook options",instruction:"Create 12 original, curiosity-building opening hooks for the topic. Mix question, surprising angle, relatable pain point, bold-but-honest statement and story-led hooks. Keep each hook short, natural and suitable for the first 3 seconds. Avoid clickbait and unsupported claims. Add a one-line note explaining the strongest 3."},
  script:{label:"AI Video Script",format:"Short video script",instruction:"Write a ready-to-record 45-60 second video script. Include a strong opening, timestamped scenes, spoken voiceover, simple visual/B-roll suggestions, on-screen text, a natural transition and a clear CTA. Keep production practical for a solo creator. Mark any facts that need checking."},
- caption:{label:"Caption & Hashtag AI",format:"Social caption and hashtags",instruction:"Create 3 distinct caption options: friendly, punchy and informative. Include a natural CTA and 8-12 relevant, specific hashtags. Avoid spammy tag stuffing, guaranteed reach claims and fabricated facts. Adapt the wording to the selected platform."}
+ caption:{label:"Caption & Hashtag AI",format:"Social caption and hashtags",instruction:"Create 3 distinct caption options: friendly, punchy and informative. Include a natural CTA and 8-12 relevant, specific hashtags. Avoid spammy tag stuffing, guaranteed reach claims and fabricated facts. Adapt the wording to the selected platform."},
+ campaign:{label:"Business Campaign Brief",format:"Marketing campaign brief",instruction:"Create a practical campaign brief for a small business or agency. Include: objective, target customer, customer problem, positioning, one core message, three content angles, a 7-day organic content sequence, one ethical offer/CTA, channel recommendations, simple success metrics, budget-conscious production notes, and claims or legal points that must be verified. Do not invent product facts, customer testimonials, market sizes or performance guarantees."}
 };
 document.querySelectorAll(".growth-generate").forEach(button=>button.addEventListener("click",async()=>{
- const mode=button.dataset.growthMode,config=growthPrompts[mode],topic=document.getElementById("topic").value.trim(),audience=document.getElementById("audience").value.trim()||"curious viewers",box=document.getElementById(mode==="hooks"?"growthHooks":mode==="script"?"growthScript":"growthCaption");
+ const mode=button.dataset.growthMode,config=growthPrompts[mode],topic=document.getElementById("topic").value.trim(),audience=document.getElementById("audience").value.trim()||getCreatorKit().audience||"curious viewers",box=document.getElementById(({hooks:"growthHooks",script:"growthScript",caption:"growthCaption",campaign:"growthCampaign"})[mode]||"growthCaption");
  if(!topic){box.classList.add("show");box.textContent="Enter your topic above first, then try again.";document.getElementById("topic").focus();return}
  button.disabled=true;const original=button.textContent;button.textContent="Creating…";box.classList.add("show");box.textContent="VYBORA AI is preparing your "+config.label.toLowerCase()+"…";
  try{
   const kit=getCreatorKit();const language=kit.language||"English";
-  const {data:sessionData}=await supabaseClient.auth.getSession();const accessToken=sessionData.session?.access_token;if(!accessToken)throw new Error("Please sign in to use AI generation.");const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic,format:config.format,audience,language,mode,instruction:config.instruction,platform:kit.platform||"Multiple platforms"})});
+  const {data:sessionData}=await supabaseClient.auth.getSession();const accessToken=sessionData.session?.access_token;if(!accessToken)throw new Error("Please sign in to use AI generation.");const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic,format:config.format,audience,language,mode,instruction:config.instruction+" Apply this creator context: niche "+(kit.niche||"not specified")+", brand voice "+(kit.voice||"friendly and clear")+", bio "+(kit.bio||"not provided")+".",platform:kit.platform||"Multiple platforms"})});
   const data=await response.json();if(!response.ok)throw new Error(data.error||"AI generation failed.");
   const output=String(data.brief||"");box.innerHTML='<b>'+escapeText(config.label)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.65">'+escapeText(output)+'</div><div class="growth-actions"><button class="ghost" type="button" data-growth-copy>Copy result</button><button class="ghost" type="button" data-growth-save>Save to Planner</button></div>';
   box.querySelector("[data-growth-copy]").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(output);box.querySelector("[data-growth-copy]").textContent="Copied ✓"}catch(e){box.querySelector("[data-growth-copy]").textContent="Copy unavailable"}});
@@ -623,7 +641,7 @@ document.querySelectorAll("#mainNav [data-view]").forEach(button=>button.addEven
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
 document.querySelectorAll("#trendFilters button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#trendFilters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderTrends(b.dataset.filter)}));
-document.getElementById("generate").addEventListener("click",async()=>{const topic=document.getElementById("topic").value.trim();const format=document.getElementById("format").value;const audience=document.getElementById("audience").value.trim()||"curious viewers";const box=document.getElementById("brief");const btn=document.getElementById("generate");if(!topic){box.classList.add("show");box.textContent="Please enter a topic first.";return}btn.disabled=true;btn.textContent="Creating your brief…";box.classList.add("show");box.textContent="VYBORA AI is shaping your idea…";try{const {data:sessionData}=await supabaseClient.auth.getSession();const accessToken=sessionData.session?.access_token;if(!accessToken)throw new Error("Please sign in to use AI generation.");const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic,format,audience,language:"English"})});const data=await response.json();if(!response.ok)throw new Error(data.error||"AI generation failed.");const brief=String(data.brief||"");box.innerHTML='<b>VYBORA AI Creative Brief · '+escapeText(format)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.65">'+escapeText(brief)+'</div><button class="ghost" id="saveBrief" style="margin-top:12px">Save this idea to Planner</button>';document.getElementById("saveBrief").addEventListener("click",async()=>{await saveIdea(topic,format,brief);show("planner")})}catch(error){box.innerHTML='<b>Creator Studio</b><div class="idea">'+escapeText(error.message)+'</div><p class="muted">Your idea is safe. Please check the Gemini API Preview configuration and try again.</p>'}finally{btn.disabled=false;btn.textContent="Generate with VYBORA AI ✦"}});
+document.getElementById("generate").addEventListener("click",async()=>{const topic=document.getElementById("topic").value.trim();const format=document.getElementById("format").value;const audience=document.getElementById("audience").value.trim()||getCreatorKit().audience||"curious viewers";const box=document.getElementById("brief");const btn=document.getElementById("generate");if(!topic){box.classList.add("show");box.textContent="Please enter a topic first.";return}btn.disabled=true;btn.textContent="Creating your brief…";box.classList.add("show");box.textContent="VYBORA AI is shaping your idea…";try{const {data:sessionData}=await supabaseClient.auth.getSession();const accessToken=sessionData.session?.access_token;if(!accessToken)throw new Error("Please sign in to use AI generation.");const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic,format,audience:audience||getCreatorKit().audience||"curious viewers",language:getCreatorKit().language||"English",platform:getCreatorKit().platform||"Multiple platforms",instruction:"Use this creator profile when relevant: niche "+(getCreatorKit().niche||"not specified")+", preferred voice "+(getCreatorKit().voice||"friendly and clear")+", brand bio "+(getCreatorKit().bio||"not provided")+". Keep the result original, audience-aware and fact-checkable."})});const data=await response.json();if(!response.ok)throw new Error(data.error||"AI generation failed.");const brief=String(data.brief||"");box.innerHTML='<b>VYBORA AI Creative Brief · '+escapeText(format)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.65">'+escapeText(brief)+'</div><button class="ghost" id="saveBrief" style="margin-top:12px">Save this idea to Planner</button>';document.getElementById("saveBrief").addEventListener("click",async()=>{await saveIdea(topic,format,brief);show("planner")})}catch(error){box.innerHTML='<b>Creator Studio</b><div class="idea">'+escapeText(error.message)+'</div><p class="muted">Your idea is safe. Please check the server-side AI configuration and try again.</p>'}finally{btn.disabled=false;btn.textContent="Generate with VYBORA AI ✦"}});
 function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function getPlans(){try{return JSON.parse(localStorage.getItem("vybora_creator_plans")||"[]")}catch(e){return []}}
 function addLocalPlan(value){const plans=getPlans();plans.unshift({text:value,done:false});localStorage.setItem("vybora_creator_plans",JSON.stringify(plans));renderPlans()}
@@ -683,14 +701,28 @@ document.getElementById("addPlan").addEventListener("click",async()=>{const el=d
 function getCreatorKit(){
  try{return JSON.parse(localStorage.getItem("vybora_creator_kit")||"{}")}catch(e){return {}}
 }
-function loadCreatorKit(){
- const p=getCreatorKit();
+function applyCreatorKit(p){
  [["creatorDisplayName","name"],["creatorNiche","niche"],["creatorAudience","audience"],["creatorPlatform","platform"],["creatorLanguage","language"],["creatorVoice","voice"],["creatorBio","bio"]].forEach(([id,key])=>{const el=document.getElementById(id);if(el&&p[key]!==undefined)el.value=p[key]});
 }
-document.getElementById("saveCreatorKit").addEventListener("click",()=>{
+function loadCreatorKit(){applyCreatorKit(getCreatorKit())}
+async function loadCreatorKitFromCloud(){
+ if(!currentUser)return;
+ const {data,error}=await supabaseClient.from("vybora_creator_profiles").select("profile").eq("user_id",currentUser.id).maybeSingle();
+ if(error){document.getElementById("creatorKitStatus").textContent="Cloud profile could not be loaded. Your local profile is still available.";return}
+ if(data&&data.profile&&typeof data.profile==="object"){
+  localStorage.setItem("vybora_creator_kit",JSON.stringify(data.profile));
+  applyCreatorKit(data.profile);
+  document.getElementById("creatorKitStatus").textContent="Creator Kit synced securely to your account ✓";
+ }
+}
+document.getElementById("saveCreatorKit").addEventListener("click",async()=>{
  const p={name:document.getElementById("creatorDisplayName").value.trim(),niche:document.getElementById("creatorNiche").value.trim(),audience:document.getElementById("creatorAudience").value.trim(),platform:document.getElementById("creatorPlatform").value,language:document.getElementById("creatorLanguage").value,voice:document.getElementById("creatorVoice").value,bio:document.getElementById("creatorBio").value.trim()};
  localStorage.setItem("vybora_creator_kit",JSON.stringify(p));
- document.getElementById("creatorKitStatus").textContent="Creator Kit saved on this device ✓";
+ const status=document.getElementById("creatorKitStatus");
+ if(!currentUser){status.textContent="Saved on this device. Sign in to sync your Creator Kit across devices.";return}
+ status.textContent="Saving Creator Kit to your account…";
+ const {error}=await supabaseClient.from("vybora_creator_profiles").upsert({user_id:currentUser.id,profile:p,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+ status.textContent=error?"Saved on this device, but cloud sync failed: "+error.message:"Creator Kit saved and synced to your account ✓";
 });
 document.getElementById("useCreatorKit").addEventListener("click",()=>{
  const p=getCreatorKit();
@@ -707,5 +739,5 @@ loadCreatorKit();
 renderPlans();
 refreshAuth();
 </script>
-<a class="social-shortcut" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social in a new tab">Open VYBORA Social ↗</a>
+<a class="social-shortcut" href="/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social in a new tab">Open VYBORA Social ↗</a>
 </body></html>

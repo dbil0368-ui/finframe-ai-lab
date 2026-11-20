@@ -36,7 +36,8 @@ async function db(path, options = {}) {
 async function razorpay(path, method, body) {
   const id = process.env.RAZORPAY_KEY_ID;
   const secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!id || !secret || !id.startsWith("rzp_test_")) throw new Error("Razorpay Test Mode keys are not configured for Preview.");
+  const live = process.env.VERCEL_ENV === "production";
+  if (!id || !secret || (live && !id.startsWith("rzp_live_")) || (!live && !id.startsWith("rzp_test_"))) throw new Error("Razorpay credentials do not match this deployment environment.");
   const response = await fetch("https://api.razorpay.com/v1/" + path, {
     method,
     headers: {
@@ -57,11 +58,13 @@ export default async function handler(req, res) {
   }
   const user = await authUser(req);
   if (!user?.id) return send(res, 401, { error: "Please sign in to VYBORA first." });
+  const billingEnvironment = process.env.VERCEL_ENV === "production" ? "live" : "test";
+  if (!process.env.RAZORPAY_WEBHOOK_SECRET) return send(res, 503, { error: "Billing webhook verification is not configured." });
   const planKey = req.body?.plan;
   if (!["starter", "pro"].includes(planKey)) return send(res, 400, { error: "Choose a valid plan." });
 
   try {
-    const existing = await db("billing_subscriptions?select=razorpay_subscription_id,status,plan_key&user_id=eq." + encodeURIComponent(user.id) + "&order=updated_at.desc&limit=1");
+    const existing = await db("billing_subscriptions?select=razorpay_subscription_id,status,plan_key&user_id=eq." + encodeURIComponent(user.id) + "&environment=eq." + billingEnvironment + "&order=updated_at.desc&limit=1");
     if (existing[0] && ["created", "authenticated", "active", "pending", "halted"].includes(existing[0].status)) {
       return send(res, 409, { error: "You already have a subscription in progress or active. Refresh your billing status before starting another." });
     }
@@ -70,26 +73,8 @@ export default async function handler(req, res) {
     const plan = planRows[0];
     if (!plan) return send(res, 503, { error: "This plan is not available right now." });
 
-    let razorpayPlanId = plan.razorpay_plan_id;
-    if (!razorpayPlanId) {
-      const createdPlan = await razorpay("plans", "POST", {
-        period: "monthly",
-        interval: 1,
-        item: {
-          name: "VYBORA " + (planKey === "starter" ? "Starter" : "Pro"),
-          amount: plan.amount_paise,
-          currency: "INR",
-          description: "VYBORA " + (planKey === "starter" ? "Starter" : "Pro") + " monthly creator tools plan"
-        },
-        notes: { vybora_plan_key: planKey }
-      });
-      razorpayPlanId = createdPlan.id;
-      await db("billing_plans?plan_key=eq." + planKey, {
-        method: "PATCH",
-        headers: { Prefer: "return=minimal" },
-        body: JSON.stringify({ razorpay_plan_id: razorpayPlanId, updated_at: new Date().toISOString() })
-      });
-    }
+    let razorpayPlanId = billingEnvironment === "live" ? plan.razorpay_plan_id : process.env["RAZORPAY_" + planKey.toUpperCase() + "_PLAN_ID"];
+    if (!razorpayPlanId) throw new Error("The Razorpay plan for this billing environment is not configured.");
 
     const subscription = await razorpay("subscriptions", "POST", {
       plan_id: razorpayPlanId,
@@ -99,11 +84,12 @@ export default async function handler(req, res) {
       notes: { vybora_user_id: user.id, vybora_plan_key: planKey, customer_email: user.email || "" }
     });
 
-    await db("billing_subscriptions?on_conflict=user_id", {
+    await db("billing_subscriptions?on_conflict=user_id,environment", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify({
         user_id: user.id,
+        environment: billingEnvironment,
         plan_key: planKey,
         razorpay_subscription_id: subscription.id,
         status: subscription.status || "created",
