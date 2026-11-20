@@ -599,7 +599,7 @@ const growthPrompts={
  campaign:{label:"Business Campaign Brief",format:"Marketing campaign brief",instruction:"Create a practical campaign brief for a small business or agency. Include: objective, target customer, customer problem, positioning, one core message, three content angles, a 7-day organic content sequence, one ethical offer/CTA, channel recommendations, simple success metrics, budget-conscious production notes, and claims or legal points that must be verified. Do not invent product facts, customer testimonials, market sizes or performance guarantees."}
 };
 document.querySelectorAll(".growth-generate").forEach(button=>button.addEventListener("click",async()=>{
- const mode=button.dataset.growthMode,config=growthPrompts[mode],topic=document.getElementById("topic").value.trim(),audience=document.getElementById("audience").value.trim()||"curious viewers",box=document.getElementById(({hooks:"growthHooks",script:"growthScript",caption:"growthCaption",campaign:"growthCampaign"})[mode]||"growthCaption");
+ const mode=button.dataset.growthMode,config=growthPrompts[mode],topic=document.getElementById("topic").value.trim(),audience=document.getElementById("audience").value.trim()||getCreatorKit().audience||"curious viewers",box=document.getElementById(({hooks:"growthHooks",script:"growthScript",caption:"growthCaption",campaign:"growthCampaign"})[mode]||"growthCaption");
  if(!topic){box.classList.add("show");box.textContent="Enter your topic above first, then try again.";document.getElementById("topic").focus();return}
  button.disabled=true;const original=button.textContent;button.textContent="Creating…";box.classList.add("show");box.textContent="VYBORA AI is preparing your "+config.label.toLowerCase()+"…";
  try{
