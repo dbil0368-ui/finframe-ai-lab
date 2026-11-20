@@ -53,7 +53,7 @@ let socialUser=null;
 const KEY='vybora_social_v1';const defaults={profile:{},ideas:[],schedule:[]};let data;try{data={...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){data=defaults}
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function refreshSocialAuth(){
- const {data}=await supabaseClient.auth.getSession();socialUser=data.session?.user||null;
+ const {data:sessionData}=await supabaseClient.auth.getSession();socialUser=sessionData.session?.user||null;
  $('socialAuthStatus').textContent=socialUser?'Signed in · AI generation and cloud saves enabled':'Sign in to use AI generation and sync saved ideas';
  $('socialEmail').hidden=!!socialUser;$('socialPassword').hidden=!!socialUser;
  $('socialSignIn').hidden=!!socialUser;$('socialSignUp').hidden=!!socialUser;$('socialSignOut').hidden=!socialUser;
