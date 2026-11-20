@@ -449,6 +449,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   <span>VYBORA</span>
  </div>
  <button class="side-btn active" data-page="home" onclick="show('home')">🏠 &nbsp; Home</button>
+ <button class="side-btn" data-page="billing" onclick="show('billing')">💳 &nbsp; Plans & Billing</button>
  <button class="side-btn" data-page="builder" onclick="show('builder')">🚀 &nbsp; Project Builder</button>
  <button class="side-btn" data-page="photo" onclick="show('photo')">📸 &nbsp; Photo Studio</button>
  <button class="side-btn" data-page="product" onclick="show('product')">💎 &nbsp; Product Studio</button>
@@ -563,6 +564,38 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   </div>
  </section>
 
+
+ <section id="billing">
+  <div class="page-title"><h2>💳 Plans & Billing</h2><p>Manage your VYBORA plan and review subscription status.</p></div>
+  <div class="card">
+   <h3>Current plan: <span id="billingCurrentPlan">Checking…</span></h3>
+   <p id="billingSubscriptionStatus" role="status" aria-live="polite">Sign in to check your current subscription.</p>
+   <p class="small" id="billingCheckoutNotice">Checkout is disabled until Razorpay Test Mode keys and a webhook secret are configured. No payments are collected.</p>
+   <button class="secondary-btn" type="button" onclick="loadVyboraBilling()">↻ Refresh billing status</button>
+  </div>
+  <div class="tool-grid">
+   <div class="card">
+    <h3>Free</h3><p><strong style="font-size:27px">₹0</strong> / forever</p>
+    <p>3 AI generations per day. Core workspace tools.</p>
+    <span class="badge">Available</span>
+   </div>
+   <div class="card">
+    <h3>Starter</h3><p><strong style="font-size:27px">₹199</strong> / month</p>
+    <p>15 AI generations per day for growing creator workflows.</p>
+    <button class="primary-btn" type="button" data-billing-plan="starter" onclick="startVyboraSubscription('starter')" disabled>Subscribe to Starter</button>
+   </div>
+   <div class="card">
+    <h3>Pro</h3><p><strong style="font-size:27px">₹499</strong> / month</p>
+    <p>50 AI generations per day for more intensive creation.</p>
+    <button class="primary-btn" type="button" data-billing-plan="pro" onclick="startVyboraSubscription('pro')" disabled>Subscribe to Pro</button>
+   </div>
+  </div>
+  <div class="card">
+   <h3>Payment safety</h3>
+   <p>Checkout is restricted to Razorpay Test Mode in this build. Live charging is not enabled. A verified webhook is required before subscriptions can be started or plan access can be updated.</p>
+   <p class="small">Subscription renewal and cancellation controls will be shown only after the payment provider configuration and account verification are complete.</p>
+  </div>
+ </section>
 
  <section id="privacy">
   <div class="page-title"><h2>🔐 Privacy & Security</h2><p>How VYBORA handles your account, workspace data and AI requests.</p></div>
@@ -1036,6 +1069,7 @@ const $=id=>document.getElementById(id);
 
 const pageNames={
  home:'✨ VYBORA',
+ billing:'💳 Plans & Billing',
  builder:'🚀 Project Builder',
  photo:'📸 Photo Enhancer',
  product:'💎 Product Studio',
@@ -1212,7 +1246,88 @@ window.show=function(id){
  if(title)title.textContent=pageNames[id]||'VYBORA';
  if(document.body.classList.contains('menu-open'))window.closeMobileMenu();
  window.scrollTo({top:0,behavior:'auto'});
+ if(id==='billing')loadVyboraBilling();
 };
+let vyboraBillingReady=false;
+function getBillingSessionToken(){
+ const client=window.vyClient;
+ if(!client||!client.auth)throw new Error('VYBORA account service is still loading. Refresh and try again.');
+ return client.auth.getSession().then(result=>{
+  if(result.error)throw result.error;
+  const token=result.data&&result.data.session&&result.data.session.access_token;
+  if(!token)throw new Error('Please sign in to manage your subscription.');
+  return token;
+ });
+}
+async function loadVyboraBilling(){
+ const status=$('billingCheckoutNotice'),current=$('billingCurrentPlan'),subscriptionStatus=$('billingSubscriptionStatus');
+ const buttons=document.querySelectorAll('[data-billing-plan]');
+ buttons.forEach(button=>button.disabled=true);
+ if(status)status.textContent='Checking billing configuration…';
+ try{
+  const token=await getBillingSessionToken();
+  const response=await fetch('/api/billing/status',{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(12000)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'Could not load billing status.');
+  const sub=data.subscription;
+  const active=sub&&sub.status==='active';
+  if(current)current.textContent=active?(sub.plan_key==='pro'?'Pro':'Starter'):'Free';
+  if(subscriptionStatus)subscriptionStatus.textContent=sub
+   ? 'Subscription status: '+sub.status+(sub.current_end?' · Current period ends '+new Date(sub.current_end).toLocaleDateString():'')
+   : 'No paid subscription is active on this account.';
+  vyboraBillingReady=Boolean(data.checkoutAvailable);
+  buttons.forEach(button=>button.disabled=!vyboraBillingReady||active);
+  if(status)status.textContent=vyboraBillingReady
+   ? 'Razorpay Test Mode is ready. Test checkout only — no real payment will be collected.'
+   : 'Checkout is disabled. Configure Razorpay Test Mode keys and RAZORPAY_WEBHOOK_SECRET in Vercel. Live payments remain disabled.';
+ }catch(error){
+  vyboraBillingReady=false;
+  if(status)status.textContent=error.message||'Billing is temporarily unavailable.';
+  if(current)current.textContent='Unavailable';
+  if(subscriptionStatus)subscriptionStatus.textContent='Sign in and refresh to check your subscription.';
+ }
+}
+function loadRazorpayCheckout(){
+ if(window.Razorpay)return Promise.resolve();
+ return new Promise((resolve,reject)=>{
+  const script=document.createElement('script');
+  script.src='https://checkout.razorpay.com/v1/checkout.js';
+  script.onload=resolve;script.onerror=()=>reject(new Error('Razorpay checkout library could not load.'));
+  document.head.appendChild(script);
+ });
+}
+async function startVyboraSubscription(plan){
+ const button=document.querySelector('[data-billing-plan="'+plan+'"]');
+ if(button)button.disabled=true;
+ const status=$('billingCheckoutNotice');
+ try{
+  if(!vyboraBillingReady)throw new Error('Test checkout is not configured yet.');
+  const token=await getBillingSessionToken();
+  const response=await fetch('/api/billing/create-subscription',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({plan}),signal:AbortSignal.timeout(15000)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'Could not start the subscription.');
+  await loadRazorpayCheckout();
+  const checkout=new window.Razorpay({
+   key:data.keyId,subscription_id:data.subscriptionId,name:'VYBORA',
+   description:(plan==='pro'?'Pro':'Starter')+' monthly plan · Test Mode',
+   prefill:{email:data.customerEmail||''},theme:{color:'#9b70ff'},
+   handler:async function(payment){
+    if(status)status.textContent='Verifying your test payment…';
+    try{
+     const verified=await fetch('/api/billing/verify-subscription',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(payment),signal:AbortSignal.timeout(15000)});
+     const result=await verified.json().catch(()=>({}));
+     if(!verified.ok)throw new Error(result.error||'Payment verification failed.');
+     if(status)status.textContent=result.message||'Payment verified. Refreshing your plan…';
+     await loadVyboraBilling();
+    }catch(error){if(status)status.textContent=error.message||'Could not verify the test payment. Do not retry until status is checked.';}
+   },
+   modal:{ondismiss:function(){if(status)status.textContent='Checkout closed. No payment confirmation was received.';}}
+  });
+  checkout.on('payment.failed',function(event){if(status)status.textContent=event.error&&event.error.description||'Test payment failed. No subscription was activated.';});
+  checkout.open();
+ }catch(error){if(status)status.textContent=error.message||'Could not start test checkout.';}
+ finally{if(button)button.disabled=!vyboraBillingReady;}
+}
 function openTool(id){
  show(id);
  saveRecent(id);
