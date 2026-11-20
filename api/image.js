@@ -1,6 +1,7 @@
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
-const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-nano-banana-2.1";
+// Current Gemini API image-generation model (Nano Banana 2).
+const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-3.1-flash-image";
 export const config = { maxDuration: 60 };
 
 function send(res, status, body) {
@@ -16,14 +17,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+    const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
     if (!token || token.length > 8192) return send(res, 401, { error: "Please sign in to use VYBORA AI Studio." });
     const auth = await fetch(SUPABASE_URL + "/auth/v1/user", {
       headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token },
       signal: AbortSignal.timeout(8000)
     });
     if (!auth.ok) return send(res, 401, { error: "Your session expired. Please sign in again." });
-    const user = await auth.json();
+    await auth.json();
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return send(res, 503, { error: "Gemini image generation is not configured on this deployment." });
 
@@ -35,7 +36,7 @@ export default async function handler(req, res) {
     const aspectRatio = ["1:1", "3:2", "2:3", "4:3", "3:4", "9:16", "16:9"].includes(body.aspectRatio) ? body.aspectRatio : "1:1";
     if (!prompt) return send(res, 400, { error: "Please describe the image you want to create." });
     const allImages = [imageData, ...referenceImages].filter(Boolean);
-    if (allImages.some(value => typeof value !== "string" || !/^data:image\/(png|jpeg|webp);base64,/i.test(value) || value.length > 4200000) || allImages.length > 2 || allImages.reduce((sum, value) => sum + value.length, 0) > 4200000) {
+    if (allImages.some(value => typeof value !== "string" || !/^data:image\\/(png|jpeg|webp);base64,/i.test(value) || value.length > 4200000) || allImages.length > 2 || allImages.reduce((sum, value) => sum + value.length, 0) > 4200000) {
       return send(res, 413, { error: "Reference images must be PNG, JPEG or WebP and total under 3 MB after resizing." });
     }
 
@@ -59,7 +60,7 @@ export default async function handler(req, res) {
 
     const parts = [{ text: "Create or edit a polished, commercially useful visual for VYBORA. Follow the user's brief closely. Do not add watermarks, fake brand logos, unreadable text, or misleading claims. " + prompt }];
     for (const reference of [imageData, ...referenceImages].filter(Boolean)) {
-      const match = reference.match(/^data:(image\/(?:png|jpeg|webp));base64,([\s\S]+)$/i);
+      const match = reference.match(/^data:(image\\/(?:png|jpeg|webp));base64,([\\s\\S]+)$/i);
       parts.push({ inlineData: { mimeType: match[1], data: match[2] } });
     }
     const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(IMAGE_MODEL) + ":generateContent", {
@@ -80,7 +81,7 @@ export default async function handler(req, res) {
       return send(res, 502, { error: "Gemini could not generate this image. Please simplify the prompt and try again." });
     }
     const outputParts = data?.candidates?.[0]?.content?.parts || [];
-    const imagePart = outputParts.find(part => part?.inlineData?.data && /^image\//i.test(part.inlineData.mimeType || ""));
+    const imagePart = outputParts.find(part => part?.inlineData?.data && /^image\\//i.test(part.inlineData.mimeType || ""));
     if (!imagePart) return send(res, 502, { error: "Gemini returned no image. Please try a different prompt." });
     return send(res, 200, {
       image: "data:" + imagePart.inlineData.mimeType + ";base64," + imagePart.inlineData.data,
