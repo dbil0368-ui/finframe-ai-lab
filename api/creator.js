@@ -25,24 +25,7 @@ export default async function handler(req, res) {
   });
   if (!authResponse.ok) return send(res, 401, { error: "Your session expired. Please sign in again." });
   const user = await authResponse.json();
-  const serviceKey = process.env.SUPABASE_SECRET_KEY;
-  if (!serviceKey) return send(res, 503, { error: "Usage limits are not configured yet." });
-
   try {
-    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
-    });
-    if (!subResponse.ok) throw new Error("Could not check your VYBORA plan.");
-    const subscriptions = await subResponse.json();
-    let planKey = subscriptions[0]?.plan_key || "free";
-    const rewardResponse = await fetch(SUPABASE_URL + "/rest/v1/vybora_referral_rewards?select=id&referrer_user_id=eq." + encodeURIComponent(user.id) + "&starts_at=lte." + encodeURIComponent(new Date().toISOString()) + "&expires_at=gt." + encodeURIComponent(new Date().toISOString()) + "&limit=1", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
-    });
-    if (!rewardResponse.ok) throw new Error("Could not check your referral Premium reward.");
-    const activeRewards = await rewardResponse.json();
-    if (activeRewards.length && planKey !== "pro") planKey = "pro";
-    const dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
-
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return send(res, 503, { error: "Gemini is not configured yet. Add GEMINI_API_KEY to the Vercel Preview environment." });
 
@@ -66,14 +49,16 @@ export default async function handler(req, res) {
     ].join("\n");
 
     // Atomically reserve one generation BEFORE calling the paid AI provider.
-    const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
+    const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation_for_current_user", {
       method: "POST",
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: dailyLimit })
+      headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({})
     });
     const usageRows = await usageResponse.json().catch(() => []);
     if (!usageResponse.ok || !Array.isArray(usageRows) || !usageRows[0]) throw new Error("Could not check your daily AI allowance.");
     const usage = usageRows[0];
+    const planKey = usage.plan_key || "free";
+    const dailyLimit = usage.daily_limit || 3;
     if (!usage.allowed) {
       return send(res, 429, {
         error: "আজকের " + dailyLimit + "টি AI generation শেষ। আরও ব্যবহার করতে Starter (₹১৯৯/মাস) বা Pro Premium (₹৪৯৯/মাস) নিন।",
