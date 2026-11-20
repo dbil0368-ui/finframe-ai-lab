@@ -1393,9 +1393,22 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    '</body></html>'
   ].join('').replaceAll('FF_SAFE_NAME_TOKEN',safeName).replaceAll('FF_SAFE_IDEA_TOKEN',safeIdea).replaceAll('FF_TITLE_TOKEN',title).replaceAll('FF_ACTION_TOKEN',action).replaceAll('FF_CARDS_TOKEN',cards);
 }
+async function getVyboraAIClient(){
+ for(let attempt=0;attempt<20;attempt++){
+  if(window.vyClient&&window.vyClient.auth)return window.vyClient;
+  if(window.supabase&&typeof window.supabase.createClient==='function'){
+   try{
+    window.vyClient=window.supabase.createClient('https://pxgoaygwtxrrqkftluut.supabase.co','sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh');
+    if(window.vyClient&&window.vyClient.auth)return window.vyClient;
+   }catch(error){console.warn('VYBORA AI auth client initialization:',error);}
+  }
+  await new Promise(resolve=>setTimeout(resolve,250));
+ }
+ if(!window.supabase||typeof window.supabase.createClient!=='function')throw new Error('VYBORA account library did not load. Check your connection, then reopen the workspace.');
+ throw new Error('VYBORA account connection could not initialize. Reopen the workspace and sign in again.');
+}
 async function callVyboraCreatorAI({topic,format,mode,instruction,platform='Web / Social',audience='people who may use this project',language='English'}){
- const client=window.vyClient;
- if(!client||!client.auth)throw new Error('VYBORA account service is still loading. Refresh the page and try again.');
+ const client=await getVyboraAIClient();
  const sessionResult=await client.auth.getSession();
  if(sessionResult.error)throw sessionResult.error;
  const token=sessionResult.data?.session?.access_token;
@@ -1415,8 +1428,7 @@ async function resizeImageFile(file,maxSide=1024){
  return canvas.toDataURL('image/jpeg',0.82);
 }
 async function callVyboraImageAI({prompt,imageData='',referenceImages=[],aspectRatio='1:1',mode='image'}){
- const client=window.vyClient;
- if(!client||!client.auth)throw new Error('VYBORA account service is still loading. Refresh the page and try again.');
+ const client=await getVyboraAIClient();
  const sessionResult=await client.auth.getSession();
  if(sessionResult.error)throw sessionResult.error;
  const token=sessionResult.data?.session?.access_token;
