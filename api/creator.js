@@ -1,3 +1,5 @@
+export const config = { maxDuration: 60 };
+
 const MODELS = (process.env.GEMINI_MODEL || "gemini-3.5-flash-lite,gemini-3.1-flash-lite")
   .split(",").map(value => value.trim()).filter(Boolean);
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
@@ -87,7 +89,7 @@ export default async function handler(req, res) {
             method: "POST",
             headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
             body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 850 } }),
-            signal: AbortSignal.timeout(75000)
+            signal: AbortSignal.timeout(55000)
           });
           const data = await response.json().catch(() => ({}));
           if (!response.ok) {
