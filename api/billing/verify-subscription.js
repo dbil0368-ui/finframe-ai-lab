@@ -9,7 +9,7 @@ function send(res, status, body) {
   return res.status(status).json(body);
 }
 async function authUser(req) {
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return null;
   const response = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token } });
   return response.ok ? response.json() : null;
