@@ -832,14 +832,14 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <div id="vyAuthForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px">
     <input id="vyAuthName" type="text" placeholder="Your name (for sign up)" autocomplete="name">
     <input id="vyAuthEmail" type="email" placeholder="Email address" autocomplete="email">
-    <input id="vyAuthPassword" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
+    <input id="vyAuthPassword" type="password" placeholder="Password (min. 8 characters)" autocomplete="current-password">
     <button class="primary-btn" type="button" onclick="vySignUp()">Create account</button>
     <button class="secondary-btn" type="button" onclick="vySignIn()">Log in</button>
     <button class="secondary-btn" type="button" onclick="vyResetPassword()">Forgot password?</button>
    </div>
    <div id="vyRecoveryForm" hidden style="display:grid;gap:8px;margin-top:10px">
     <p class="small">Set a new password for your VYBORA account.</p>
-    <input id="vyNewPassword" type="password" placeholder="New password (min. 6 characters)" autocomplete="new-password">
+    <input id="vyNewPassword" type="password" placeholder="New password (min. 8 characters)" autocomplete="new-password">
     <button class="primary-btn" type="button" onclick="vySaveNewPassword()">Save new password</button>
    </div>
    <div id="vyAuthSignedIn" hidden style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
@@ -1979,7 +1979,7 @@ function resetPreferences(){
  }
  window.vySignUp=async function(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
-  if(!email||password.length<6){say('Enter a valid email and a password with at least 6 characters.');return;}
+  if(!email||password.length<8){say('Enter a valid email and a password with at least 8 characters.');return;}
   say('Creating your account…');
   const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://vybora-trend-hub.vercel.app/'}});
   if(r.error){say(r.error.message);return;}
@@ -1997,7 +1997,7 @@ function resetPreferences(){
  window.vySaveNewPassword=async function(){
   const password=el('vyNewPassword').value;
   const btn=el('vyRecoveryForm').querySelector('button');
-  if(password.length<6){say('Your new password must have at least 6 characters.');return;}
+  if(password.length<8){say('Your new password must have at least 8 characters.');return;}
   if(btn)btn.disabled=true;
   say('Checking your password-reset session…');
   try{
