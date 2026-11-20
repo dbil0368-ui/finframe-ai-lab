@@ -49,3 +49,15 @@ test("all remaining VYBORA HTML pages have parseable inline scripts", async () =
     assert.match(html, /<!doctype html/i, path + " should be a valid HTML document");
   }
 });
+
+
+test("Social navigation resolves to the integrated VYBORA workspace", async () => {
+  const trend = (await readFile(new URL("../trend-hub.html", import.meta.url), "utf8"));
+  const premium = (await readFile(new URL("../premium.html", import.meta.url), "utf8"));
+  const workspace = (await readFile(new URL("../index.html", import.meta.url), "utf8"));
+  assert.doesNotMatch(trend, /finframe-ai-dd76hpfan-clon3\.vercel\.app\/social\.html/i);
+  assert.match(trend, /\.\/index\.html\?mode=vybora/);
+  assert.match(premium, /\.\/index\.html\?mode=vybora/);
+  assert.match(workspace, /params\.get\('mode'\) === 'vybora'/);
+  assert.match(workspace, /window\.show\('vybora'\)/);
+});
