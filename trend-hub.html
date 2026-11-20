@@ -310,7 +310,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
  <button type="button" data-view="studio"><span class="bottom-nav-icon">✧</span><span class="bottom-nav-label">Creator Studio</span></button>
  <button type="button" data-view="planner"><span class="bottom-nav-icon">▦</span><span class="bottom-nav-label">Content Planner</span></button>
  <button type="button" data-view="creatorKit"><span class="bottom-nav-icon">✦</span><span class="bottom-nav-label">Creator Kit</span></button>
- <a class="bottom-social-link" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
+ <a class="bottom-social-link" href="/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
 </nav>
 <button class="creator-login-fab" id="creatorLoginFab" type="button" aria-label="Open Creator Login">Creator Login</button>
 <main class="main">
@@ -355,6 +355,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <article class="tool-card"><div class="tool-icon">⚡</div><h3>Viral Hook Generator</h3><p>Generate scroll-stopping opening lines for your next post or video.</p><button class="primary growth-generate" type="button" data-growth-mode="hooks">Generate hooks ✦</button><div class="result growth-result" id="growthHooks" aria-live="polite"></div></article>
     <article class="tool-card"><div class="tool-icon">🎬</div><h3>AI Video Script Writer</h3><p>Turn your topic into a ready-to-record script with scenes, voiceover and CTA.</p><button class="primary growth-generate" type="button" data-growth-mode="script">Write my script ✦</button><div class="result growth-result" id="growthScript" aria-live="polite"></div></article>
     <article class="tool-card"><div class="tool-icon">#️⃣</div><h3>Caption & Hashtag AI</h3><p>Create platform-friendly captions, calls to action and relevant hashtags.</p><button class="primary growth-generate" type="button" data-growth-mode="caption">Create caption ✦</button><div class="result growth-result" id="growthCaption" aria-live="polite"></div></article>
+    <article class="tool-card"><div class="tool-icon">📣</div><h3>Business Campaign Brief</h3><p>Build a practical campaign angle, audience message, offer framing and content sequence for a product or service.</p><button class="primary growth-generate" type="button" data-growth-mode="campaign">Build campaign brief ✦</button><div class="result growth-result" id="growthCampaign" aria-live="polite"></div></article>
    </div>
    <div class="notice">Creator Studio uses a secure, server-side Google Gemini API connection. Your topic is sent securely for brief generation. API credentials are kept server-side and are never stored in this page.</div>
   </section>
@@ -457,6 +458,7 @@ async function refreshAuth(){
  document.getElementById("signIn").hidden=!!currentUser;
  document.getElementById("signUp").hidden=!!currentUser;
  renderPlans();
+ loadCreatorKitFromCloud();
  loadReferralSummary();
 }
 async function authAction(kind){
@@ -578,7 +580,8 @@ async function loadBillingStatus(){
 const growthPrompts={
  hooks:{label:"Viral Hook Generator",format:"Short-form hook options",instruction:"Create 12 original, curiosity-building opening hooks for the topic. Mix question, surprising angle, relatable pain point, bold-but-honest statement and story-led hooks. Keep each hook short, natural and suitable for the first 3 seconds. Avoid clickbait and unsupported claims. Add a one-line note explaining the strongest 3."},
  script:{label:"AI Video Script",format:"Short video script",instruction:"Write a ready-to-record 45-60 second video script. Include a strong opening, timestamped scenes, spoken voiceover, simple visual/B-roll suggestions, on-screen text, a natural transition and a clear CTA. Keep production practical for a solo creator. Mark any facts that need checking."},
- caption:{label:"Caption & Hashtag AI",format:"Social caption and hashtags",instruction:"Create 3 distinct caption options: friendly, punchy and informative. Include a natural CTA and 8-12 relevant, specific hashtags. Avoid spammy tag stuffing, guaranteed reach claims and fabricated facts. Adapt the wording to the selected platform."}
+ caption:{label:"Caption & Hashtag AI",format:"Social caption and hashtags",instruction:"Create 3 distinct caption options: friendly, punchy and informative. Include a natural CTA and 8-12 relevant, specific hashtags. Avoid spammy tag stuffing, guaranteed reach claims and fabricated facts. Adapt the wording to the selected platform."},
+ campaign:{label:"Business Campaign Brief",format:"Marketing campaign brief",instruction:"Create a practical campaign brief for a small business or agency. Include: objective, target customer, customer problem, positioning, one core message, three content angles, a 7-day organic content sequence, one ethical offer/CTA, channel recommendations, simple success metrics, budget-conscious production notes, and claims or legal points that must be verified. Do not invent product facts, customer testimonials, market sizes or performance guarantees."}
 };
 document.querySelectorAll(".growth-generate").forEach(button=>button.addEventListener("click",async()=>{
  const mode=button.dataset.growthMode,config=growthPrompts[mode],topic=document.getElementById("topic").value.trim(),audience=document.getElementById("audience").value.trim()||"curious viewers",box=document.getElementById(mode==="hooks"?"growthHooks":mode==="script"?"growthScript":"growthCaption");
@@ -623,7 +626,7 @@ document.querySelectorAll("#mainNav [data-view]").forEach(button=>button.addEven
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
 document.querySelectorAll("#trendFilters button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#trendFilters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderTrends(b.dataset.filter)}));
-document.getElementById("generate").addEventListener("click",async()=>{const topic=document.getElementById("topic").value.trim();const format=document.getElementById("format").value;const audience=document.getElementById("audience").value.trim()||"curious viewers";const box=document.getElementById("brief");const btn=document.getElementById("generate");if(!topic){box.classList.add("show");box.textContent="Please enter a topic first.";return}btn.disabled=true;btn.textContent="Creating your brief…";box.classList.add("show");box.textContent="VYBORA AI is shaping your idea…";try{const {data:sessionData}=await supabaseClient.auth.getSession();const accessToken=sessionData.session?.access_token;if(!accessToken)throw new Error("Please sign in to use AI generation.");const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic,format,audience,language:"English"})});const data=await response.json();if(!response.ok)throw new Error(data.error||"AI generation failed.");const brief=String(data.brief||"");box.innerHTML='<b>VYBORA AI Creative Brief · '+escapeText(format)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.65">'+escapeText(brief)+'</div><button class="ghost" id="saveBrief" style="margin-top:12px">Save this idea to Planner</button>';document.getElementById("saveBrief").addEventListener("click",async()=>{await saveIdea(topic,format,brief);show("planner")})}catch(error){box.innerHTML='<b>Creator Studio</b><div class="idea">'+escapeText(error.message)+'</div><p class="muted">Your idea is safe. Please check the Gemini API Preview configuration and try again.</p>'}finally{btn.disabled=false;btn.textContent="Generate with VYBORA AI ✦"}});
+document.getElementById("generate").addEventListener("click",async()=>{const topic=document.getElementById("topic").value.trim();const format=document.getElementById("format").value;const audience=document.getElementById("audience").value.trim()||"curious viewers";const box=document.getElementById("brief");const btn=document.getElementById("generate");if(!topic){box.classList.add("show");box.textContent="Please enter a topic first.";return}btn.disabled=true;btn.textContent="Creating your brief…";box.classList.add("show");box.textContent="VYBORA AI is shaping your idea…";try{const {data:sessionData}=await supabaseClient.auth.getSession();const accessToken=sessionData.session?.access_token;if(!accessToken)throw new Error("Please sign in to use AI generation.");const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic,format,audience,language:getCreatorKit().language||"English",platform:getCreatorKit().platform||"Multiple platforms"})});const data=await response.json();if(!response.ok)throw new Error(data.error||"AI generation failed.");const brief=String(data.brief||"");box.innerHTML='<b>VYBORA AI Creative Brief · '+escapeText(format)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.65">'+escapeText(brief)+'</div><button class="ghost" id="saveBrief" style="margin-top:12px">Save this idea to Planner</button>';document.getElementById("saveBrief").addEventListener("click",async()=>{await saveIdea(topic,format,brief);show("planner")})}catch(error){box.innerHTML='<b>Creator Studio</b><div class="idea">'+escapeText(error.message)+'</div><p class="muted">Your idea is safe. Please check the Gemini API Preview configuration and try again.</p>'}finally{btn.disabled=false;btn.textContent="Generate with VYBORA AI ✦"}});
 function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function getPlans(){try{return JSON.parse(localStorage.getItem("vybora_creator_plans")||"[]")}catch(e){return []}}
 function addLocalPlan(value){const plans=getPlans();plans.unshift({text:value,done:false});localStorage.setItem("vybora_creator_plans",JSON.stringify(plans));renderPlans()}
@@ -683,14 +686,28 @@ document.getElementById("addPlan").addEventListener("click",async()=>{const el=d
 function getCreatorKit(){
  try{return JSON.parse(localStorage.getItem("vybora_creator_kit")||"{}")}catch(e){return {}}
 }
-function loadCreatorKit(){
- const p=getCreatorKit();
+function applyCreatorKit(p){
  [["creatorDisplayName","name"],["creatorNiche","niche"],["creatorAudience","audience"],["creatorPlatform","platform"],["creatorLanguage","language"],["creatorVoice","voice"],["creatorBio","bio"]].forEach(([id,key])=>{const el=document.getElementById(id);if(el&&p[key]!==undefined)el.value=p[key]});
 }
-document.getElementById("saveCreatorKit").addEventListener("click",()=>{
+function loadCreatorKit(){applyCreatorKit(getCreatorKit())}
+async function loadCreatorKitFromCloud(){
+ if(!currentUser)return;
+ const {data,error}=await supabaseClient.from("vybora_creator_profiles").select("profile").eq("user_id",currentUser.id).maybeSingle();
+ if(error){document.getElementById("creatorKitStatus").textContent="Cloud profile could not be loaded. Your local profile is still available.";return}
+ if(data&&data.profile&&typeof data.profile==="object"){
+  localStorage.setItem("vybora_creator_kit",JSON.stringify(data.profile));
+  applyCreatorKit(data.profile);
+  document.getElementById("creatorKitStatus").textContent="Creator Kit synced securely to your account ✓";
+ }
+}
+document.getElementById("saveCreatorKit").addEventListener("click",async()=>{
  const p={name:document.getElementById("creatorDisplayName").value.trim(),niche:document.getElementById("creatorNiche").value.trim(),audience:document.getElementById("creatorAudience").value.trim(),platform:document.getElementById("creatorPlatform").value,language:document.getElementById("creatorLanguage").value,voice:document.getElementById("creatorVoice").value,bio:document.getElementById("creatorBio").value.trim()};
  localStorage.setItem("vybora_creator_kit",JSON.stringify(p));
- document.getElementById("creatorKitStatus").textContent="Creator Kit saved on this device ✓";
+ const status=document.getElementById("creatorKitStatus");
+ if(!currentUser){status.textContent="Saved on this device. Sign in to sync your Creator Kit across devices.";return}
+ status.textContent="Saving Creator Kit to your account…";
+ const {error}=await supabaseClient.from("vybora_creator_profiles").upsert({user_id:currentUser.id,profile:p,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+ status.textContent=error?"Saved on this device, but cloud sync failed: "+error.message:"Creator Kit saved and synced to your account ✓";
 });
 document.getElementById("useCreatorKit").addEventListener("click",()=>{
  const p=getCreatorKit();
@@ -707,5 +724,5 @@ loadCreatorKit();
 renderPlans();
 refreshAuth();
 </script>
-<a class="social-shortcut" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social in a new tab">Open VYBORA Social ↗</a>
+<a class="social-shortcut" href="/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social in a new tab">Open VYBORA Social ↗</a>
 </body></html>
