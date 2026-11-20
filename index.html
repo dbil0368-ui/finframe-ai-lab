@@ -626,6 +626,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <canvas id="photoCanvas" width="900" height="650"></canvas>
    <div class="actions">
     <button class="secondary-btn" onclick="resetPhoto()">↩ Reset</button>
+    <button onclick="enhancePhotoWithAI()">✨ AI Enhance</button>
     <button onclick="downloadCanvas('photoCanvas','finframe-enhanced-photo.png')">⬇ Download Photo</button>
    </div>
    <p id="photoStatus">Upload a photo to begin.</p>
@@ -643,7 +644,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <label>Shadow Strength: <span id="shadowVal">20</span></label><input type="range" id="shadow" min="0" max="50" value="20">
    <canvas id="productCanvas" width="1000" height="1000"></canvas>
    <div class="actions">
-    <button onclick="createProduct()">✨ Create Design</button>
+    <button onclick="createProduct()">Create Manual Design</button>
+    <button onclick="createProductWithAI()">✨ Generate Product Visual with AI</button>
     <button class="secondary-btn" onclick="downloadCanvas('productCanvas','finframe-product-design.png')">⬇ Download Design</button>
    </div>
    <p id="productStatus">Upload a product photo to begin.</p>
@@ -660,7 +662,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <label>Text Color</label><input type="color" id="posterText" value="#ffffff">
    <canvas id="posterCanvas" width="1000" height="1200"></canvas>
    <div class="actions">
-    <button onclick="createPoster()">✨ Create Poster</button>
+    <button onclick="createPoster()">Create Manual Poster</button>
+    <button onclick="createPosterWithAI()">✨ Generate Poster with AI</button>
     <button class="secondary-btn" onclick="downloadCanvas('posterCanvas','finframe-poster.png')">⬇ Download Poster</button>
    </div>
    <p id="posterStatus">Upload an image to begin.</p>
@@ -1391,6 +1394,51 @@ async function callVyboraCreatorAI({topic,format,mode,instruction,platform='Web 
  if(!response.ok)throw new Error(data.error||'VYBORA AI could not complete this request.');
  if(!data.brief||typeof data.brief!=='string')throw new Error('VYBORA AI returned an empty result.');
  return data.brief.trim();
+}
+async function resizeImageFile(file,maxSide=1024){
+ if(!file||!file.type.startsWith('image/'))throw new Error('Please select an image file first.');
+ const source=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('Could not read the selected image.'));img.src=reader.result;};reader.onerror=()=>reject(new Error('Could not read the selected image.'));reader.readAsDataURL(file);});
+ const scale=Math.min(1,maxSide/Math.max(source.width,source.height));
+ const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
+ canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+ return canvas.toDataURL('image/jpeg',0.82);
+}
+async function callVyboraImageAI({prompt,imageData='',aspectRatio='1:1'}){
+ const client=window.vyClient;
+ if(!client||!client.auth)throw new Error('VYBORA account service is still loading. Refresh the page and try again.');
+ const sessionResult=await client.auth.getSession();
+ if(sessionResult.error)throw sessionResult.error;
+ const token=sessionResult.data?.session?.access_token;
+ if(!token)throw new Error('Please sign in to use VYBORA AI Studio.');
+ const response=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({prompt,imageData,aspectRatio}),signal:AbortSignal.timeout(120000)});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||'VYBORA image generation failed.');
+ if(typeof data.image!=='string'||!data.image.startsWith('data:image/'))throw new Error('VYBORA AI returned no usable image.');
+ return data.image;
+}
+async function putImageOnCanvas(dataUrl,canvasId){
+ const img=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Generated image could not be opened.'));image.src=dataUrl;});
+ const canvas=$(canvasId);canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+ canvas.getContext('2d').drawImage(img,0,0);
+}
+async function enhancePhotoWithAI(){
+ const file=$('photoFile').files[0],status=$('photoStatus');
+ if(!file){status.textContent='Upload a photo first.';return;}
+ status.textContent='AI is enhancing your photo…';
+ try{const data=await resizeImageFile(file);const image=await callVyboraImageAI({prompt:'Enhance this photo professionally. Preserve the original subject and identity. Improve lighting, clarity, natural color, detail and composition without changing the scene or adding objects.',imageData:data,aspectRatio:'4:3'});await putImageOnCanvas(image,'photoCanvas');status.textContent='AI photo enhancement complete. Download the result when ready.';saveRecent('photo');}
+ catch(error){status.textContent='AI enhancement unavailable: '+(error.message||'Please try again.');}
+}
+async function createProductWithAI(){
+ const status=$('productStatus'),file=$('productFile').files[0],name=$('productNameInput').value.trim()||'Premium Product',tagline=$('productTagline').value.trim();
+ status.textContent='AI is creating your product visual…';
+ try{const data=file?await resizeImageFile(file):'';const image=await callVyboraImageAI({prompt:'Create a premium e-commerce product hero visual for '+name+'. '+(tagline?'Tagline concept: '+tagline+'. ':'')+'Use a polished studio setup, clean background, professional commercial lighting, realistic materials, elegant composition and no extra text or watermarks. Preserve the product from the reference image if provided.',imageData:data,aspectRatio:'1:1'});await putImageOnCanvas(image,'productCanvas');status.textContent='AI product visual generated. Download the design when ready.';saveRecent('product');}
+ catch(error){status.textContent='AI product generation unavailable: '+(error.message||'Please try again.');}
+}
+async function createPosterWithAI(){
+ const status=$('posterStatus'),file=$('posterFile').files[0],title=$('posterTitle').value.trim()||'A NEW BEGINNING',subtitle=$('posterSubtitle').value.trim();
+ status.textContent='AI is designing your poster…';
+ try{const data=file?await resizeImageFile(file):'';const image=await callVyboraImageAI({prompt:'Design a striking, professional promotional poster. Main headline concept: '+title+'. Supporting message: '+subtitle+'. Create a balanced, high-impact layout with strong visual hierarchy, attractive typography, clean spacing and premium art direction. If a reference image is supplied, incorporate its subject faithfully. Ensure any text is spelled exactly as supplied; if text rendering is unreliable, leave clean space for text rather than inventing words. No watermarks.',imageData:data,aspectRatio:'3:4'});await putImageOnCanvas(image,'posterCanvas');status.textContent='AI poster generated. Download the design when ready.';saveRecent('poster');}
+ catch(error){status.textContent='AI poster generation unavailable: '+(error.message||'Please try again.');}
 }
 async function buildProject(){
  const type=$('projectType').value;
