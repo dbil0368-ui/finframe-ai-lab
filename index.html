@@ -571,7 +571,7 @@ body.vybora-mode.vy-reels-mode #vyCloudFeed #vyFeed>.vy-card .vy-head,body.vybor
   <div class="card">
    <h3>Current plan: <span id="billingCurrentPlan">Checking…</span></h3>
    <p id="billingSubscriptionStatus" role="status" aria-live="polite">Sign in to check your current subscription.</p>
-    <button class="primary-btn" type="button" onclick="show(\'vybora\');setTimeout(()=>{const account=document.getElementById(\'vyCloudAuth\');if(account)account.scrollIntoView({behavior:\'smooth\',block:\'center\'})},120)">🔐 Sign in / Create account</button>
+    <button class="primary-btn" type="button" onclick="show('vybora');setTimeout(()=>{const account=document.getElementById('vyCloudAuth');if(account)account.scrollIntoView({behavior:'smooth',block:'center'})},120)">🔐 Sign in / Create account</button>
    <p class="small" id="billingCheckoutNotice">Checkout is disabled until Razorpay Test Mode keys and a webhook secret are configured. No payments are collected.</p>
    <button class="secondary-btn" type="button" onclick="loadVyboraBilling()">↻ Refresh billing status</button>
   </div>
