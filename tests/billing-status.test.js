@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import billingStatus from "../api/billing/status.js";
 
 async function invoke({ webhookSecret = "test-webhook-secret" } = {}) {
+  let subscriptionRequestUrl = "";
   const oldFetch = globalThis.fetch;
   const keys = ["SUPABASE_SECRET_KEY", "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET", "RAZORPAY_WEBHOOK_SECRET"];
   const previous = Object.fromEntries(keys.map(key => [key, process.env[key]]));
@@ -13,7 +14,7 @@ async function invoke({ webhookSecret = "test-webhook-secret" } = {}) {
   else delete process.env.RAZORPAY_WEBHOOK_SECRET;
   globalThis.fetch = async url => {
     if (String(url).endsWith("/auth/v1/user")) return { ok: true, json: async () => ({ id: "user-123" }) };
-    if (String(url).includes("/billing_subscriptions?")) return { ok: true, json: async () => [] };
+    if (String(url).includes("/billing_subscriptions?")) { subscriptionRequestUrl = String(url); return { ok: true, json: async () => [] }; }
     if (String(url).includes("/billing_plans?")) return { ok: true, json: async () => [] };
     throw new Error("Unexpected URL: " + url);
   };
@@ -25,7 +26,7 @@ async function invoke({ webhookSecret = "test-webhook-secret" } = {}) {
   };
   try {
     await billingStatus({ method: "GET", headers: { authorization: "Bearer test-session" } }, res);
-    return res;
+    return { res, subscriptionRequestUrl };
   } finally {
     globalThis.fetch = oldFetch;
     for (const key of keys) {
@@ -36,16 +37,17 @@ async function invoke({ webhookSecret = "test-webhook-secret" } = {}) {
 }
 
 test("billing status exposes only a test-mode readiness boolean", async () => {
-  const res = await invoke();
+  const { res, subscriptionRequestUrl } = await invoke();
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.checkoutAvailable, true);
   assert.equal(res.body.checkoutMode, "test");
   assert.equal(res.body.subscription, null);
+  assert.match(subscriptionRequestUrl, /environment=eq\\.test/);
   assert.equal("keyId" in res.body, false);
 });
 
 test("billing stays disabled until a webhook secret exists", async () => {
-  const res = await invoke({ webhookSecret: "" });
+  const { res } = await invoke({ webhookSecret: "" });
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.checkoutAvailable, false);
   assert.equal(res.body.checkoutMode, "disabled");
