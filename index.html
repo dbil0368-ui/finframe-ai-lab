@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="google-site-verification" content="uo2O1fIq7zNGBWy3UVBBP0NsmUSVgbY1_o6WNaLtxeY" />
 <meta name="theme-color" content="#090914">
-<meta name="description" content="FinFrame AI Lab — creative tools for building, designing and exploring ideas.">
+<meta name="description" content="VYBORA — a creator workspace for discovering trends and building creative workflows.">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icons/finframe.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icons/finframe.svg">
-<title>FinFrame AI Lab</title>
+<link rel="icon" href="./icons/vybora.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/vybora.svg">
+<title>VYBORA | Creator Workspace</title>
 <style>
 :root{
  --bg:#090914;
@@ -446,7 +446,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 <aside class="sidebar">
  <div class="brand">
   <div class="brand-icon">✨</div>
-  <span>FinFrame AI Lab</span>
+  <span>VYBORA</span>
  </div>
  <button class="side-btn active" data-page="home" onclick="show('home')">🏠 &nbsp; Home</button>
  <button class="side-btn" data-page="builder" onclick="show('builder')">🚀 &nbsp; Project Builder</button>
@@ -463,7 +463,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
  <button class="side-btn" data-page="settings" onclick="show('settings')">⚙️ &nbsp; Settings & Backup</button>
  <div class="sidebar-bottom">
   <div class="sidebar-note">
-   <strong>✨ FinFrame Workspace</strong><br>
+   <strong>✨ VYBORA Workspace</strong><br>
    Your creative tools in one place.<br><br>
    <span>Free browser-based prototype</span>
   </div>
@@ -473,7 +473,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 <div class="main-area">
  <div class="topbar">
   <button class="icon-btn menu-toggle" aria-label="Open menu" onclick="toggleMobileMenu()">☰</button>
-  <div class="top-title" id="topTitle">✨ FinFrame AI Lab</div>
+  <div class="top-title" id="topTitle">✨ VYBORA</div>
 
  </div>
 
@@ -484,7 +484,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <div class="hero">
     <div class="hero-logo">✨</div>
     <h1>What can I create for you?</h1>
-    <p>Welcome to FinFrame AI Lab.<br>Build, design, edit and explore your ideas.</p>
+    <p>Welcome to VYBORA.<br>Build, design, edit and explore your ideas.</p>
    </div>
 
    <div class="prompt-box">
@@ -556,8 +556,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    </div>
 
    <div class="card" style="margin-top:25px">
-    <h2>✨ About FinFrame AI Lab</h2>
-    <p>FinFrame AI Lab is a browser-based creative toolkit. You can use its image tools directly in your browser.</p>
+    <h2>✨ About VYBORA</h2>
+    <p>VYBORA brings creator tools and social content workflows together in one browser-based workspace. You can use its image tools directly in your browser.</p>
     <p class="small">This prototype does not connect to a real AI generation service. Some features depend on browser and device support.</p>
    </div>
   </div>
@@ -568,8 +568,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   <div class="page-title"><h2>🔐 Privacy & Security</h2><p>Your privacy matters. Here is what this browser-based prototype does and does not store.</p></div>
   <div class="card">
    <h3>What this version stores</h3>
-   <p>FinFrame AI Lab currently saves a short list of recently opened tool names and timestamps in this browser's local storage. It does not save your prompts, uploaded images, generated files, passwords or payment details there.</p>
-   <p>Uploaded images are processed in your browser for the selected tool. This static version does not send them to a FinFrame server.</p>
+   <p>VYBORA currently saves a short list of recently opened tool names and timestamps in this browser's local storage. It does not save your prompts, uploaded images, generated files, passwords or payment details there.</p>
+   <p>Uploaded images are processed in your browser for the selected tool. This static version does not upload them to a VYBORA image-processing server.</p>
    <h3>What this version does not provide</h3>
    <p>This prototype has no user accounts, cloud sync, server-side encryption, or payment processing. Your browser/device and any browser extensions remain outside our control. Do not enter sensitive personal, financial, medical or confidential information.</p>
    <h3>Control your recent activity</h3>
@@ -989,7 +989,7 @@ body.vybora-mode #vybora .vy-settings-row button{flex:0 0 auto}
   </div>
  </section>
  <section id="settings">
-  <div class="page-title"><h2>⚙️ Settings & Backup</h2><p>Personalize FinFrame and keep a copy of your workspace data.</p></div>
+  <div class="page-title"><h2>⚙️ Settings & Backup</h2><p>Personalize VYBORA and keep a copy of your workspace data.</p></div>
   <div class="card"><h3>🎨 Appearance</h3><p>Switch between dark and light mode. Your choice is saved on this device.</p><div class="actions"><button onclick="setTheme('dark')">🌙 Dark Mode</button><button class="secondary-btn" onclick="setTheme('light')">☀️ Light Mode</button></div><p id="themeStatus" class="small" role="status">Choose the look you prefer.</p></div>
   <div class="card"><h3>🖌️ Accent Color</h3><p>Choose the highlight color used by buttons and creative tools.</p><div class="grid"><div><label for="accentColor">Custom color</label><input id="accentColor" type="color" value="#9b70ff" onchange="savePreferences()"></div><div><label for="accentPreset">Quick presets</label><select id="accentPreset" onchange="applyAccentPreset(this.value)"><option value="">Choose a preset</option><option value="#9b70ff">Violet</option><option value="#2585ff">Ocean Blue</option><option value="#16a085">Emerald</option><option value="#e67e22">Sunset Orange</option><option value="#e84393">Pink</option></select></div></div></div>
   <div class="card"><h3>📐 Interface Preferences</h3><label for="textScale">Text size: <strong id="textScaleValue">16px</strong></label><input id="textScale" type="range" min="14" max="19" step="1" value="16" oninput="previewTextScale(this.value)" onchange="savePreferences()"><label><input id="compactMode" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Compact layout (more content on screen)</label><label><input id="reduceMotion" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> Reduce animations</label><label><input id="highContrast" type="checkbox" style="width:auto;margin-right:8px" onchange="savePreferences()"> High contrast text</label><div class="actions"><button class="secondary-btn" onclick="resetPreferences()">↩️ Reset Appearance</button></div><p id="preferencesStatus" class="small" role="status">Your preferences are saved in this browser.</p></div>
@@ -1009,10 +1009,10 @@ body.vybora-mode #vybora .vy-settings-row button{flex:0 0 auto}
 <div class="actions"><button class="secondary-btn" onclick="resetAllLocalData()">15. Reset all local workspace data</button></div>
 <p id="extraSettingsStatus" class="small" role="status">These options only affect this browser on this device.</p></div>
 <div class="card"><h3>📦 Workspace Backup</h3><p>Export your saved Brand Kit, recent activity and appearance setting into one JSON backup file.</p><div class="actions"><button onclick="exportWorkspaceBackup()">⬇️ Download Backup</button></div><label for="workspaceBackupFile">Restore a backup file</label><input id="workspaceBackupFile" type="file" accept=".json,application/json"><div class="actions"><button class="secondary-btn" onclick="importWorkspaceBackup()">↩️ Restore Backup</button></div><p id="backupStatus" class="small" role="status">Your backup stays on your device unless you choose to share it.</p></div>
-  <div class="card"><h3>ℹ️ About this prototype</h3><p>FinFrame AI Lab is a free browser-based prototype. Your saved data is stored locally in this browser; clearing browser site data may remove it.</p></div>
+  <div class="card"><h3>ℹ️ About this prototype</h3><p>VYBORA includes browser-based prototype tools. Your saved data is stored locally in this browser; clearing browser site data may remove it.</p></div>
  </section>
  </main>
- <footer>FinFrame AI Lab • Free Browser Prototype • Made with ❤️</footer>
+ <footer>VYBORA • Creator Workspace • Made with ❤️</footer>
 </div>
 </div>
 
@@ -1021,7 +1021,7 @@ body.vybora-mode #vybora .vy-settings-row button{flex:0 0 auto}
 const $=id=>document.getElementById(id);
 
 const pageNames={
- home:'✨ FinFrame AI Lab',
+ home:'✨ VYBORA',
  builder:'🚀 Project Builder',
  photo:'📸 Photo Enhancer',
  product:'💎 Product Studio',
@@ -1195,7 +1195,7 @@ window.show=function(id){
   button.classList.toggle('active',button.dataset.page===id);
  });
  const title=document.getElementById('topTitle');
- if(title)title.textContent=pageNames[id]||'FinFrame AI Lab';
+ if(title)title.textContent=pageNames[id]||'VYBORA';
  if(document.body.classList.contains('menu-open'))window.closeMobileMenu();
  window.scrollTo({top:0,behavior:'auto'});
 };
@@ -1328,7 +1328,7 @@ function escapeHTML(value){
 }
 function makeStarterWebsite(name,idea,type){
  const safeName=escapeHTML(name);
- const safeIdea=escapeHTML(idea||'A fresh project made with FinFrame AI Lab.');
+ const safeIdea=escapeHTML(idea||'A fresh project made with VYBORA.');
  const isGame=type.toLowerCase().includes('game');
  const isApp=type.toLowerCase().includes('app');
  const isShop=/shop|store|shopping|flipkart|ecommerce|e-commerce|cart|product/i.test(name+' '+idea);
@@ -1348,7 +1348,7 @@ function makeStarterWebsite(name,idea,type){
 <article class="product" data-name="camera"><div class="photo">📷</div><h3>Digital Camera</h3><p>Capture your best moments</p><div class="price">₹5,499</div><button onclick="addToCart('Digital Camera',5499)">Add to Cart</button></article>
 <article class="product" data-name="coffee maker"><div class="photo">☕</div><h3>Coffee Maker</h3><p>Fresh coffee at home</p><div class="price">₹1,299</div><button onclick="addToCart('Coffee Maker',1299)">Add to Cart</button></article>
 </section><section class="cartbox" id="cartbox"><h2>Your Cart</h2><div id="cartitems"></div><p><b>Total: ₹<span id="total">0</span></b></p><button onclick="clearCart()" style="background:#2874f0;color:white;border:0;padding:10px 15px">Clear Cart</button></section></main>
-<footer class="foot">Demo storefront · Made with FinFrame AI Lab</footer>
+<footer class="foot">Demo storefront · Made with VYBORA</footer>
 <script>
 const cart=[];function addToCart(name,price){cart.push({name,price});document.getElementById('count').textContent=cart.length;renderCart()}
 function renderCart(){document.getElementById('cartitems').innerHTML=cart.length?cart.map(x=>'<div class="cartrow"><span>'+x.name+'</span><b>₹'+x.price.toLocaleString('en-IN')+'</b></div>').join(''):'<p class="empty">Your cart is empty.</p>';document.getElementById('total').textContent=cart.reduce((s,x)=>s+x.price,0).toLocaleString('en-IN')}
@@ -1373,7 +1373,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    '<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#211b35}.nav{display:flex;justify-content:space-between;align-items:center;padding:18px max(5%,calc((100% - 1050px)/2));background:#fff}.nav b{font-size:20px}.nav a{color:#6841c6;text-decoration:none}.hero{padding:75px 20px;text-align:center;background:linear-gradient(135deg,#6d49ce,#e66ac1);color:white}.hero h1{font-size:clamp(32px,6vw,58px);margin:0 0 15px}.hero p{max-width:650px;margin:0 auto 25px;line-height:1.6}.btn,button{display:inline-block;background:#fff;color:#5732b0;border:0;border-radius:12px;padding:13px 20px;font-weight:bold;text-decoration:none;cursor:pointer}.wrap{max-width:1050px;margin:35px auto;padding:0 18px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;padding:24px;border-radius:18px;box-shadow:0 8px 30px #35205c12}.emoji{font-size:30px}footer{text-align:center;padding:30px;color:#746b88}</style></head><body>',
    '<nav class="nav"><b>FF_SAFE_NAME_TOKEN</b><a href="#about">About</a></nav>',
    '<header class="hero"><h1>FF_TITLE_TOKEN</h1><p>FF_SAFE_IDEA_TOKEN</p><a class="btn" href="#features">FF_ACTION_TOKEN</a></header>',
-   '<main class="wrap" id="features"><div class="cards">FF_CARDS_TOKEN</div><section class="card" id="about" style="margin-top:18px"><h2>About this project</h2><p>Built with an editable FinFrame AI Lab starter template.</p></section></main>',
+   '<main class="wrap" id="features"><div class="cards">FF_CARDS_TOKEN</div><section class="card" id="about" style="margin-top:18px"><h2>About this project</h2><p>Built with an editable VYBORA starter template.</p></section></main>',
    '<footer>Made with care · FF_SAFE_NAME_TOKEN</footer>',
    '<script>const playButton=document.getElementById("play");if(playButton){playButton.addEventListener("click",()=>{const score=document.getElementById("score");score.textContent=String(Number(score.textContent)+1);});}<\/script>',
    '</body></html>'
@@ -1641,7 +1641,7 @@ async function makeVideo(){
   ctx.font='28px Arial';ctx.fillText(subtitle,360,815,680);
   ctx.fillStyle='#b58cff';ctx.fillRect(0,870,c.width,30);
   ctx.fillStyle='#ffffff';ctx.font='20px Arial';
-  ctx.fillText('FinFrame AI Lab',360,890);
+  ctx.fillText('VYBORA',360,890);
  }
  drawFrame();
  const interval=setInterval(()=>{
