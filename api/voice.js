@@ -66,14 +66,23 @@ export default async function handler(req, res) {
     const audioPart = (data?.candidates?.[0]?.content?.parts || []).find(part => part?.inlineData?.data && /^audio\//i.test(part.inlineData.mimeType || ""));
     if (!audioPart) return send(res, 502, { error: "Gemini returned no audio. Please try another script." });
     const rawAudio = Buffer.from(audioPart.inlineData.data, "base64");
-    const sampleRate = Number((String(audioPart.inlineData.mimeType).match(/rate=(\d+)/i) || [])[1]) || 24000;
-    const wav = Buffer.alloc(44 + rawAudio.length);
-    wav.write("RIFF", 0); wav.writeUInt32LE(36 + rawAudio.length, 4); wav.write("WAVE", 8);
-    wav.write("fmt ", 12); wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20);
-    wav.writeUInt16LE(1, 22); wav.writeUInt32LE(sampleRate, 24);
-    wav.writeUInt32LE(sampleRate * 2, 28); wav.writeUInt16LE(2, 32);
-    wav.writeUInt16LE(16, 34); wav.write("data", 36); wav.writeUInt32LE(rawAudio.length, 40);
-    rawAudio.copy(wav, 44);
+    const mimeType = String(audioPart.inlineData.mimeType || "").toLowerCase();
+    // Gemini 3.8 TTS can return a complete WAV file, while PCM-oriented
+    // responses contain headerless 16-bit mono samples. Do not wrap WAV twice.
+    const hasWavHeader = mimeType.includes("wav") || rawAudio.subarray(0, 4).toString("ascii") === "RIFF";
+    let wav;
+    if (hasWavHeader) {
+      wav = rawAudio;
+    } else {
+      const sampleRate = Number((mimeType.match(/rate=(\d+)/i) || [])[1]) || 24000;
+      wav = Buffer.alloc(44 + rawAudio.length);
+      wav.write("RIFF", 0); wav.writeUInt32LE(36 + rawAudio.length, 4); wav.write("WAVE", 8);
+      wav.write("fmt ", 12); wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20);
+      wav.writeUInt16LE(1, 22); wav.writeUInt32LE(sampleRate, 24);
+      wav.writeUInt32LE(sampleRate * 2, 28); wav.writeUInt16LE(2, 32);
+      wav.writeUInt16LE(16, 34); wav.write("data", 36); wav.writeUInt32LE(rawAudio.length, 40);
+      rawAudio.copy(wav, 44);
+    }
     return send(res, 200, {
       audio: "data:audio/wav;base64," + wav.toString("base64"),
       model: TTS_MODEL,
