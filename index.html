@@ -1981,18 +1981,24 @@ function resetPreferences(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
   if(!email||password.length<8){say('Enter a valid email and a password with at least 8 characters.');return;}
   say('Creating your account…');
-  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://vybora-trend-hub.vercel.app/'}});
-  if(r.error){say(r.error.message);return;}
-  if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
-  else say('Account created. Check your email for the confirmation link, then log in here.');
+  try{
+   const r=await withTimeout(db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://vybora-trend-hub.vercel.app/'} }),20000,'Account creation');
+   if(r.error){say(r.error.message);return;}
+   if(r.data.user && r.data.session){
+    currentUser=r.data.user;await signedIn();
+    withTimeout(profileFor(currentUser),12000,'Profile setup').then(()=>say('Account created. Your profile is ready.')).catch(error=>{console.warn('VYBORA profile setup:',error);say('Account created, but your profile could not sync yet. You can retry after signing in.');});
+   }else say('Account created. Check your email for the confirmation link, then log in here.');
+  }catch(error){say('Account creation failed: '+(error&&error.message?error.message:'Please check your connection and try again.'));console.error('VYBORA signup error:',error);}
  };
  window.vyResetPassword=async function(){
   const email=el('vyAuthEmail').value.trim();
   if(!email){say('Enter your account email first, then tap Forgot password?');return;}
   say('Sending password reset email…');
-  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://vybora-trend-hub.vercel.app/'});
-  if(r.error){say(r.error.message);return;}
-  say('Password reset email sent. Open the link in your inbox, then set a new password here.');
+  try{
+   const r=await withTimeout(db.auth.resetPasswordForEmail(email,{redirectTo:'https://vybora-trend-hub.vercel.app/'}),15000,'Password reset email');
+   if(r.error){say(r.error.message);return;}
+   say('Password reset email sent. Open the link in your inbox, then set a new password here.');
+  }catch(error){say('Could not send the password reset email: '+(error&&error.message?error.message:'Please try again.'));}
  };
  window.vySaveNewPassword=async function(){
   const password=el('vyNewPassword').value;
@@ -2036,7 +2042,10 @@ function resetPreferences(){
    console.error('VYBORA login error:',err);
   }
  };
- window.vySignOut=async function(){const r=await db.auth.signOut();if(r.error){say(r.error.message);return;}currentUser=null;await signedOut();};
+ window.vySignOut=async function(){
+  try{const r=await withTimeout(db.auth.signOut(),12000,'Sign out');if(r.error)throw r.error;currentUser=null;await signedOut();}
+  catch(error){say('Could not sign out: '+(error&&error.message?error.message:'Please try again.'));}
+ };
  async function signedIn(){
   document.body.classList.add('vy-account-connected');
   el('vyAuthForm').hidden=true;el('vyAuthSignedIn').hidden=false;
