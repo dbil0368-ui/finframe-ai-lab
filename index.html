@@ -1379,14 +1379,39 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    '</body></html>'
   ].join('').replaceAll('FF_SAFE_NAME_TOKEN',safeName).replaceAll('FF_SAFE_IDEA_TOKEN',safeIdea).replaceAll('FF_TITLE_TOKEN',title).replaceAll('FF_ACTION_TOKEN',action).replaceAll('FF_CARDS_TOKEN',cards);
 }
-function buildProject(){
+async function callVyboraCreatorAI({topic,format,mode,instruction,platform='Web / Social',audience='people who may use this project',language='English'}){
+ const client=window.vyClient;
+ if(!client||!client.auth)throw new Error('VYBORA account service is still loading. Refresh the page and try again.');
+ const sessionResult=await client.auth.getSession();
+ if(sessionResult.error)throw sessionResult.error;
+ const token=sessionResult.data?.session?.access_token;
+ if(!token)throw new Error('Please sign in to use VYBORA AI.');
+ const response=await fetch('/api/creator',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({topic,format,mode,instruction,platform,audience,language}),signal:AbortSignal.timeout(90000)});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||'VYBORA AI could not complete this request.');
+ if(!data.brief||typeof data.brief!=='string')throw new Error('VYBORA AI returned an empty result.');
+ return data.brief.trim();
+}
+async function buildProject(){
  const type=$('projectType').value;
  const name=$('projectName').value.trim()||'My Project';
  const idea=$('projectIdea').value.trim();
- $('projectCode').value=makeStarterWebsite(name,idea,type);
- refreshProjectPreview();
- $('projectStatus').textContent='Starter code generated. Edit the code and tap Update Preview.';
- saveRecent('builder');
+ if(!idea){$('projectStatus').textContent='Describe what your project should do first.';return;}
+ const button=document.querySelector('#builder button[onclick="buildProject()"]');
+ if(button){button.disabled=true;button.textContent='✨ Building with AI…';}
+ $('projectStatus').textContent='VYBORA AI is creating your project code…';
+ try{
+  const generated=await callVyboraCreatorAI({topic:name+' — '+idea,format:'Complete single-file responsive HTML website',mode:'website_code',platform:'Web',audience:'the target visitors described in the project brief',language:'English',instruction:'Return ONLY a complete, valid, self-contained HTML5 document. No markdown fences, no explanations. Include embedded CSS and vanilla JavaScript, responsive mobile layout, accessible semantic markup, working navigation and functional interactions. Project type: '+type+'. Project name: '+name+'. Requirements: '+idea+'. Use polished visual design and realistic placeholder content; do not claim external services are connected.'});
+  let code=generated.replace(/^\s*```(?:html)?\s*/i,'').replace(/\s*```\s*$/,'').trim();
+  const start=code.toLowerCase().indexOf('<!doctype html');
+  const htmlStart=code.toLowerCase().indexOf('<html');
+  if(start>0)code=code.slice(start);else if(htmlStart>0)code=code.slice(htmlStart);
+  if(!/<html[\s>]/i.test(code)||!/<\/html>/i.test(code))throw new Error('AI returned text instead of a complete HTML page. Please try again with a more specific brief.');
+  $('projectCode').value=code;refreshProjectPreview();
+  $('projectStatus').textContent='AI website generated successfully. Review the preview, edit if needed, then download the HTML.';
+  saveRecent('builder');
+ }catch(error){$('projectStatus').textContent=error.message||'Could not generate the project. Please try again.';}
+ finally{if(button){button.disabled=false;button.textContent='Generate with AI';}}
 }
 function refreshProjectPreview(){
  const code=$('projectCode').value;
@@ -1515,18 +1540,15 @@ function createPoster(){
  saveRecent('poster');
 }
 
-function makeCaption(){
+async function makeCaption(){
  const topic=$('captionTopic').value.trim()||'our latest creation';
  const style=$('captionStyle').value;
- const samples={
- Professional:'Introducing '+topic+'. Thoughtfully created with quality and care. Discover more today. #Quality #Innovation',
- Funny:'We tried to keep '+topic+' a secret… but it is too good! 😄✨ #Fun',
- Inspirational:'Dream big, create boldly and celebrate '+topic+'. Every great idea starts somewhere. ✨',
- Promotional:'✨ SPECIAL UPDATE! Discover '+topic+'. Do not miss out—explore it today! #NewLaunch',
- 'Short and simple':'✨ '+topic+' — Made with love. ❤️'
- };
- $('captionOutput').textContent=samples[style];
- saveRecent('caption');
+ const output=$('captionOutput');
+ output.textContent='VYBORA AI is writing your caption…';
+ try{
+  const caption=await callVyboraCreatorAI({topic,format:'Social media caption with hashtags',mode:'caption',platform:'Instagram, Facebook and TikTok',audience:'social media followers',language:'English',instruction:'Write 3 distinct ready-to-post captions in the selected style: '+style+'. Topic: '+topic+'. Include relevant hashtags and one clear call to action. Keep each caption platform-friendly and avoid fabricated claims. Label options 1, 2 and 3.'});
+  output.textContent=caption;saveRecent('caption');
+ }catch(error){output.textContent='AI caption unavailable: '+(error.message||'Please try again.');}
 }
 function copyText(id){
  const text=$(id).textContent;
@@ -1691,7 +1713,10 @@ async function generateAiTryon(){
  const form=new FormData();form.append('person',person);form.append('garment',garment);
  button.disabled=true;button.textContent='Generating…';status.textContent='Sending images securely to the configured AI service…';wrap.classList.add('hidden');
  try{
-  const response=await fetch('./api/tryon',{method:'POST',body:form});
+  const sessionResult=await window.vyClient?.auth?.getSession();
+  const token=sessionResult?.data?.session?.access_token;
+  if(!token)throw new Error('Please sign in to use AI Virtual Try-On.');
+  const response=await fetch('./api/tryon',{method:'POST',headers:{Authorization:'Bearer '+token},body:form});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||'AI service is not configured yet. Please connect a compatible provider on the secure backend.');
   let image=data.imageUrl||data.image_url||data.imageBase64||data.image_base64||data.output;
