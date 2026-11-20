@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
+const BILLING_ENVIRONMENT = "test";
 
 function send(res, status, body) {
   res.setHeader("Cache-Control", "no-store");
@@ -62,7 +63,7 @@ export default async function handler(req, res) {
   if (!["starter", "pro"].includes(planKey)) return send(res, 400, { error: "Choose a valid plan." });
 
   try {
-    const existing = await db("billing_subscriptions?select=razorpay_subscription_id,status,plan_key&user_id=eq." + encodeURIComponent(user.id) + "&order=updated_at.desc&limit=1");
+    const existing = await db("billing_subscriptions?select=razorpay_subscription_id,status,plan_key&user_id=eq." + encodeURIComponent(user.id) + "&environment=eq." + BILLING_ENVIRONMENT + "&order=updated_at.desc&limit=1");
     if (existing[0] && ["created", "authenticated", "active", "pending", "halted"].includes(existing[0].status)) {
       return send(res, 409, { error: "You already have a subscription in progress or active. Refresh your billing status before starting another." });
     }
@@ -100,11 +101,12 @@ export default async function handler(req, res) {
       notes: { vybora_user_id: user.id, vybora_plan_key: planKey, customer_email: user.email || "" }
     });
 
-    await db("billing_subscriptions?on_conflict=user_id", {
+    await db("billing_subscriptions?on_conflict=user_id,environment", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify({
         user_id: user.id,
+        environment: BILLING_ENVIRONMENT,
         plan_key: planKey,
         razorpay_subscription_id: subscription.id,
         status: subscription.status || "created",

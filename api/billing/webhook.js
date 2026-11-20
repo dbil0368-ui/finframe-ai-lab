@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 export const config = { api: { bodyParser: false } };
+const BILLING_ENVIRONMENT = "test";
 async function rawBody(req) {
   const chunks = [];
   for await (const chunk of req) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
@@ -63,7 +64,7 @@ export default async function handler(req, res) {
       if (subscription?.charge_at) patch.charge_at = new Date(subscription.charge_at * 1000).toISOString();
       if (typeof subscription?.paid_count === "number") patch.paid_count = subscription.paid_count;
       if (payment?.id) patch.last_payment_id = payment.id;
-      await db("billing_subscriptions?razorpay_subscription_id=eq." + encodeURIComponent(subscriptionId), {
+      await db("billing_subscriptions?razorpay_subscription_id=eq." + encodeURIComponent(subscriptionId) + "&environment=eq." + BILLING_ENVIRONMENT, {
         method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch)
       });
     }
