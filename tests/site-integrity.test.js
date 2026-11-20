@@ -58,11 +58,11 @@ test("Social navigation resolves to the integrated VYBORA workspace", async () =
   assert.doesNotMatch(trend, /finframe-ai-dd76hpfan-clon3\.vercel\.app\/social\.html/i);
   assert.match(trend, /\.\/index\.html\?mode=vybora/);
   assert.match(premium, /\.\/index\.html\?mode=vybora/);
-  const executableScripts = [...workspace.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script\\s*>/gi)]
-    .filter(match => !/\\bsrc\\s*=/.test(match[1] || "") && !/application\\/ld\\+json/i.test(match[1] || ""))
+  const executableScripts = [...workspace.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]
+    .filter(match => !/\bsrc\s*=/.test(match[1] || "") && !/application\/ld\+json/i.test(match[1] || ""))
     .map(match => match[2] || "");
   assert.ok(executableScripts.some(source =>
-    /params\\.get\\('mode'\\) !== 'vybora'/.test(source) &&
-    /window\\.show\\('vybora'\\)/.test(source)
+    source.includes("params.get('mode') !== 'vybora'") &&
+    source.includes("window.show('vybora')")
   ), "the Social deep-link handler must be in an executable page script, not only generated HTML");
 });
