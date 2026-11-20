@@ -336,7 +336,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
   </section>
   <section class="view" id="trends">
    <div class="eyebrow">Live search signals</div><h1 class="heading">Trend Radar</h1><p class="sub">See Google's public Trending Now RSS feed for a selected country. Search volume is an approximate bucket, not an exact count.</p>
-   <div class="panel" style="margin:20px 0"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label for="trendRegion"><b>Region</b></label><select id="trendRegion" class="field" style="width:auto;min-width:150px"><option value="IN">India</option><option value="BD">Bangladesh</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="SG">Singapore</option><option value="DE">Germany</option><option value="FR">France</option><option value="JP">Japan</option></select><button class="primary" id="refreshTrends">Refresh trends ↻</button><span id="trendStatus" class="muted" aria-live="polite">Not loaded yet</span></div></div>
+   <div class="panel" style="margin:20px 0"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label for="trendRegion"><b>Region</b></label><select id="trendRegion" class="field" style="width:auto;min-width:150px"><option value="IN">India</option><option value="BD">Bangladesh</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="SG">Singapore</option><option value="DE">Germany</option><option value="FR">France</option><option value="JP">Japan</option><option value="BR">Brazil</option><option value="MX">Mexico</option><option value="ES">Spain</option><option value="IT">Italy</option><option value="NL">Netherlands</option><option value="NZ">New Zealand</option><option value="ZA">South Africa</option><option value="NG">Nigeria</option><option value="IE">Ireland</option><option value="KR">South Korea</option><option value="PH">Philippines</option><option value="ID">Indonesia</option><option value="MY">Malaysia</option><option value="PK">Pakistan</option><option value="AE">United Arab Emirates</option><option value="SA">Saudi Arabia</option><option value="TH">Thailand</option><option value="VN">Vietnam</option><option value="TR">Türkiye</option><option value="SE">Sweden</option><option value="NO">Norway</option><option value="DK">Denmark</option><option value="PL">Poland</option></select><button class="primary" id="refreshTrends">Refresh trends ↻</button><span id="trendStatus" class="muted" aria-live="polite">Not loaded yet</span></div></div>
    <div class="trend-tools" style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0">
     <input id="trendSearch" class="field" type="search" placeholder="Search trends in this country…" aria-label="Search trends" style="flex:1;min-width:190px;max-width:420px">
     <button class="ghost" id="copyTrendList" type="button">Copy trend titles</button>
@@ -386,11 +386,11 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <div class="actions"><button class="primary" id="saveCreatorKit" type="button">Save Creator Kit</button><button class="ghost" id="useCreatorKit" type="button">Use profile in Creator Studio</button></div>
     <p class="muted" id="creatorKitStatus" aria-live="polite" style="font-size:12px;margin-top:12px">Your profile is saved only in this browser on this device.</p>
    </div>
-   <div class="notice">Creator Kit currently stores this profile locally in your browser. It is not public and is not synced to your account or social platforms.</div>
+   <div class="notice">Creator Kit is saved locally and, when you sign in, synced privately to your VYBORA account across devices.</div>
   </section>
   <section class="view" id="billing">
    <div class="eyebrow">Simple creator plans</div><h1 class="heading">Plans & Billing</h1>
-   <p class="sub">Start with Free or explore the planned Premium membership. Payments are not enabled yet.</p>
+   <p class="sub">Start free, then upgrade to Premium when secure international checkout is configured. Premium is planned at $5 USD per month.</p>
    <div class="notice" id="billingStatus" aria-live="polite">Sign in to view your plan or start a subscription.</div>
    <div class="panel" style="margin-top:16px;max-width:900px">
     <div class="eyebrow">Invite creators · Earn Pro</div><h2 style="margin:8px 0">Refer & Earn</h2>
@@ -402,9 +402,9 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    </div>
    <div class="tools" style="margin-top:18px">
     <article class="tool-card"><div class="tool-icon">✦</div><h3>Free</h3><p><strong style="font-size:28px;color:#fff">₹0</strong> / forever</p><p>Explore the creator workspace with 3 AI generations per day.</p><span class="tag">AVAILABLE</span></article>
-    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">₹299</strong> / month</p><p>Planned expanded access for creators who need more room to build.</p><button class="ghost" type="button" disabled>Checkout coming soon</button></article>
+    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">$5</strong> USD / month</p><p>50 AI generations per day, Creator Studio, business campaign briefs and cloud planning.</p><button class="primary" id="startPremiumCheckout" type="button" disabled>Premium setup in progress</button><p><a href="/premium.html" style="color:var(--cyan)">View plan details →</a></p></article>
    </div>
-   <div class="notice">Premium is planned at ₹299/month. Checkout is disabled and no payment is collected. Premium generation limits and subscription terms will be confirmed before launch.</div>
+   <div class="notice">Premium is planned at $5 USD/month. Checkout stays disabled until Preview testing, Razorpay international-card approval, matching Live credentials, the USD plan ID and webhook verification are complete. No payment is collected until setup passes.</div>
    <p class="muted" style="font-size:12px">By continuing, you agree to the <a href="/terms.html" style="color:var(--violet)">Terms of Use</a> and acknowledge the <a href="/privacy.html" style="color:var(--violet)">Privacy Notice</a>.</p>
   </section>
   
@@ -416,9 +416,9 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    <h3>Turn a topic into a content brief</h3>
    <p>Creator Studio helps structure a topic into a hook, short-form video outline or caption direction. Review and fact-check every draft, add your own experience, and make the final content original before publishing.</p>
    <h3>Plan a consistent publishing routine</h3>
-   <p>Content Planner lets you save ideas and organise planned publishing dates. Creator Kit stores your niche, audience and preferred voice in your browser so you can keep your creative direction consistent.</p>
+   <p>Content Planner lets you save ideas and organise planned publishing dates. Creator Kit stores your niche, audience and preferred voice locally and can sync privately to your VYBORA account when signed in.</p>
    <h3>Free creator tools and Premium</h3>
-   <p>VYBORA offers a Free plan at ₹0 with 3 AI generations per day. A Premium plan is planned at ₹299 per month. Premium checkout is not active and no payment is currently collected. See <a href="premium.html" style="color:var(--cyan)">VYBORA plans and pricing</a> for the latest details.</p>
+   <p>VYBORA offers a Free plan at ₹0 with 3 AI generations per day. Premium is planned at $5 USD per month with an expanded daily AI allowance. Premium checkout remains disabled until payment provider approval and security checks are complete. See <a href="premium.html" style="color:var(--cyan)">VYBORA plans and pricing</a> for the latest details.</p>
    <p>Explore the <a href="electrical-a2z.html" style="color:var(--cyan)">Electrical A to Z learning guide</a> or return to the <a href="trend-hub.html" style="color:var(--cyan)">VYBORA Trend Hub</a>.</p>
   </section>
   <footer class="foot">VYBORA · Independent Trend & Creator Platform · Preview build 0.2 · <a href="/privacy.html" style="color:var(--muted)">Privacy</a> · <a href="/terms.html" style="color:var(--muted)">Terms</a></footer>
@@ -484,7 +484,7 @@ function escapeText(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;",
 let trendItems = [];
 let trendRegionCode = "IN";
 let showSavedOnly = false;
-const trendMarketNames = {IN:"India",BD:"Bangladesh",US:"United States",GB:"United Kingdom",CA:"Canada",AU:"Australia",SG:"Singapore",DE:"Germany",FR:"France",JP:"Japan"};
+const trendMarketNames = {IN:"India",BD:"Bangladesh",US:"United States",GB:"United Kingdom",CA:"Canada",AU:"Australia",SG:"Singapore",DE:"Germany",FR:"France",JP:"Japan",BR:"Brazil",MX:"Mexico",ES:"Spain",IT:"Italy",NL:"Netherlands",NZ:"New Zealand",ZA:"South Africa",NG:"Nigeria",IE:"Ireland",KR:"South Korea",PH:"Philippines",ID:"Indonesia",MY:"Malaysia",PK:"Pakistan",AE:"United Arab Emirates",SA:"Saudi Arabia",TH:"Thailand",VN:"Vietnam",TR:"Türkiye",SE:"Sweden",NO:"Norway",DK:"Denmark",PL:"Poland"};
 function getSavedTrends(){
  try{return JSON.parse(localStorage.getItem("vybora_saved_trends")||"[]")}catch(error){return []}
 }
@@ -561,9 +561,22 @@ document.getElementById("copyTrendList").addEventListener("click",async()=>{
  setTimeout(()=>{button.textContent="Copy trend titles"},1800);
 });
 loadTrends();
+document.getElementById("startPremiumCheckout").addEventListener("click",async()=>{
+ const button=document.getElementById("startPremiumCheckout"),box=document.getElementById("billingStatus");
+ if(!currentUser){box.textContent="Please sign in before subscribing.";return}
+ button.disabled=true;button.textContent="Opening secure checkout…";
+ try{
+  const {data}=await supabaseClient.auth.getSession(),token=data.session?.access_token;
+  if(!token)throw new Error("Your session expired. Please sign in again.");
+  const response=await fetch("/api/billing/create",{method:"POST",headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
+  const result=await response.json();if(!response.ok)throw new Error(result.error||"Could not start checkout.");
+  if(!/^https:\/\/rzp\.io\//i.test(result.checkout_url||""))throw new Error("Razorpay returned an invalid checkout link.");
+  window.location.assign(result.checkout_url);
+ }catch(error){box.textContent=error.message;button.disabled=false;button.textContent="Try Premium checkout again"}
+});
 async function loadBillingStatus(){
- const box=document.getElementById("billingStatus");
- if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
+ const box=document.getElementById("billingStatus"),button=document.getElementById("startPremiumCheckout");
+ if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";if(button){button.disabled=true;button.textContent="Sign in to subscribe"}return}
  box.textContent="Loading your billing status…";
  try{
   const {data}=await supabaseClient.auth.getSession();
@@ -571,11 +584,13 @@ async function loadBillingStatus(){
   const result=await response.json();
   if(!response.ok)throw new Error(result.error||"Could not load billing status.");
   const sub=result.subscription;
-  if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
-  const label={starter:"Starter",pro:"Pro"}[sub.plan_key]||sub.plan_key;
+  const activeOrPending=!!sub&&["created","authenticated","active","pending","halted"].includes(sub.status);
+  if(button){button.disabled=!result.checkout_ready||activeOrPending;button.textContent=activeOrPending?"Subscription already started":result.checkout_ready?"Subscribe securely · $5/month":"Premium setup in progress"}
+  if(!sub){box.textContent="Current plan: Free · No paid subscription yet.";return}
+  const label={starter:"Starter",pro:"Pro",pro_usd:"Premium ($5 USD/month)"}[sub.plan_key]||sub.plan_key;
   const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
   box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
- }catch(error){box.textContent=error.message}
+ }catch(error){if(button){button.disabled=true;button.textContent="Premium setup in progress"}box.textContent=error.message}
 }
 const growthPrompts={
  hooks:{label:"Viral Hook Generator",format:"Short-form hook options",instruction:"Create 12 original, curiosity-building opening hooks for the topic. Mix question, surprising angle, relatable pain point, bold-but-honest statement and story-led hooks. Keep each hook short, natural and suitable for the first 3 seconds. Avoid clickbait and unsupported claims. Add a one-line note explaining the strongest 3."},
