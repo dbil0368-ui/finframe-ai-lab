@@ -20,8 +20,8 @@ async function checkInlineScripts(path) {
   }
   return { html, checked };
 }
-
-test("main VYBORA workspace inline scripts parse", async () => {
+  assert.match(html, /@media\s*\(max-width:\s*900px\)/i);
+  assert.match(html, /@media\s*\(max-width:\s*520px\)/i);
   const { html, checked } = await checkInlineScripts("../index.html");
   assert.ok(checked >= 5, "expected to validate the inline application scripts");
   assert.match(html, /name="viewport"/i);
