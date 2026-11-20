@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "FinFrame AI Lab",
-  "short_name": "FinFrame",
-  "description": "Creative tools for building, designing and exploring ideas.",
+  "name": "VYBORA Creator Workspace",
+  "short_name": "VYBORA",
+  "description": "Discover trends, plan content and build your creator workflow with VYBORA.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -11,7 +11,7 @@
   "theme_color": "#090914",
   "icons": [
     {
-      "src": "./icons/finframe.svg",
+      "src": "./icons/vybora.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
