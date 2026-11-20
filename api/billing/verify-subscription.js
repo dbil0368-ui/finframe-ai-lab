@@ -2,13 +2,14 @@ import crypto from "node:crypto";
 
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
+const BILLING_ENVIRONMENT = "test";
 function send(res, status, body) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   return res.status(status).json(body);
 }
 async function authUser(req) {
-  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
   if (!token) return null;
   const response = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token } });
   return response.ok ? response.json() : null;
@@ -47,7 +48,7 @@ export default async function handler(req, res) {
     const supplied = Buffer.from(signature, "hex");
     if (supplied.length !== expected.length || !crypto.timingSafeEqual(supplied, expected)) return send(res, 400, { error: "Payment signature could not be verified." });
 
-    const rows = await db("billing_subscriptions?select=user_id,plan_key,status&razorpay_subscription_id=eq." + encodeURIComponent(subscriptionId) + "&limit=1");
+    const rows = await db("billing_subscriptions?select=user_id,plan_key,status&razorpay_subscription_id=eq." + encodeURIComponent(subscriptionId) + "&environment=eq." + BILLING_ENVIRONMENT + "&limit=1");
     if (!rows[0] || rows[0].user_id !== user.id) return send(res, 403, { error: "This subscription does not belong to your account." });
 
     const [subscription, payment] = await Promise.all([
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
       return send(res, 400, { error: "Razorpay has not confirmed the subscription payment yet." });
     }
     const status = ["active", "authenticated"].includes(subscription.status) ? subscription.status : "pending";
-    await db("billing_subscriptions?razorpay_subscription_id=eq." + encodeURIComponent(subscriptionId), {
+    await db("billing_subscriptions?razorpay_subscription_id=eq." + encodeURIComponent(subscriptionId) + "&environment=eq." + BILLING_ENVIRONMENT, {
       method: "PATCH",
       headers: { Prefer: "return=minimal" },
       body: JSON.stringify({
