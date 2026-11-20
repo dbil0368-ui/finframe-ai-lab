@@ -1247,21 +1247,28 @@ function quickPrompt(text){
 function sendPrompt(){
  const text=$('homePrompt').value.trim();
  if(!text){alert('Please describe what you want to create.');return}
- const t=text.toLowerCase();
+ const t=text.toLowerCase().replace(/[’']/g,"'");
+ const intents=[
+  {page:'vybora',terms:['social','reel','feed','post on','publish','instagram','facebook','creator profile','social media','সোশ্যাল','রিল','পোস্ট']},
+  {page:'tryon',terms:['try on','try-on','virtual try','outfit','clothing','dress on','জামা পরা','পোশাক']},
+  {page:'video',terms:['video','promo','animation','animate','ভিডিও','অ্যানিমেশন']},
+  {page:'voice',terms:['voice','voiceover','text to speech','narration','ভয়েস','কণ্ঠ']},
+  {page:'caption',terms:['caption','hashtag','post copy','ক্যাপশন','হ্যাশট্যাগ']},
+  {page:'game',terms:['game','เกมส์','গেম']},
+  {page:'poster',terms:['poster','flyer','banner','পোস্টার','ব্যানার']},
+  {page:'product',terms:['product','mockup','product photo','পণ্য']},
+  {page:'photo',terms:['photo','picture','image edit','enhance','retouch','brightness','contrast','ছবি','ফটো','এডিট']},
+  {page:'builder',terms:['website','web app','application','app','software','landing page','portfolio','ওয়েবসাইট','অ্যাপ']}
+ ];
  let destination='builder';
- if(t.includes('photo')||t.includes('image')||t.includes('enhance'))destination='photo';
- else if(t.includes('product'))destination='product';
- else if(t.includes('poster'))destination='poster';
- else if(t.includes('caption'))destination='caption';
- else if(t.includes('video'))destination='video';
- else if(t.includes('voice'))destination='voice';
- else if(t.includes('game'))destination='game';
- else if(t.includes('try on')||t.includes('clothing'))destination='tryon';
+ for(const intent of intents){if(intent.terms.some(term=>t.includes(term))){destination=intent.page;break;}}
  if(destination==='builder'){
   $('projectIdea').value=text;
   $('projectName').value='My New Project';
  }
  if(destination==='caption')$('captionTopic').value=text;
+ if(destination==='vybora'){show(destination);return;}
+ if(!document.getElementById(destination)){alert('This tool is not available yet. Please choose a tool from Explore your tools.');return;}
  show(destination);
  saveRecent(destination);
 }
