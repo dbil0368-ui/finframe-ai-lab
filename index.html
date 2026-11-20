@@ -1836,7 +1836,7 @@ function exportPreferencesOnly(){
 }
 function updateStorageUsage(){
  let bytes=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);bytes+=new Blob([k,localStorage.getItem(k)||'']).size}}catch(e){}
- $('storageUsage').textContent='Approximate FinFrame local storage used: '+(bytes<1024?bytes+' bytes':(bytes/1024).toFixed(1)+' KB')+'. Browser-wide storage limits vary.';
+ $('storageUsage').textContent='Approximate VYBORA local storage used: '+(bytes<1024?bytes+' bytes':(bytes/1024).toFixed(1)+' KB')+'. Browser-wide storage limits vary.';
 }
 function resetAllLocalData(){
  if(!confirm('Reset all FinFrame data saved in this browser? This cannot be undone.'))return;
