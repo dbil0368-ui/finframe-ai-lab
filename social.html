@@ -57,6 +57,10 @@ async function refreshSocialAuth(){
  $('socialAuthStatus').textContent=socialUser?'Signed in · AI generation and cloud saves enabled':'Sign in to use AI generation and sync saved ideas';
  $('socialEmail').hidden=!!socialUser;$('socialPassword').hidden=!!socialUser;
  $('socialSignIn').hidden=!!socialUser;$('socialSignUp').hidden=!!socialUser;$('socialSignOut').hidden=!socialUser;
+ if(socialUser){
+  const {data:profileRow}=await supabaseClient.from('vybora_creator_profiles').select('profile').eq('user_id',socialUser.id).maybeSingle();
+  if(profileRow?.profile){data.profile={...data.profile,...profileRow.profile};localStorage.setItem(KEY,JSON.stringify(data));fillProfile();render()}
+ }
 }
 $('socialSignIn').addEventListener('click',async()=>{const email=$('socialEmail').value.trim(),password=$('socialPassword').value;if(!email||password.length<8){$('socialAuthStatus').textContent='Enter your email and password (at least 8 characters).';return} $('socialAuthStatus').textContent='Signing in…';const {error}=await supabaseClient.auth.signInWithPassword({email,password});$('socialAuthStatus').textContent=error?error.message:'Signed in successfully.';if(!error)await refreshSocialAuth()});
 $('socialSignUp').addEventListener('click',async()=>{const email=$('socialEmail').value.trim(),password=$('socialPassword').value;if(!email||password.length<8){$('socialAuthStatus').textContent='Enter your email and password (at least 8 characters).';return} $('socialAuthStatus').textContent='Creating account…';const {data,error}=await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.href}});$('socialAuthStatus').textContent=error?error.message:data.session?'Account created and signed in.':'Account created. Check your email to confirm, then sign in.';if(!error&&data.session)await refreshSocialAuth()});
@@ -89,7 +93,15 @@ let latest=null;$('generate').addEventListener('click',async()=>{
 });
 async function copyText(t){try{await navigator.clipboard.writeText(t);alert('Copied to clipboard')}catch(e){alert('Copy is unavailable in this browser. You can select the text manually.')}}
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.copy!==undefined){const i=[...data.ideas].reverse()[Number(b.dataset.copy)];if(i)copyText('HOOK\n'+i.hook+'\n\nSCRIPT\n'+i.script+'\n\nCAPTION\n'+i.caption+'\n\n'+i.hashtags.join(' '))}if(b.dataset.remove!==undefined){const i=data.ideas.length-1-Number(b.dataset.remove);data.ideas.splice(i,1);save()}if(b.dataset.unschedule!==undefined){data.schedule.splice(Number(b.dataset.unschedule),1);save()}});
-$('saveProfile').addEventListener('click',()=>{data.profile={name:$('pname').value.trim(),niche:$('pniche').value.trim(),audience:$('paudience').value.trim(),country:$('pcountry').value,voice:$('pvoice').value};save();$('profileStatus').textContent='Profile saved in this browser.'});
+$('saveProfile').addEventListener('click',async()=>{
+ const next={name:$('pname').value.trim(),niche:$('pniche').value.trim(),audience:$('paudience').value.trim(),country:$('pcountry').value,voice:$('pvoice').value};
+ data.profile={...data.profile,...next};save();
+ if(!socialUser){$('profileStatus').textContent='Profile saved in this browser. Sign in to sync across devices.';return}
+ $('profileStatus').textContent='Syncing profile to your VYBORA account…';
+ const {data:existing}=await supabaseClient.from('vybora_creator_profiles').select('profile').eq('user_id',socialUser.id).maybeSingle();
+ const {error}=await supabaseClient.from('vybora_creator_profiles').upsert({user_id:socialUser.id,profile:{...(existing?.profile||{}),...next},updated_at:new Date().toISOString()},{onConflict:'user_id'});
+ $('profileStatus').textContent=error?'Saved locally; cloud sync failed: '+error.message:'Profile saved and synced to your account ✓';
+});
 $('makeWeek').addEventListener('click',()=>{const p=data.profile||{};const niche=p.niche||$('niche').value.trim()||'your niche';const ideas=['A beginner tip about '+niche,'A common mistake in '+niche,'Your personal story with '+niche,'A quick how-to for '+niche,'Answer a question your audience asks','A myth to clarify in '+niche,'A weekly recap and audience question'];const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];data.schedule=days.map((day,i)=>({day,title:ideas[i],format:i%3===0?'Short video':i%3===1?'Carousel or photo':'Story / community post'}));save();$('week').innerHTML=data.schedule.map(s=>'<div class="day"><b>'+s.day+'</b><span>'+esc(s.title)+'<br><small class="muted">'+esc(s.format)+'</small></span><span></span></div>').join('')});
 fillProfile();render();refreshSocialAuth();if(location.hash&&$(location.hash.slice(1)))show(location.hash.slice(1));
 </script></body></html>
