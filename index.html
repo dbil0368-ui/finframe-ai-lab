@@ -2328,13 +2328,15 @@ function resetPreferences(){
   if(r.error){host.textContent=r.error.message;return;}if(!r.data.length){host.textContent='No creators found.';return;}
   const [f,req]=await Promise.all([db.from('follows').select('following_id').eq('follower_id',currentUser.id),db.from('follow_requests').select('target_id,status').eq('requester_id',currentUser.id)]);
   const following=(f.data||[]).map(x=>x.following_id),requests=req.data||[];
-  host.innerHTML=r.data.map(p=>{const n=p.username||p.full_name||'Creator',status=following.includes(p.id)?'Following':(requests.some(x=>x.target_id===p.id&&x.status==='pending')?'Requested':(p.is_private?'＋ Request':'＋ Follow'));return '<div class="vy-settings-row"><b>'+esc(n)+(p.is_private?' 🔒':'')+'</b><button class="secondary-btn" onclick="vyCloudFollow(\\''+esc(p.id)+'\\',this)">'+status+'</button></div>';}).join('');
+   host.innerHTML=r.data.map(p=>{const n=p.username||p.full_name||'Creator',status=following.includes(p.id)?'Following':(requests.some(x=>x.target_id===p.id&&x.status==='pending')?'Requested':(p.is_private?'＋ Request':'＋ Follow'));return '<div class="vy-settings-row"><b>'+esc(n)+(p.is_private?' 🔒':'')+'</b><button class="secondary-btn vy-cloud-follow" data-user-id="'+esc(p.id)+'">'+status+'</button></div>';}).join('');
+   host.querySelectorAll('.vy-cloud-follow').forEach(button=>button.addEventListener('click',()=>window.vyCloudFollow(button.dataset.userId,button)));
  };
  window.vyShowFollowRequests=async function(){
   const host=el('vyCreatorResults');if(!host)return;if(!currentUser){host.textContent='Log in first.';return;}
   const r=await db.from('follow_requests').select('id,requester_id,created_at').eq('target_id',currentUser.id).eq('status','pending').order('created_at',{ascending:false});if(r.error){host.textContent=r.error.message;return;}
   const ids=r.data.map(x=>x.requester_id),pr=ids.length?await db.from('profiles').select('id,username,full_name').in('id',ids):{data:[]},names={};(pr.data||[]).forEach(p=>names[p.id]=p.username||p.full_name||'Creator');
-  host.innerHTML=r.data.length?r.data.map(x=>'<div class="vy-settings-row"><b>'+esc(names[x.requester_id]||'Creator')+'</b><span><button class="secondary-btn" onclick="vyResolveFollowRequest(\\''+esc(x.id)+'\\',true)">Accept</button> <button class="secondary-btn" onclick="vyResolveFollowRequest(\\''+esc(x.id)+'\\',false)">Decline</button></span></div>').join(''):'No pending follow requests.';
+   host.innerHTML=r.data.length?r.data.map(x=>'<div class="vy-settings-row"><b>'+esc(names[x.requester_id]||'Creator')+'</b><span><button class="secondary-btn vy-resolve-request" data-request-id="'+esc(x.id)+'" data-accept="true">Accept</button> <button class="secondary-btn vy-resolve-request" data-request-id="'+esc(x.id)+'" data-accept="false">Decline</button></span></div>').join(''):'No pending follow requests.';
+   host.querySelectorAll('.vy-resolve-request').forEach(button=>button.addEventListener('click',()=>window.vyResolveFollowRequest(button.dataset.requestId,button.dataset.accept==='true')));
  };
  window.vyResolveFollowRequest=async function(id,accept){
   const r=accept?await db.rpc('accept_vybora_follow_request',{request_id:id}):await db.from('follow_requests').update({status:'rejected',updated_at:new Date().toISOString()}).eq('id',id).eq('target_id',currentUser.id);
