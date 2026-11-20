@@ -1,6 +1,7 @@
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
 const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-nano-banana-2.1";
+export const config = { maxDuration: 60 };
 
 function send(res, status, body) {
   res.setHeader("Cache-Control", "no-store");
@@ -37,10 +38,26 @@ export default async function handler(req, res) {
       return send(res, 413, { error: "Reference image must be a PNG, JPEG or WebP under 3 MB after resizing." });
     }
 
+    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
+      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!subResponse.ok) return send(res, 503, { error: "Could not verify your VYBORA plan." });
+    const subscriptions = await subResponse.json();
+    let planKey = subscriptions[0]?.plan_key || "free";
+    const rewardResponse = await fetch(SUPABASE_URL + "/rest/v1/vybora_referral_rewards?select=id&referrer_user_id=eq." + encodeURIComponent(user.id) + "&starts_at=lte." + encodeURIComponent(new Date().toISOString()) + "&expires_at=gt." + encodeURIComponent(new Date().toISOString()) + "&limit=1", {
+      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!rewardResponse.ok) return send(res, 503, { error: "Could not verify your Premium reward." });
+    const rewards = await rewardResponse.json();
+    if (rewards.length && planKey !== "pro") planKey = "pro";
+    const dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
+
     const quotaResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
       method: "POST",
       headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: 3 }),
+      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: dailyLimit }),
       signal: AbortSignal.timeout(8000)
     });
     const quotaRows = await quotaResponse.json().catch(() => []);
@@ -48,7 +65,7 @@ export default async function handler(req, res) {
       return send(res, 503, { error: "Could not verify your daily AI allowance." });
     }
     const quota = quotaRows[0];
-    if (!quota.allowed) return send(res, 429, { error: "Today's AI generation limit has been reached.", quota: { used: quota.used, limit: quota.daily_limit, remaining: 0 } });
+    if (!quota.allowed) return send(res, 429, { error: "Today's AI generation limit has been reached.", quota: { plan: planKey, used: quota.used, limit: quota.daily_limit, remaining: 0 } });
 
     const parts = [{ text: "Create or edit a polished, commercially useful visual for VYBORA. Follow the user's brief closely. Do not add watermarks, fake brand logos, unreadable text, or misleading claims. " + prompt }];
     if (imageData) {
@@ -62,7 +79,7 @@ export default async function handler(req, res) {
         contents: [{ role: "user", parts }],
         generationConfig: { responseModalities: ["TEXT", "IMAGE"], imageConfig: { aspectRatio } }
       }),
-      signal: AbortSignal.timeout(105000)
+      signal: AbortSignal.timeout(55000)
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -78,7 +95,7 @@ export default async function handler(req, res) {
     return send(res, 200, {
       image: "data:" + imagePart.inlineData.mimeType + ";base64," + imagePart.inlineData.data,
       model: IMAGE_MODEL,
-      quota: { plan: quota.plan || "free", used: quota.used, limit: quota.daily_limit || 3, remaining: quota.remaining }
+      quota: { plan: planKey, used: quota.used, limit: quota.daily_limit || dailyLimit, remaining: quota.remaining }
     });
   } catch (error) {
     console.error("[VYBORA Image] request failed", String(error?.message || error).slice(0, 180));
