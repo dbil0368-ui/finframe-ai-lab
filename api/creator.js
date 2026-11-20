@@ -63,7 +63,7 @@ export default async function handler(req, res) {
       "Audience: " + audience, "Platform: " + platform, "Format: " + format,
       "Task type: " + mode, "Topic: " + topic,
       instruction || "Create a concise creative brief with a big idea, hooks, content structure, caption, CTA, hashtags, and fact-check notes."
-    ].join("\\n");
+    ].join("\n");
 
     // Atomically reserve one generation BEFORE calling the paid AI provider.
     const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
@@ -101,7 +101,7 @@ export default async function handler(req, res) {
             if ([429,503,504].includes(response.status)) break;
             return send(res, 502, { error: "Gemini request failed. Please try again shortly." });
           }
-          const brief = (data?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\\n").trim();
+          const brief = (data?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\n").trim();
           if (!brief) return send(res, 502, { error: "Gemini returned an empty brief. Please try again." });
           return send(res, 200, { brief, model, quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: usage.remaining } });
         } catch (error) {
