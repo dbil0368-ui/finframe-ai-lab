@@ -1400,7 +1400,7 @@ async function callVyboraCreatorAI({topic,format,mode,instruction,platform='Web 
  if(sessionResult.error)throw sessionResult.error;
  const token=sessionResult.data?.session?.access_token;
  if(!token)throw new Error('Please sign in to use VYBORA AI.');
- const response=await fetch('/api/creator',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({topic,format,mode,instruction,platform,audience,language}),signal:AbortSignal.timeout(90000)});
+ const response=await fetch('/api/creator',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({topic,format,mode,instruction,platform,audience,language}),signal:AbortSignal.timeout(55000)});
  const data=await response.json().catch(()=>({}));
  if(!response.ok)throw new Error(data.error||'VYBORA AI could not complete this request.');
  if(!data.brief||typeof data.brief!=='string')throw new Error('VYBORA AI returned an empty result.');
