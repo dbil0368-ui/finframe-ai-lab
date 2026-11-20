@@ -19,10 +19,16 @@ export default async function handler(req, res) {
   }
 
   const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
-  if (!token) return send(res, 401, { error: "Please sign in to use VYBORA AI." });
-  const authResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
-    headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token }
-  });
+  if (!token || token.length > 8192) return send(res, 401, { error: "Please sign in to use VYBORA AI." });
+  let authResponse;
+  try {
+    authResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
+      headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token },
+      signal: AbortSignal.timeout(8000)
+    });
+  } catch {
+    return send(res, 503, { error: "Could not verify your VYBORA session. Please try again." });
+  }
   if (!authResponse.ok) return send(res, 401, { error: "Your session expired. Please sign in again." });
   const user = await authResponse.json();
   try {
@@ -52,7 +58,8 @@ export default async function handler(req, res) {
     const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation_for_current_user", {
       method: "POST",
       headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json" },
-      body: JSON.stringify({})
+      body: JSON.stringify({}),
+      signal: AbortSignal.timeout(8000)
     });
     const usageRows = await usageResponse.json().catch(() => []);
     if (!usageResponse.ok || !Array.isArray(usageRows) || !usageRows[0]) throw new Error("Could not check your daily AI allowance.");
@@ -67,36 +74,42 @@ export default async function handler(req, res) {
     }
 
     let lastError;
+    let providerRateLimited = false;
     for (const model of MODELS) {
-      for (let attempt = 0; attempt < 2; attempt += 1) {
-        try {
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-            body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 850 } }),
-            signal: AbortSignal.timeout(23000)
-          });
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) {
-            const providerMessage = String(data?.error?.message || "");
-            console.error("[VYBORA Creator] Gemini request failed", { status: response.status, message: providerMessage.slice(0, 220), attempt: attempt + 1 });
-            if ([429,503,504].includes(response.status) && attempt === 0) { await new Promise(resolve => setTimeout(resolve, 1500)); continue; }
-            if (response.status === 401 || response.status === 403) return send(res, 502, { error: "Gemini API key was rejected. Check the GEMINI_API_KEY configured for this Preview deployment." });
-            if (response.status === 429) return send(res, 429, { error: "AI provider is busy. Please wait and try again." });
-            if ([429,503,504].includes(response.status)) break;
-            return send(res, 502, { error: "Gemini request failed. Please try again shortly." });
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+          body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 850 } }),
+          // Two bounded model attempts plus auth/quota checks must fit Vercel's 60s function budget.
+          signal: AbortSignal.timeout(18000)
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const providerMessage = String(data?.error?.message || "");
+          console.error("[VYBORA Creator] Gemini request failed", { status: response.status, message: providerMessage.slice(0, 220), model });
+          if (response.status === 401 || response.status === 403) {
+            return send(res, 502, { error: "Gemini API key was rejected. Check the GEMINI_API_KEY configured for this deployment." });
           }
-          const brief = (data?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\n").trim();
-          if (!brief) return send(res, 502, { error: "Gemini returned an empty brief. Please try again." });
-          return send(res, 200, { brief, model, quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: usage.remaining } });
-        } catch (error) {
-          lastError = error;
-          console.error("[VYBORA Creator] Gemini request error", { errorName: String(error?.name || "Error").slice(0, 80), message: String(error?.message || "").slice(0, 180), attempt: attempt + 1 });
-          if (attempt === 0 && ["TimeoutError","AbortError","TypeError"].includes(error?.name)) { await new Promise(resolve => setTimeout(resolve, 1000)); continue; }
-          break;
+          if (response.status === 429) providerRateLimited = true;
+          lastError = new Error("Gemini HTTP " + response.status);
+          if ([400, 413].includes(response.status)) {
+            return send(res, 502, { error: "Gemini could not process this brief. Please shorten or simplify it." });
+          }
+          continue;
         }
+        const brief = (data?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\n").trim();
+        if (!brief) {
+          lastError = new Error("Gemini returned an empty brief");
+          continue;
+        }
+        return send(res, 200, { brief, model, quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: usage.remaining } });
+      } catch (error) {
+        lastError = error;
+        console.error("[VYBORA Creator] Gemini request error", { errorName: String(error?.name || "Error").slice(0, 80), message: String(error?.message || error).slice(0, 180), model });
       }
     }
+    if (providerRateLimited) return send(res, 429, { error: "AI provider is busy or its quota is exhausted. Please try again later." });
     return send(res, 502, { error: lastError?.name === "TimeoutError" ? "Gemini is taking longer than expected. Please try again in a moment." : "Gemini service is temporarily unavailable. Please try again shortly." });
   } catch (error) {
     console.error("[VYBORA Creator] usage check failed", String(error?.message || error).slice(0, 200));

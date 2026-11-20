@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         contents: [{ role: "user", parts }],
         generationConfig: { responseModalities: ["TEXT", "IMAGE"], imageConfig: { aspectRatio } }
       }),
-      signal: AbortSignal.timeout(55000)
+      signal: AbortSignal.timeout(40000)
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {

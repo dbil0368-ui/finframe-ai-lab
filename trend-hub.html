@@ -310,7 +310,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
  <button type="button" data-view="studio"><span class="bottom-nav-icon">✧</span><span class="bottom-nav-label">Creator Studio</span></button>
  <button type="button" data-view="planner"><span class="bottom-nav-icon">▦</span><span class="bottom-nav-label">Content Planner</span></button>
  <button type="button" data-view="creatorKit"><span class="bottom-nav-icon">✦</span><span class="bottom-nav-label">Creator Kit</span></button>
- <a class="bottom-social-link" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
+ <a class="bottom-social-link" href="./index.html?mode=vybora" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
 </nav>
 <button class="creator-login-fab" id="creatorLoginFab" type="button" aria-label="Open Creator Login">Creator Login</button>
 <main class="main">
@@ -459,24 +459,56 @@ async function refreshAuth(){
  renderPlans();
  loadReferralSummary();
 }
+function withAuthTimeout(promise,label,ms=15000){
+ let timer;
+ return Promise.race([
+  Promise.resolve(promise),
+  new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label+" timed out. Check your connection and try again.")),ms);})
+ ]).finally(()=>clearTimeout(timer));
+}
 async function authAction(kind){
  const email=document.getElementById("authEmail").value.trim();
  const password=document.getElementById("authPassword").value;
  const status=document.getElementById("authStatus");
  if(!email||password.length<8){status.textContent="Enter a valid email and a password with at least 8 characters.";return}
  status.textContent=kind==="signup"?"Creating your account…":"Signing in…";
- const result=kind==="signup"
-  ? await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.href,data:{}}})
-  : await supabaseClient.auth.signInWithPassword({email,password});
- if(result.error){status.textContent=result.error.message;return}
- if(kind==="signup"&&!result.data.session){status.textContent="Account created. Check your email to confirm your address, then sign in."}
- else {status.textContent="Account ready. Cloud Planner is enabled.";await refreshAuth()}
+ try{
+  const result=await withAuthTimeout(kind==="signup"
+   ? supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.href,data:{}}})
+   : supabaseClient.auth.signInWithPassword({email,password}),kind==="signup"?"Sign-up":"Sign-in");
+  if(result.error){status.textContent=result.error.message;return}
+  if(kind==="signup"&&!result.data.session){status.textContent="Account created. Check your email to confirm your address, then sign in."}
+  else {status.textContent="Account ready. Cloud Planner is enabled.";await refreshAuth()}
+ }catch(error){status.textContent=(kind==="signup"?"Sign-up":"Sign-in")+" failed: "+(error&&error.message?error.message:"Please try again.");}
 }
 document.getElementById("signIn").addEventListener("click",()=>authAction("signin"));
 document.getElementById("signUp").addEventListener("click",()=>authAction("signup"));
-document.getElementById("forgotPassword").addEventListener("click",async()=>{const email=document.getElementById("authEmail").value.trim();const status=document.getElementById("authStatus");if(!email){status.textContent="Enter your account email first.";return}status.textContent="Sending password reset link…";const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname+"?password_reset=1"});status.textContent=error?"Could not send reset email: "+error.message:"Password reset email requested. Open the newest email and follow its link."});
-document.getElementById("saveNewPassword").addEventListener("click",async()=>{const password=document.getElementById("newPassword").value;const status=document.getElementById("authStatus");if(password.length<8){status.textContent="Choose a password with at least 8 characters.";return}status.textContent="Updating password…";const {error}=await supabaseClient.auth.updateUser({password});if(error){status.textContent="Could not update password: "+error.message;return}document.getElementById("passwordResetBox").hidden=true;document.getElementById("newPassword").value="";status.textContent="Password updated. You can now sign in with your new password.";await refreshAuth()});
-document.getElementById("signOut").addEventListener("click",async()=>{await supabaseClient.auth.signOut();await refreshAuth()});
+document.getElementById("forgotPassword").addEventListener("click",async()=>{
+ const email=document.getElementById("authEmail").value.trim(),status=document.getElementById("authStatus");
+ if(!email){status.textContent="Enter your account email first.";return}
+ status.textContent="Sending password reset link…";
+ try{
+  const result=await withAuthTimeout(supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname+"?password_reset=1"}),"Password reset email");
+  if(result.error)throw result.error;
+  status.textContent="Password reset email requested. Open the newest email and follow its link.";
+ }catch(error){status.textContent="Could not send reset email: "+(error&&error.message?error.message:"Please try again.");}
+});
+document.getElementById("saveNewPassword").addEventListener("click",async()=>{
+ const password=document.getElementById("newPassword").value,status=document.getElementById("authStatus");
+ if(password.length<8){status.textContent="Choose a password with at least 8 characters.";return}
+ status.textContent="Updating password…";
+ try{
+  const result=await withAuthTimeout(supabaseClient.auth.updateUser({password}),"Password update");
+  if(result.error)throw result.error;
+  document.getElementById("passwordResetBox").hidden=true;document.getElementById("newPassword").value="";
+  status.textContent="Password updated. You can now sign in with your new password.";await refreshAuth();
+ }catch(error){status.textContent="Could not update password: "+(error&&error.message?error.message:"Please reopen the reset email link and try again.");}
+});
+document.getElementById("signOut").addEventListener("click",async()=>{
+ const status=document.getElementById("authStatus");
+ try{const result=await withAuthTimeout(supabaseClient.auth.signOut(),"Sign out");if(result.error)throw result.error;await refreshAuth();}
+ catch(error){status.textContent="Could not sign out: "+(error&&error.message?error.message:"Please try again.");}
+});
 supabaseClient.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY"){document.getElementById("authContent").hidden=false;document.getElementById("accountToggle").textContent="Hide account −";document.getElementById("accountToggle").setAttribute("aria-expanded","true");document.getElementById("passwordResetBox").hidden=false;document.getElementById("authStatus").textContent="Choose a new password for your VYBORA account."}setTimeout(refreshAuth,0)});
 function escapeText(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 let trendItems = [];
@@ -707,5 +739,5 @@ loadCreatorKit();
 renderPlans();
 refreshAuth();
 </script>
-<a class="social-shortcut" href="https://finframe-ai-dd76hpfan-clon3.vercel.app/social.html" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social in a new tab">Open VYBORA Social ↗</a>
+<a class="social-shortcut" href="./index.html?mode=vybora" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social in a new tab">Open VYBORA Social ↗</a>
 </body></html>
