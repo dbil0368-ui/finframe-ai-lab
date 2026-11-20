@@ -32,32 +32,42 @@ export default async function handler(req, res) {
     const body = req.body || {};
     const prompt = typeof body.prompt === "string" ? body.prompt.trim().slice(0, 1800) : "";
     const imageData = typeof body.imageData === "string" ? body.imageData : "";
+    const referenceImages = Array.isArray(body.referenceImages) ? body.referenceImages.slice(0, 2) : [];
+    const mode = body.mode === "tryon" ? "tryon" : "image";
     const aspectRatio = ["1:1", "3:2", "2:3", "4:3", "3:4", "9:16", "16:9"].includes(body.aspectRatio) ? body.aspectRatio : "1:1";
     if (!prompt) return send(res, 400, { error: "Please describe the image you want to create." });
-    if (imageData && (!/^data:image\/(png|jpeg|webp);base64,/i.test(imageData) || imageData.length > 4200000)) {
-      return send(res, 413, { error: "Reference image must be a PNG, JPEG or WebP under 3 MB after resizing." });
+    const allImages = [imageData, ...referenceImages].filter(Boolean);
+    if (allImages.some(value => typeof value !== "string" || !/^data:image\/(png|jpeg|webp);base64,/i.test(value) || value.length > 4200000) || allImages.length > 2 || allImages.reduce((sum, value) => sum + value.length, 0) > 4200000) {
+      return send(res, 413, { error: "Reference images must be PNG, JPEG or WebP and total under 3 MB after resizing." });
     }
 
-    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
-      signal: AbortSignal.timeout(8000)
-    });
-    if (!subResponse.ok) return send(res, 503, { error: "Could not verify your VYBORA plan." });
-    const subscriptions = await subResponse.json();
-    let planKey = subscriptions[0]?.plan_key || "free";
-    const rewardResponse = await fetch(SUPABASE_URL + "/rest/v1/vybora_referral_rewards?select=id&referrer_user_id=eq." + encodeURIComponent(user.id) + "&starts_at=lte." + encodeURIComponent(new Date().toISOString()) + "&expires_at=gt." + encodeURIComponent(new Date().toISOString()) + "&limit=1", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
-      signal: AbortSignal.timeout(8000)
-    });
-    if (!rewardResponse.ok) return send(res, 503, { error: "Could not verify your Premium reward." });
-    const rewards = await rewardResponse.json();
-    if (rewards.length && planKey !== "pro") planKey = "pro";
-    const dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
+    let planKey = "free", dailyLimit = 3, quotaEndpoint = "consume_vybora_ai_generation", quotaLimit = dailyLimit;
+    if (mode === "tryon") {
+      quotaEndpoint = "consume_vybora_tryon_request";
+      quotaLimit = 5;
+    } else {
+      const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
+        headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
+        signal: AbortSignal.timeout(8000)
+      });
+      if (!subResponse.ok) return send(res, 503, { error: "Could not verify your VYBORA plan." });
+      const subscriptions = await subResponse.json();
+      planKey = subscriptions[0]?.plan_key || "free";
+      const rewardResponse = await fetch(SUPABASE_URL + "/rest/v1/vybora_referral_rewards?select=id&referrer_user_id=eq." + encodeURIComponent(user.id) + "&starts_at=lte." + encodeURIComponent(new Date().toISOString()) + "&expires_at=gt." + encodeURIComponent(new Date().toISOString()) + "&limit=1", {
+        headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
+        signal: AbortSignal.timeout(8000)
+      });
+      if (!rewardResponse.ok) return send(res, 503, { error: "Could not verify your Premium reward." });
+      const rewards = await rewardResponse.json();
+      if (rewards.length && planKey !== "pro") planKey = "pro";
+      dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
+      quotaLimit = dailyLimit;
+    }
 
-    const quotaResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
+    const quotaResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/" + quotaEndpoint, {
       method: "POST",
       headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: dailyLimit }),
+      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: quotaLimit }),
       signal: AbortSignal.timeout(8000)
     });
     const quotaRows = await quotaResponse.json().catch(() => []);
@@ -95,7 +105,7 @@ export default async function handler(req, res) {
     return send(res, 200, {
       image: "data:" + imagePart.inlineData.mimeType + ";base64," + imagePart.inlineData.data,
       model: IMAGE_MODEL,
-      quota: { plan: planKey, used: quota.used, limit: quota.daily_limit || dailyLimit, remaining: quota.remaining }
+      quota: { plan: planKey, used: quota.used, limit: quota.daily_limit || quotaLimit, remaining: quota.remaining }
     });
   } catch (error) {
     console.error("[VYBORA Image] request failed", String(error?.message || error).slice(0, 180));
