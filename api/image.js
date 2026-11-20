@@ -1,6 +1,7 @@
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
-const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-nano-banana-2.1";
+// Current Gemini API image-generation model (Nano Banana 2).
+const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-3.1-flash-image";
 export const config = { maxDuration: 60 };
 
 function send(res, status, body) {
@@ -23,7 +24,7 @@ export default async function handler(req, res) {
       signal: AbortSignal.timeout(8000)
     });
     if (!auth.ok) return send(res, 401, { error: "Your session expired. Please sign in again." });
-    const user = await auth.json();
+    await auth.json();
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return send(res, 503, { error: "Gemini image generation is not configured on this deployment." });
 
