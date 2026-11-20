@@ -24,9 +24,7 @@ export default async function handler(req, res) {
     });
     if (!auth.ok) return send(res, 401, { error: "Your session expired. Please sign in again." });
     const user = await auth.json();
-    const serviceKey = process.env.SUPABASE_SECRET_KEY;
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!serviceKey) return send(res, 503, { error: "AI usage protection is not configured on the secure backend." });
     if (!apiKey) return send(res, 503, { error: "Gemini image generation is not configured on this deployment." });
 
     const body = req.body || {};
@@ -41,33 +39,13 @@ export default async function handler(req, res) {
       return send(res, 413, { error: "Reference images must be PNG, JPEG or WebP and total under 3 MB after resizing." });
     }
 
-    let planKey = "free", dailyLimit = 3, quotaEndpoint = "consume_vybora_ai_generation", quotaLimit = dailyLimit;
-    if (mode === "tryon") {
-      quotaEndpoint = "consume_vybora_tryon_request";
-      quotaLimit = 5;
-    } else {
-      const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
-        headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
-        signal: AbortSignal.timeout(8000)
-      });
-      if (!subResponse.ok) return send(res, 503, { error: "Could not verify your VYBORA plan." });
-      const subscriptions = await subResponse.json();
-      planKey = subscriptions[0]?.plan_key || "free";
-      const rewardResponse = await fetch(SUPABASE_URL + "/rest/v1/vybora_referral_rewards?select=id&referrer_user_id=eq." + encodeURIComponent(user.id) + "&starts_at=lte." + encodeURIComponent(new Date().toISOString()) + "&expires_at=gt." + encodeURIComponent(new Date().toISOString()) + "&limit=1", {
-        headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey },
-        signal: AbortSignal.timeout(8000)
-      });
-      if (!rewardResponse.ok) return send(res, 503, { error: "Could not verify your Premium reward." });
-      const rewards = await rewardResponse.json();
-      if (rewards.length && planKey !== "pro") planKey = "pro";
-      dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
-      quotaLimit = dailyLimit;
-    }
-
+    const quotaEndpoint = mode === "tryon"
+      ? "consume_vybora_tryon_request_for_current_user"
+      : "consume_vybora_ai_generation_for_current_user";
     const quotaResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/" + quotaEndpoint, {
       method: "POST",
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: quotaLimit }),
+      headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({}),
       signal: AbortSignal.timeout(8000)
     });
     const quotaRows = await quotaResponse.json().catch(() => []);
@@ -75,6 +53,8 @@ export default async function handler(req, res) {
       return send(res, 503, { error: "Could not verify your daily AI allowance." });
     }
     const quota = quotaRows[0];
+    const planKey = quota.plan_key || "free";
+    const quotaLimit = quota.daily_limit || (mode === "tryon" ? 5 : 3);
     if (!quota.allowed) return send(res, 429, { error: "Today's AI generation limit has been reached.", quota: { plan: planKey, used: quota.used, limit: quota.daily_limit, remaining: 0 } });
 
     const parts = [{ text: "Create or edit a polished, commercially useful visual for VYBORA. Follow the user's brief closely. Do not add watermarks, fake brand logos, unreadable text, or misleading claims. " + prompt }];
