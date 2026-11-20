@@ -732,12 +732,12 @@ body.vybora-mode #vyCloudAuth{display:none!important}
  <section id="tryon">
   <div class="card">
    <h2>👗 Virtual Try-On Preview</h2>
-   <p>Upload a person's photo and a separate clothing photo. The AI service can create a realistic try-on after a secure backend is connected. Until then, the manual preview below remains available.</p>
+   <p>Upload a person's photo and a separate clothing photo. Signed-in users can use Gemini AI for a realistic try-on when the secure backend key is configured. The manual preview remains available too.</p>
    <div class="card" style="background:#101020;border-color:#65528f">
     <h3>✨ AI Virtual Try-On</h3>
-    <p>Use the two uploads below, then generate an AI outfit preview. Your images are sent only when you press Generate; the AI provider and its privacy terms will apply once a backend is configured.</p>
+    <p>Use the two uploads below, then generate an AI outfit preview. Your images are resized in your browser and sent securely only after you press Generate. Gemini processing and Google's privacy terms apply.</p>
     <button class="primary-btn" id="aiTryonButton" type="button" onclick="generateAiTryon()">✨ Generate AI Try-On</button>
-    <p id="aiTryonStatus" role="status" aria-live="polite">AI service is not connected yet. The secure backend setup is being prepared.</p>
+    <p id="aiTryonStatus" role="status" aria-live="polite">Sign in and add both images to generate an AI try-on. Gemini must be configured securely on the backend.</p>
     <div id="aiTryonResultWrap" class="hidden">
      <img id="aiTryonResult" alt="AI virtual try-on result" style="display:block;max-width:100%;max-height:650px;margin:12px auto;border-radius:12px">
      <a id="aiTryonDownload" class="secondary-btn" download="finframe-ai-tryon.png">⬇ Save AI result</a>
