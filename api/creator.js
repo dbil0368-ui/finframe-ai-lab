@@ -1,3 +1,5 @@
+export const config = { maxDuration: 60 };
+
 const MODELS = (process.env.GEMINI_MODEL || "gemini-3.5-flash-lite,gemini-3.1-flash-lite")
   .split(",").map(value => value.trim()).filter(Boolean);
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
@@ -23,26 +25,9 @@ export default async function handler(req, res) {
   });
   if (!authResponse.ok) return send(res, 401, { error: "Your session expired. Please sign in again." });
   const user = await authResponse.json();
-  const serviceKey = process.env.SUPABASE_SECRET_KEY;
-  if (!serviceKey) return send(res, 503, { error: "Usage limits are not configured yet." });
-
   try {
-    const subResponse = await fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status&user_id=eq." + encodeURIComponent(user.id) + "&status=eq.active&limit=1", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
-    });
-    if (!subResponse.ok) throw new Error("Could not check your VYBORA plan.");
-    const subscriptions = await subResponse.json();
-    let planKey = subscriptions[0]?.plan_key || "free";
-    const rewardResponse = await fetch(SUPABASE_URL + "/rest/v1/vybora_referral_rewards?select=id&referrer_user_id=eq." + encodeURIComponent(user.id) + "&starts_at=lte." + encodeURIComponent(new Date().toISOString()) + "&expires_at=gt." + encodeURIComponent(new Date().toISOString()) + "&limit=1", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
-    });
-    if (!rewardResponse.ok) throw new Error("Could not check your referral Premium reward.");
-    const activeRewards = await rewardResponse.json();
-    if (activeRewards.length && planKey !== "pro") planKey = "pro";
-    const dailyLimit = planKey === "pro" ? 50 : planKey === "starter" ? 15 : 3;
-
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return send(res, 503, { error: "Gemini is not configured yet. Add GEMINI_API_KEY to the Vercel Preview environment." });
+    if (!apiKey) return send(res, 503, { error: "Gemini is not configured yet. Add GEMINI_API_KEY to this deployment’s secure Vercel environment." });
 
     const body = req.body || {};
     const topic = typeof body.topic === "string" ? body.topic.trim().slice(0, 240) : "";
@@ -61,17 +46,19 @@ export default async function handler(req, res) {
       "Audience: " + audience, "Platform: " + platform, "Format: " + format,
       "Task type: " + mode, "Topic: " + topic,
       instruction || "Create a concise creative brief with a big idea, hooks, content structure, caption, CTA, hashtags, and fact-check notes."
-    ].join("\\n");
+    ].join("\n");
 
     // Atomically reserve one generation BEFORE calling the paid AI provider.
-    const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
+    const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation_for_current_user", {
       method: "POST",
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_user_id: user.id, p_daily_limit: dailyLimit })
+      headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({})
     });
     const usageRows = await usageResponse.json().catch(() => []);
     if (!usageResponse.ok || !Array.isArray(usageRows) || !usageRows[0]) throw new Error("Could not check your daily AI allowance.");
     const usage = usageRows[0];
+    const planKey = usage.plan_key || "free";
+    const dailyLimit = usage.daily_limit || 3;
     if (!usage.allowed) {
       return send(res, 429, {
         error: "আজকের " + dailyLimit + "টি AI generation শেষ। আরও ব্যবহার করতে Starter (₹১৯৯/মাস) বা Pro Premium (₹৪৯৯/মাস) নিন।",
@@ -87,7 +74,7 @@ export default async function handler(req, res) {
             method: "POST",
             headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
             body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 850 } }),
-            signal: AbortSignal.timeout(75000)
+            signal: AbortSignal.timeout(23000)
           });
           const data = await response.json().catch(() => ({}));
           if (!response.ok) {
@@ -99,7 +86,7 @@ export default async function handler(req, res) {
             if ([429,503,504].includes(response.status)) break;
             return send(res, 502, { error: "Gemini request failed. Please try again shortly." });
           }
-          const brief = (data?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\\n").trim();
+          const brief = (data?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\n").trim();
           if (!brief) return send(res, 502, { error: "Gemini returned an empty brief. Please try again." });
           return send(res, 200, { brief, model, quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: usage.remaining } });
         } catch (error) {

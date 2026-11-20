@@ -465,7 +465,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   <div class="sidebar-note">
    <strong>✨ VYBORA Workspace</strong><br>
    Your creative tools in one place.<br><br>
-   <span>Free browser-based prototype</span>
+   <span>Browser workspace with secure cloud AI</span>
   </div>
  </div>
 </aside>
@@ -514,7 +514,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     </button>
     <button class="tool-card" data-search="photo image enhancer edit brightness" onclick="openTool('photo')">
      <div class="tool-icon">📸</div><strong>Photo Enhancer</strong>
-     <span>Adjust brightness, contrast and saturation.</span>
+     <span>Use AI enhancement or adjust brightness, contrast and saturation.</span>
     </button>
     <button class="tool-card" data-search="product visual design image" onclick="openTool('product')">
      <div class="tool-icon">💎</div><strong>Product Studio</strong>
@@ -522,7 +522,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     </button>
     <button class="tool-card" data-search="poster maker design image" onclick="openTool('poster')">
      <div class="tool-icon">🖼️</div><strong>Poster Maker</strong>
-     <span>Design custom posters with your own text.</span>
+     <span>Create promotional poster artwork with AI or manual controls.</span>
     </button>
     <button class="tool-card" data-search="creative caption voice video tryon" onclick="openTool('creative')">
      <div class="tool-icon">🎨</div><strong>Creative Studio</strong>
@@ -538,7 +538,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     </button>
     <button class="tool-card" data-search="voice audio speech voiceover" onclick="openTool('voice')">
      <div class="tool-icon">🎙️</div><strong>Voiceover Studio</strong>
-     <span>Read your text aloud using browser voices.</span>
+     <span>Preview with browser voices or generate AI voiceovers.</span>
     </button>
     <button class="tool-card" data-search="video promo animation" onclick="openTool('video')">
      <div class="tool-icon">🎬</div><strong>Promo Video Maker</strong>
@@ -558,34 +558,37 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <div class="card" style="margin-top:25px">
     <h2>✨ About VYBORA</h2>
     <p>VYBORA brings creator tools and social content workflows together in one browser-based workspace. You can use its image tools directly in your browser.</p>
-    <p class="small">This prototype does not connect to a real AI generation service. Some features depend on browser and device support.</p>
+    <p class="small">AI generation is available for signed-in users when secure backend credentials are configured. Some features still depend on browser and device support.</p>
    </div>
   </div>
  </section>
 
 
  <section id="privacy">
-  <div class="page-title"><h2>🔐 Privacy & Security</h2><p>Your privacy matters. Here is what this browser-based prototype does and does not store.</p></div>
+  <div class="page-title"><h2>🔐 Privacy & Security</h2><p>How VYBORA handles your account, workspace data and AI requests.</p></div>
   <div class="card">
-   <h3>What this version stores</h3>
-   <p>VYBORA currently saves a short list of recently opened tool names and timestamps in this browser's local storage. It does not save your prompts, uploaded images, generated files, passwords or payment details there.</p>
-   <p>Uploaded images are processed in your browser for the selected tool. This static version does not upload them to a VYBORA image-processing server.</p>
-   <h3>What this version does not provide</h3>
-   <p>This prototype has no user accounts, cloud sync, server-side encryption, or payment processing. Your browser/device and any browser extensions remain outside our control. Do not enter sensitive personal, financial, medical or confidential information.</p>
+   <h3>Account and cloud data</h3>
+   <p>VYBORA uses Supabase Auth for account registration, login and password recovery. Cloud features may store your profile, posts, follows, likes, comments, messages, notifications and account-related usage records in the VYBORA Supabase project. Row-level security policies restrict access to private account data.</p>
+   <h3>Data saved on this device</h3>
+   <p>Workspace preferences, recent tool activity, brand settings and some drafts may be saved in this browser's local storage. Clearing browser site data can remove locally saved items. Export a backup before resetting this browser if you want to keep them.</p>
+   <h3>AI processing</h3>
+   <p>When you choose an AI feature, the relevant prompt and any reference images you selected are sent securely to the VYBORA server and then to Google Gemini for processing. Images are resized in your browser before upload. The VYBORA API returns generated results to your browser and does not intentionally save the image payloads as files. Google's API data handling terms and privacy policy apply to content sent to Gemini.</p>
+   <h3>What you should protect</h3>
+   <p>Use a unique password. Do not upload images you do not have permission to use, and do not enter highly sensitive personal, medical, financial or confidential information into prompts. Never paste API keys or passwords into prompts, project descriptions or public content.</p>
    <h3>Control your recent activity</h3>
-   <p>You can clear the recent-tool history saved by this site on this browser. This does not clear your browser history, downloads, or other website data.</p>
+   <p>You can clear the recent-tool history saved by this site on this browser. This does not delete cloud posts, account data, browser history, downloads or other website data.</p>
    <button class="secondary-btn" onclick="clearRecentHistory()">🗑️ Clear Recent Activity</button>
-   <p id="privacyStatus" class="small" role="status" aria-live="polite">No account or personal profile is required in this prototype.</p>
+   <p id="privacyStatus" class="small" role="status" aria-live="polite">Your account and workspace data are managed through VYBORA and its connected service providers.</p>
   </div>
   <div class="card">
-   <h3>Privacy-first promise</h3>
-   <p>We aim to collect only what is needed. Before adding accounts, analytics, cloud storage or AI services, we will explain what data is involved and provide appropriate controls. Never place private API keys in this public website.</p>
-   <p class="small">This is an informational privacy notice for the current prototype, not a guarantee of absolute security or a substitute for a legally reviewed privacy policy.</p>
+   <h3>Privacy notice</h3>
+   <p>AI features process content only after you actively submit a request. Review Google's current privacy and API terms before sending personal images or confidential material. For account or data removal requests, use the account support channel provided by VYBORA.</p>
+   <p class="small">This in-app notice summarizes the current implementation. It is not legal advice or a substitute for a complete, legally reviewed privacy policy.</p>
   </div>
  </section>
 
  <section id="builder">
-  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Describe a website, generate starter code, edit it and preview it live.</p></div>
+  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Describe a website and let Gemini AI generate editable code you can preview and download.</p></div>
   <div class="card">
    <label>Choose project type</label>
    <select id="projectType"><option>Website</option><option>Android App (HTML prototype)</option><option>Game (HTML prototype)</option></select>
@@ -594,10 +597,10 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <label>Describe your project idea</label>
    <textarea id="projectIdea" placeholder="Example: Make a beautiful shopping website with product cards, search and an add-to-cart button..."></textarea>
    <div class="actions">
-    <button onclick="buildProject()">✨ Generate Starter Code</button>
+    <button onclick="buildProject()">✨ Generate with AI</button>
     <button class="secondary-btn" onclick="clearProject()">Clear</button>
    </div>
-   <p class="builder-note">This first version creates editable browser-based starter code from your description. It is not connected to a cloud AI model yet, so it cannot understand arbitrary prompts or rewrite code conversationally. Never put private API keys in this public website.</p>
+   <p class="builder-note">Sign in to generate a complete website with Gemini AI. The AI service runs securely on the server; never put private API keys in this website. If the AI service is unavailable, check the secure backend configuration.</p>
    <div class="builder-workspace">
     <div class="builder-panel">
      <h3>🧩 Source Code</h3>
@@ -610,7 +613,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     <div class="builder-panel">
      <h3>🌐 Live Preview</h3>
      <iframe class="builder-frame" id="projectFrame" title="Generated website preview" sandbox="allow-scripts"></iframe>
-     <div class="builder-status" id="projectStatus">Describe a project and tap Generate Starter Code.</div>
+     <div class="builder-status" id="projectStatus">Describe a project and tap Generate with AI.</div>
     </div>
    </div>
   </div>
@@ -626,6 +629,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <canvas id="photoCanvas" width="900" height="650"></canvas>
    <div class="actions">
     <button class="secondary-btn" onclick="resetPhoto()">↩ Reset</button>
+    <button onclick="enhancePhotoWithAI()">✨ AI Enhance</button>
     <button onclick="downloadCanvas('photoCanvas','finframe-enhanced-photo.png')">⬇ Download Photo</button>
    </div>
    <p id="photoStatus">Upload a photo to begin.</p>
@@ -643,7 +647,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <label>Shadow Strength: <span id="shadowVal">20</span></label><input type="range" id="shadow" min="0" max="50" value="20">
    <canvas id="productCanvas" width="1000" height="1000"></canvas>
    <div class="actions">
-    <button onclick="createProduct()">✨ Create Design</button>
+    <button onclick="createProduct()">Create Manual Design</button>
+    <button onclick="createProductWithAI()">✨ Generate Product Visual with AI</button>
     <button class="secondary-btn" onclick="downloadCanvas('productCanvas','finframe-product-design.png')">⬇ Download Design</button>
    </div>
    <p id="productStatus">Upload a product photo to begin.</p>
@@ -660,7 +665,8 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <label>Text Color</label><input type="color" id="posterText" value="#ffffff">
    <canvas id="posterCanvas" width="1000" height="1200"></canvas>
    <div class="actions">
-    <button onclick="createPoster()">✨ Create Poster</button>
+    <button onclick="createPoster()">Create Manual Poster</button>
+    <button onclick="createPosterWithAI()">✨ Generate Poster with AI</button>
     <button class="secondary-btn" onclick="downloadCanvas('posterCanvas','finframe-poster.png')">⬇ Download Poster</button>
    </div>
    <p id="posterStatus">Upload an image to begin.</p>
@@ -671,12 +677,12 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   <div class="card">
    <h2>🎨 Creative Studio</h2><p>Explore your creative tools.</p>
    <div class="tool-grid">
-    <button class="tool-card" onclick="openTool('tryon')"><div class="tool-icon">👗</div><strong>Virtual Try-On</strong><span>Image composition tool</span></button>
+    <button class="tool-card" onclick="openTool('tryon')"><div class="tool-icon">👗</div><strong>Virtual Try-On</strong><span>AI outfit fitting and manual preview.</span></button>
     <button class="tool-card" onclick="openTool('product')"><div class="tool-icon">💎</div><strong>Product Visuals</strong><span>Product design tool</span></button>
     <button class="tool-card" onclick="openTool('video')"><div class="tool-icon">🎬</div><strong>Promo Videos</strong><span>Simple video maker</span></button>
     <button class="tool-card" onclick="openTool('poster')"><div class="tool-icon">🖼️</div><strong>Posters</strong><span>Poster design</span></button>
     <button class="tool-card" onclick="openTool('caption')"><div class="tool-icon">✍️</div><strong>Captions</strong><span>Caption ideas</span></button>
-    <button class="tool-card" onclick="openTool('voice')"><div class="tool-icon">🎙️</div><strong>Voiceover</strong><span>Browser text-to-speech</span></button>
+    <button class="tool-card" onclick="openTool('voice')"><div class="tool-icon">🎙️</div><strong>Voiceover</strong><span>Browser preview + AI voiceover</span></button>
     <button class="tool-card" onclick="openTool('game')"><div class="tool-icon">🎮</div><strong>Game Studio</strong><span>Play a mini game</span></button>
    </div>
   </div>
@@ -696,12 +702,20 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 
  <section id="voice">
   <div class="card">
-   <h2>🎙️ Voiceover Studio</h2><p>Use your browser's built-in speech engine.</p>
+   <h2>🎙️ Voiceover Studio</h2><p>Preview with browser voices or generate a downloadable AI voiceover.</p>
    <label>Enter your script</label><textarea id="voiceText" placeholder="Write something to speak..."></textarea>
    <label>Voice</label><select id="voiceSelect"><option value="">Default voice</option></select>
    <label>Speed</label><input type="range" id="voiceRate" min="0.5" max="2" step="0.1" value="1">
-   <div class="actions"><button onclick="speakText()">▶ Speak</button><button class="secondary-btn" onclick="stopSpeak()">■ Stop</button></div>
-   <p id="voiceStatus">Voice availability depends on your browser and device.</p>
+   <div class="actions"><button onclick="speakText()">▶ Browser Voice Preview</button><button class="secondary-btn" onclick="stopSpeak()">■ Stop</button></div>
+   <div class="card" style="margin-top:14px">
+    <h3>✨ AI Voiceover</h3>
+    <label>AI voice</label><select id="aiVoiceSelect"><option>Kore</option><option>Aoede</option><option>Zephyr</option><option>Puck</option><option>Charon</option><option>Fenrir</option><option>Leda</option><option>Orus</option><option>Callirrhoe</option><option>Enceladus</option></select>
+    <label>Voice style</label><select id="aiVoiceStyle"><option>Natural, clear, warm and confident</option><option>Energetic and upbeat advertisement</option><option>Calm, reassuring and friendly</option><option>Professional documentary narration</option><option>Expressive storytelling with gentle emotion</option></select>
+    <div class="actions"><button id="aiVoiceButton" onclick="generateAiVoiceover()">✨ Generate AI Voiceover</button></div>
+    <audio id="aiVoiceAudio" controls style="display:none;width:100%;margin-top:12px"></audio>
+    <div class="actions"><a id="aiVoiceDownload" class="secondary-btn" download="vybora-ai-voiceover.wav" style="display:none">⬇ Download Voiceover</a></div>
+   </div>
+   <p id="voiceStatus">Browser voice preview is available. Sign in to generate downloadable AI voiceovers.</p>
   </div>
  </section>
 
@@ -729,12 +743,12 @@ body.vybora-mode #vyCloudAuth{display:none!important}
  <section id="tryon">
   <div class="card">
    <h2>👗 Virtual Try-On Preview</h2>
-   <p>Upload a person's photo and a separate clothing photo. The AI service can create a realistic try-on after a secure backend is connected. Until then, the manual preview below remains available.</p>
+   <p>Upload a person's photo and a separate clothing photo. Signed-in users can use Gemini AI for a realistic try-on when the secure backend key is configured. The manual preview remains available too.</p>
    <div class="card" style="background:#101020;border-color:#65528f">
     <h3>✨ AI Virtual Try-On</h3>
-    <p>Use the two uploads below, then generate an AI outfit preview. Your images are sent only when you press Generate; the AI provider and its privacy terms will apply once a backend is configured.</p>
+    <p>Use the two uploads below, then generate an AI outfit preview. Your images are resized in your browser and sent securely only after you press Generate. Gemini processing and Google's privacy terms apply.</p>
     <button class="primary-btn" id="aiTryonButton" type="button" onclick="generateAiTryon()">✨ Generate AI Try-On</button>
-    <p id="aiTryonStatus" role="status" aria-live="polite">AI service is not connected yet. The secure backend setup is being prepared.</p>
+    <p id="aiTryonStatus" role="status" aria-live="polite">Sign in and add both images to generate an AI try-on. Gemini must be configured securely on the backend.</p>
     <div id="aiTryonResultWrap" class="hidden">
      <img id="aiTryonResult" alt="AI virtual try-on result" style="display:block;max-width:100%;max-height:650px;margin:12px auto;border-radius:12px">
      <a id="aiTryonDownload" class="secondary-btn" download="finframe-ai-tryon.png">⬇ Save AI result</a>
@@ -1009,7 +1023,7 @@ body.vybora-mode #vybora .vy-settings-row button{flex:0 0 auto}
 <div class="actions"><button class="secondary-btn" onclick="resetAllLocalData()">15. Reset all local workspace data</button></div>
 <p id="extraSettingsStatus" class="small" role="status">These options only affect this browser on this device.</p></div>
 <div class="card"><h3>📦 Workspace Backup</h3><p>Export your saved Brand Kit, recent activity and appearance setting into one JSON backup file.</p><div class="actions"><button onclick="exportWorkspaceBackup()">⬇️ Download Backup</button></div><label for="workspaceBackupFile">Restore a backup file</label><input id="workspaceBackupFile" type="file" accept=".json,application/json"><div class="actions"><button class="secondary-btn" onclick="importWorkspaceBackup()">↩️ Restore Backup</button></div><p id="backupStatus" class="small" role="status">Your backup stays on your device unless you choose to share it.</p></div>
-  <div class="card"><h3>ℹ️ About this prototype</h3><p>VYBORA includes browser-based prototype tools. Your saved data is stored locally in this browser; clearing browser site data may remove it.</p></div>
+  <div class="card"><h3>ℹ️ About VYBORA</h3><p>VYBORA combines browser-based creative tools, Supabase-powered accounts and social features, and Gemini AI services. Some preferences and drafts are saved locally; account and social data may be stored securely in the connected cloud project.</p></div>
  </section>
  </main>
  <footer>VYBORA • Creator Workspace • Made with ❤️</footer>
@@ -1379,14 +1393,96 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    '</body></html>'
   ].join('').replaceAll('FF_SAFE_NAME_TOKEN',safeName).replaceAll('FF_SAFE_IDEA_TOKEN',safeIdea).replaceAll('FF_TITLE_TOKEN',title).replaceAll('FF_ACTION_TOKEN',action).replaceAll('FF_CARDS_TOKEN',cards);
 }
-function buildProject(){
+async function getVyboraAIClient(){
+ for(let attempt=0;attempt<20;attempt++){
+  if(window.vyClient&&window.vyClient.auth)return window.vyClient;
+  if(window.supabase&&typeof window.supabase.createClient==='function'){
+   try{
+    window.vyClient=window.supabase.createClient('https://pxgoaygwtxrrqkftluut.supabase.co','sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh');
+    if(window.vyClient&&window.vyClient.auth)return window.vyClient;
+   }catch(error){console.warn('VYBORA AI auth client initialization:',error);}
+  }
+  await new Promise(resolve=>setTimeout(resolve,250));
+ }
+ if(!window.supabase||typeof window.supabase.createClient!=='function')throw new Error('VYBORA account library did not load. Check your connection, then reopen the workspace.');
+ throw new Error('VYBORA account connection could not initialize. Reopen the workspace and sign in again.');
+}
+async function callVyboraCreatorAI({topic,format,mode,instruction,platform='Web / Social',audience='people who may use this project',language='English'}){
+ const client=await getVyboraAIClient();
+ const sessionResult=await client.auth.getSession();
+ if(sessionResult.error)throw sessionResult.error;
+ const token=sessionResult.data?.session?.access_token;
+ if(!token)throw new Error('Please sign in to use VYBORA AI.');
+ const response=await fetch('/api/creator',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({topic,format,mode,instruction,platform,audience,language}),signal:AbortSignal.timeout(55000)});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||'VYBORA AI could not complete this request.');
+ if(!data.brief||typeof data.brief!=='string')throw new Error('VYBORA AI returned an empty result.');
+ return data.brief.trim();
+}
+async function resizeImageFile(file,maxSide=1024){
+ if(!file||!file.type.startsWith('image/'))throw new Error('Please select an image file first.');
+ const source=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('Could not read the selected image.'));img.src=reader.result;};reader.onerror=()=>reject(new Error('Could not read the selected image.'));reader.readAsDataURL(file);});
+ const scale=Math.min(1,maxSide/Math.max(source.width,source.height));
+ const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
+ canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+ return canvas.toDataURL('image/jpeg',0.82);
+}
+async function callVyboraImageAI({prompt,imageData='',referenceImages=[],aspectRatio='1:1',mode='image'}){
+ const client=await getVyboraAIClient();
+ const sessionResult=await client.auth.getSession();
+ if(sessionResult.error)throw sessionResult.error;
+ const token=sessionResult.data?.session?.access_token;
+ if(!token)throw new Error('Please sign in to use VYBORA AI Studio.');
+ const response=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({prompt,imageData,referenceImages,aspectRatio,mode}),signal:AbortSignal.timeout(60000)});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||'VYBORA image generation failed.');
+ if(typeof data.image!=='string'||!data.image.startsWith('data:image/'))throw new Error('VYBORA AI returned no usable image.');
+ return data.image;
+}
+async function putImageOnCanvas(dataUrl,canvasId){
+ const img=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Generated image could not be opened.'));image.src=dataUrl;});
+ const canvas=$(canvasId);canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+ canvas.getContext('2d').drawImage(img,0,0);
+}
+async function enhancePhotoWithAI(){
+ const file=$('photoFile').files[0],status=$('photoStatus');
+ if(!file){status.textContent='Upload a photo first.';return;}
+ status.textContent='AI is enhancing your photo…';
+ try{const data=await resizeImageFile(file);const image=await callVyboraImageAI({prompt:'Enhance this photo professionally. Preserve the original subject and identity. Improve lighting, clarity, natural color, detail and composition without changing the scene or adding objects.',imageData:data,aspectRatio:'4:3'});await putImageOnCanvas(image,'photoCanvas');status.textContent='AI photo enhancement complete. Download the result when ready.';saveRecent('photo');}
+ catch(error){status.textContent='AI enhancement unavailable: '+(error.message||'Please try again.');}
+}
+async function createProductWithAI(){
+ const status=$('productStatus'),file=$('productFile').files[0],name=$('productNameInput').value.trim()||'Premium Product',tagline=$('productTagline').value.trim();
+ status.textContent='AI is creating your product visual…';
+ try{const data=file?await resizeImageFile(file):'';const image=await callVyboraImageAI({prompt:'Create a premium e-commerce product hero visual for '+name+'. '+(tagline?'Tagline concept: '+tagline+'. ':'')+'Use a polished studio setup, clean background, professional commercial lighting, realistic materials, elegant composition and no extra text or watermarks. Preserve the product from the reference image if provided.',imageData:data,aspectRatio:'1:1'});await putImageOnCanvas(image,'productCanvas');status.textContent='AI product visual generated. Download the design when ready.';saveRecent('product');}
+ catch(error){status.textContent='AI product generation unavailable: '+(error.message||'Please try again.');}
+}
+async function createPosterWithAI(){
+ const status=$('posterStatus'),file=$('posterFile').files[0],title=$('posterTitle').value.trim()||'A NEW BEGINNING',subtitle=$('posterSubtitle').value.trim();
+ status.textContent='AI is designing your poster…';
+ try{const data=file?await resizeImageFile(file):'';const image=await callVyboraImageAI({prompt:'Design a striking, professional promotional poster. Main headline concept: '+title+'. Supporting message: '+subtitle+'. Create a balanced, high-impact layout with strong visual hierarchy, attractive typography, clean spacing and premium art direction. If a reference image is supplied, incorporate its subject faithfully. Ensure any text is spelled exactly as supplied; if text rendering is unreliable, leave clean space for text rather than inventing words. No watermarks.',imageData:data,aspectRatio:'3:4'});await putImageOnCanvas(image,'posterCanvas');status.textContent='AI poster generated. Download the design when ready.';saveRecent('poster');}
+ catch(error){status.textContent='AI poster generation unavailable: '+(error.message||'Please try again.');}
+}
+async function buildProject(){
  const type=$('projectType').value;
  const name=$('projectName').value.trim()||'My Project';
  const idea=$('projectIdea').value.trim();
- $('projectCode').value=makeStarterWebsite(name,idea,type);
- refreshProjectPreview();
- $('projectStatus').textContent='Starter code generated. Edit the code and tap Update Preview.';
- saveRecent('builder');
+ if(!idea){$('projectStatus').textContent='Describe what your project should do first.';return;}
+ const button=document.querySelector('#builder button[onclick="buildProject()"]');
+ if(button){button.disabled=true;button.textContent='✨ Building with AI…';}
+ $('projectStatus').textContent='VYBORA AI is creating your project code…';
+ try{
+  const generated=await callVyboraCreatorAI({topic:name+' — '+idea,format:'Complete single-file responsive HTML website',mode:'website_code',platform:'Web',audience:'the target visitors described in the project brief',language:'English',instruction:'Return ONLY a complete, valid, self-contained HTML5 document. No markdown fences, no explanations. Include embedded CSS and vanilla JavaScript, responsive mobile layout, accessible semantic markup, working navigation and functional interactions. Project type: '+type+'. Project name: '+name+'. Requirements: '+idea+'. Use polished visual design and realistic placeholder content; do not claim external services are connected.'});
+  let code=generated.replace(/^\s*```(?:html)?\s*/i,'').replace(/\s*```\s*$/,'').trim();
+  const start=code.toLowerCase().indexOf('<!doctype html');
+  const htmlStart=code.toLowerCase().indexOf('<html');
+  if(start>0)code=code.slice(start);else if(htmlStart>0)code=code.slice(htmlStart);
+  if(!/<html[\s>]/i.test(code)||!/<\/html>/i.test(code))throw new Error('AI returned text instead of a complete HTML page. Please try again with a more specific brief.');
+  $('projectCode').value=code;refreshProjectPreview();
+  $('projectStatus').textContent='AI website generated successfully. Review the preview, edit if needed, then download the HTML.';
+  saveRecent('builder');
+ }catch(error){$('projectStatus').textContent=error.message||'Could not generate the project. Please try again.';}
+ finally{if(button){button.disabled=false;button.textContent='Generate with AI';}}
 }
 function refreshProjectPreview(){
  const code=$('projectCode').value;
@@ -1515,18 +1611,15 @@ function createPoster(){
  saveRecent('poster');
 }
 
-function makeCaption(){
+async function makeCaption(){
  const topic=$('captionTopic').value.trim()||'our latest creation';
  const style=$('captionStyle').value;
- const samples={
- Professional:'Introducing '+topic+'. Thoughtfully created with quality and care. Discover more today. #Quality #Innovation',
- Funny:'We tried to keep '+topic+' a secret… but it is too good! 😄✨ #Fun',
- Inspirational:'Dream big, create boldly and celebrate '+topic+'. Every great idea starts somewhere. ✨',
- Promotional:'✨ SPECIAL UPDATE! Discover '+topic+'. Do not miss out—explore it today! #NewLaunch',
- 'Short and simple':'✨ '+topic+' — Made with love. ❤️'
- };
- $('captionOutput').textContent=samples[style];
- saveRecent('caption');
+ const output=$('captionOutput');
+ output.textContent='VYBORA AI is writing your caption…';
+ try{
+  const caption=await callVyboraCreatorAI({topic,format:'Social media caption with hashtags',mode:'caption',platform:'Instagram, Facebook and TikTok',audience:'social media followers',language:'English',instruction:'Write 3 distinct ready-to-post captions in the selected style: '+style+'. Topic: '+topic+'. Include relevant hashtags and one clear call to action. Keep each caption platform-friendly and avoid fabricated claims. Label options 1, 2 and 3.'});
+  output.textContent=caption;saveRecent('caption');
+ }catch(error){output.textContent='AI caption unavailable: '+(error.message||'Please try again.');}
 }
 function copyText(id){
  const text=$(id).textContent;
@@ -1565,6 +1658,23 @@ function speakText(){
  speechSynthesis.speak(utter);
  $('voiceStatus').textContent='Speaking...';
  saveRecent('voice');
+}
+async function generateAiVoiceover(){
+ const text=$('voiceText').value.trim(),status=$('voiceStatus'),button=$('aiVoiceButton');
+ if(!text){status.textContent='Enter a script first.';return;}
+ button.disabled=true;button.textContent='Generating AI voice…';status.textContent='Gemini is generating your voiceover…';
+ try{
+  const sessionResult=await window.vyClient?.auth?.getSession();
+  const token=sessionResult?.data?.session?.access_token;
+  if(!token)throw new Error('Please sign in to generate an AI voiceover.');
+  const response=await fetch('/api/voice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({text,voice:$('aiVoiceSelect').value,style:$('aiVoiceStyle').value}),signal:AbortSignal.timeout(60000)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'AI voice generation failed.');
+  if(typeof data.audio!=='string'||!data.audio.startsWith('data:audio/'))throw new Error('Gemini returned no playable audio.');
+  const audio=$('aiVoiceAudio'),download=$('aiVoiceDownload');audio.src=data.audio;audio.style.display='block';download.href=data.audio;download.style.display='inline-block';
+  status.textContent='AI voiceover generated. Play it or download the WAV file.';saveRecent('voice');
+ }catch(error){status.textContent=error.message||'Could not generate the AI voiceover.';}
+ finally{button.disabled=false;button.textContent='✨ Generate AI Voiceover';}
 }
 function stopSpeak(){
  if('speechSynthesis' in window)speechSynthesis.cancel();
@@ -1688,18 +1798,12 @@ async function generateAiTryon(){
  if(!person||!garment){status.textContent="Please choose both a person's photo and a separate clothing photo first.";return;}
  if(!person.type.startsWith('image/')||!garment.type.startsWith('image/')){status.textContent='Please select image files only.';return;}
  if(person.size>10*1024*1024||garment.size>10*1024*1024){status.textContent='Each image must be 10 MB or smaller.';return;}
- const form=new FormData();form.append('person',person);form.append('garment',garment);
- button.disabled=true;button.textContent='Generating…';status.textContent='Sending images securely to the configured AI service…';wrap.classList.add('hidden');
+ button.disabled=true;button.textContent='Generating…';status.textContent='Gemini AI is fitting the selected clothing to your portrait…';wrap.classList.add('hidden');
  try{
-  const response=await fetch('./api/tryon',{method:'POST',body:form});
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error||'AI service is not configured yet. Please connect a compatible provider on the secure backend.');
-  let image=data.imageUrl||data.image_url||data.imageBase64||data.image_base64||data.output;
-  if(Array.isArray(image))image=image[0];
-  if(typeof image==='string'&&!image.startsWith('data:')&&!/^https?:\/\//i.test(image)&&!image.startsWith('/'))image='data:image/png;base64,'+image;
-  if(!image){throw new Error('The AI provider responded, but did not return an image in imageUrl, imageBase64, or output.');}
+  const personData=await resizeImageFile(person,1024),garmentData=await resizeImageFile(garment,1024);
+  const image=await callVyboraImageAI({prompt:'Create a realistic virtual try-on image. Reference image 1 is the person; reference image 2 is the garment. Dress the person in the exact garment from reference image 2, preserving its color, pattern, cut and material as closely as possible. Preserve the person identity, face, body proportions, pose and background. Make the garment fit naturally with realistic folds, lighting and shadows. Return one photorealistic image, no captions, no watermark.',referenceImages:[personData,garmentData],aspectRatio:'3:4',mode:'tryon'});
   const img=$('aiTryonResult');img.src=image;$('aiTryonDownload').href=image;wrap.classList.remove('hidden');
-  status.textContent='AI try-on image generated. Check the result before saving.';saveRecent('AI Virtual Try-On');
+  status.textContent='AI virtual try-on generated. Check the result before saving.';saveRecent('AI Virtual Try-On');
  }catch(error){status.textContent=error.message||'Could not generate the AI try-on. Please try again.';}
  finally{button.disabled=false;button.textContent='✨ Generate AI Try-On';}
 }
@@ -1877,7 +1981,7 @@ function resetPreferences(){
   const email=el('vyAuthEmail').value.trim(),password=el('vyAuthPassword').value,name=el('vyAuthName').value.trim();
   if(!email||password.length<6){say('Enter a valid email and a password with at least 6 characters.');return;}
   say('Creating your account…');
-  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://finframe-ai-lab.vercel.app/'}});
+  const r=await db.auth.signUp({email:email,password:password,options:{data:{full_name:name},emailRedirectTo:'https://vybora-trend-hub.vercel.app/'}});
   if(r.error){say(r.error.message);return;}
   if(r.data.user && r.data.session){currentUser=r.data.user;await profileFor(currentUser);await signedIn();}
   else say('Account created. Check your email for the confirmation link, then log in here.');
@@ -1886,7 +1990,7 @@ function resetPreferences(){
   const email=el('vyAuthEmail').value.trim();
   if(!email){say('Enter your account email first, then tap Forgot password?');return;}
   say('Sending password reset email…');
-  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://finframe-ai-lab.vercel.app/'});
+  const r=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://vybora-trend-hub.vercel.app/'});
   if(r.error){say(r.error.message);return;}
   say('Password reset email sent. Open the link in your inbox, then set a new password here.');
  };

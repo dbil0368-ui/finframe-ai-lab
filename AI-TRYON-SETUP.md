@@ -1,25 +1,25 @@
-# FinFrame AI Virtual Try-On backend
+# VYBORA AI Virtual Try-On
 
-The GitHub Pages site is static. It cannot safely hold an AI provider secret or run a server, so the AI button uses the optional Vercel serverless endpoint at `/api/tryon`.
+The VYBORA Workspace uses the authenticated Vercel endpoint `/api/image` and Gemini image generation for AI Virtual Try-On. It does not require a third-party try-on provider URL.
 
-## Current status
+## Required secure environment variables
 
-- The browser interface and secure server-side proxy are scaffolded.
-- **AI generation is not active until a compatible virtual try-on provider is selected and configured.**
-- Do not paste API keys into `index.html`, GitHub Pages files, or a public chat.
+Configure these in Vercel Project Settings → Environment Variables for both Preview and Production:
 
-## Deploy the API
+- `GEMINI_API_KEY`: private Google Gemini Developer API key. This is the only required secret for the new Gemini Creator, Image, Try-On, and Voice endpoints.
 
-1. Import this GitHub repository into a Vercel project.
-2. In Vercel Project Settings → Environment Variables, add:
-   - `TRYON_PROVIDER_URL`: the provider's HTTPS endpoint that accepts multipart form data.
-   - `TRYON_API_KEY`: the private server-side bearer token.
-3. The provider endpoint must accept multipart fields named `person` and `garment`, and return JSON containing an image as `imageUrl`, `imageBase64`, or `output` (string or first string in an array).
-4. Deploy the Vercel project and configure the site/API routing so `/api/tryon` reaches this function. GitHub Pages alone does not host this API.
-5. Review the provider's pricing, image retention, privacy, and usage terms before allowing visitors to upload photos.
+Never put this key in browser code, GitHub files, or a public chat. The usage limits are enforced by authenticated Supabase database functions using the signed-in user's token; no Supabase service-role/secret key is needed by these AI endpoints. After adding or changing the Gemini key, redeploy the relevant environment.
 
-The proxy forwards the multipart request without parsing or storing the uploaded images. Add provider-specific validation, abuse protection/rate limiting, and privacy disclosures before public launch. The browser limits each selected image to 10 MB; this is not a substitute for server-side provider limits.
+## How it works
 
-## Local/manual preview
+1. The user signs in through Supabase Auth.
+2. The browser resizes both selected images locally before upload.
+3. The browser sends the portrait and garment reference images to `/api/image` with the user's Supabase access token.
+4. The server validates the session, applies the daily Virtual Try-On limit through `consume_vybora_tryon_request_for_current_user`, and calls the configured Gemini image model.
+5. The generated image is returned to the browser for review and download.
 
-The existing manual overlay preview remains available and does not require a backend. It is not AI clothing fitting.
+The server does not persist the uploaded or generated image. Google Gemini processing is subject to Google's applicable API terms and privacy policies. Users should only upload images they have permission to use.
+
+## Manual preview
+
+The manual overlay remains available as a separate browser-only preview. It is not AI clothing fitting.

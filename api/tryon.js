@@ -1,6 +1,6 @@
 // Authenticated, rate-limited Vercel proxy for a compatible virtual try-on provider.
 // Keep TRYON_API_KEY on the server. Never expose it in browser code.
-export const config = { api: { bodyParser: false } };
+export const config = { api: { bodyParser: false }, maxDuration: 60 };
 
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
@@ -13,7 +13,7 @@ function send(res, status, body) {
 }
 
 async function authenticate(req) {
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token || token.length > 8192) return null;
   const response = await fetch(SUPABASE_URL + "/auth/v1/user", {
     headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token },
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
   if (!serviceKey) return send(res, 503, { error: "Virtual Try-On usage protection is not configured." });
 
   const contentType = String(req.headers["content-type"] || "");
-  if (!/^multipart\\/form-data\\s*;\\s*boundary=/i.test(contentType)) {
+  if (!/^multipart\/form-data\s*;\s*boundary=/i.test(contentType)) {
     return send(res, 400, { error: "Expected multipart form data with person and garment images." });
   }
   const lengthHeader = req.headers["content-length"];
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
     }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 90000);
+    const timeout = setTimeout(() => controller.abort(), 55000);
     try {
       const upstream = await fetch(parsedProviderUrl, {
         method: "POST",
