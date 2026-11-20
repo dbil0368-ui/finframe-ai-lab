@@ -36,7 +36,8 @@ async function db(path, options = {}) {
 async function razorpay(path, method, body) {
   const id = process.env.RAZORPAY_KEY_ID;
   const secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!id || !secret || !id.startsWith("rzp_test_")) throw new Error("Razorpay Test Mode keys are not configured for Preview.");
+  if (!id || !secret || !id.startsWith("rzp_test_")) throw new Error("Razorpay Test Mode keys are not configured.");
+  if (!process.env.RAZORPAY_WEBHOOK_SECRET) throw new Error("Add RAZORPAY_WEBHOOK_SECRET before enabling subscriptions.");
   const response = await fetch("https://api.razorpay.com/v1/" + path, {
     method,
     headers: {
