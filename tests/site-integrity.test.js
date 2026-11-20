@@ -15,7 +15,7 @@ async function checkInlineScripts(path) {
     try {
       new vm.Script(source, { filename: path + "#inline-script-" + checked });
     } catch (error) {
-      throw new Error(path + " inline script " + checked + " failed to parse: " + error.message + "\\n" + source.slice(0, 700));
+      throw new Error(path + " inline script " + checked + " failed to parse:\\n" + error.stack);
     }
   }
   return { html, checked };
