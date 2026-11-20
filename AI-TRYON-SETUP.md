@@ -6,10 +6,9 @@ The VYBORA Workspace uses the authenticated Vercel endpoint `/api/image` and Gem
 
 Configure these in Vercel Project Settings → Environment Variables for both Preview and Production:
 
-- `GEMINI_API_KEY`: private Google Gemini Developer API key.
-- `SUPABASE_SECRET_KEY`: private Supabase secret key used only by the server to enforce VYBORA usage limits.
+- `GEMINI_API_KEY`: private Google Gemini Developer API key. This is the only required secret for the new Gemini Creator, Image, Try-On, and Voice endpoints.
 
-Never put either value in browser code, GitHub files, or a public chat. After adding or changing environment variables, redeploy the relevant environment.
+Never put either value in browser code, GitHub files, or a public chat. The usage limits are enforced by authenticated Supabase database functions using the signed-in user's token; no Supabase service-role/secret key is needed by these AI endpoints. After adding or changing the Gemini key, redeploy the relevant environment.
 
 ## How it works
 
