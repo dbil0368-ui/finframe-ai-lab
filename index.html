@@ -1490,6 +1490,16 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 }
 <\/script>
 
+
+<script>
+/* Allow other VYBORA pages to deep-link directly into the integrated Social workspace. */
+(function(){
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'vybora' && typeof window.show === 'function') window.show('vybora');
+  } catch (_) {}
+})();
+</script>
 </body></html>`;
  }
  const title=isGame?'Play and have fun':(isApp?'Your app starts here':'Discover something wonderful');
