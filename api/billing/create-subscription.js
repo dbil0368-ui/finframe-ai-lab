@@ -59,6 +59,7 @@ export default async function handler(req, res) {
   const user = await authUser(req);
   if (!user?.id) return send(res, 401, { error: "Please sign in to VYBORA first." });
   const billingEnvironment = process.env.VERCEL_ENV === "production" ? "live" : "test";
+  if (!process.env.RAZORPAY_WEBHOOK_SECRET) return send(res, 503, { error: "Billing webhook verification is not configured." });
   const planKey = req.body?.plan;
   if (!["starter", "pro"].includes(planKey)) return send(res, 400, { error: "Choose a valid plan." });
 
