@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     const audioPart = (data?.candidates?.[0]?.content?.parts || []).find(part => part?.inlineData?.data && /^audio\//i.test(part.inlineData.mimeType || ""));
     if (!audioPart) return send(res, 502, { error: "Gemini returned no audio. Please try another script." });
     const rawAudio = Buffer.from(audioPart.inlineData.data, "base64");
-    const sampleRate = Number((String(audioPart.inlineData.mimeType).match(/rate=(\\d+)/i) || [])[1]) || 24000;
+    const sampleRate = Number((String(audioPart.inlineData.mimeType).match(/rate=(\d+)/i) || [])[1]) || 24000;
     const wav = Buffer.alloc(44 + rawAudio.length);
     wav.write("RIFF", 0); wav.writeUInt32LE(36 + rawAudio.length, 4); wav.write("WAVE", 8);
     wav.write("fmt ", 12); wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20);
