@@ -11,6 +11,7 @@
     "ai": "7.0.169"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "check": "for file in api/*.js api/billing/*.js; do node --check \"$file\" || exit 1; done"
   }
 }
