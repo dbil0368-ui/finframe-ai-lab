@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     return send(res, 405, { error: "Use GET." });
   }
 
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return send(res, 401, { error: "Sign in to view billing." });
 
   const userResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
