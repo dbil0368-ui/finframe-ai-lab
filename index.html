@@ -585,7 +585,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
  </section>
 
  <section id="builder">
-  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Describe a website, generate starter code, edit it and preview it live.</p></div>
+  <div class="page-title"><h2>🚀 AI Project Builder</h2><p>Describe a website and let Gemini AI generate editable code you can preview and download.</p></div>
   <div class="card">
    <label>Choose project type</label>
    <select id="projectType"><option>Website</option><option>Android App (HTML prototype)</option><option>Game (HTML prototype)</option></select>
@@ -594,10 +594,10 @@ body.vybora-mode #vyCloudAuth{display:none!important}
    <label>Describe your project idea</label>
    <textarea id="projectIdea" placeholder="Example: Make a beautiful shopping website with product cards, search and an add-to-cart button..."></textarea>
    <div class="actions">
-    <button onclick="buildProject()">✨ Generate Starter Code</button>
+    <button onclick="buildProject()">✨ Generate with AI</button>
     <button class="secondary-btn" onclick="clearProject()">Clear</button>
    </div>
-   <p class="builder-note">This first version creates editable browser-based starter code from your description. It is not connected to a cloud AI model yet, so it cannot understand arbitrary prompts or rewrite code conversationally. Never put private API keys in this public website.</p>
+   <p class="builder-note">Sign in to generate a complete website with Gemini AI. The AI service runs securely on the server; never put private API keys in this website. If the AI service is unavailable, check the secure backend configuration.</p>
    <div class="builder-workspace">
     <div class="builder-panel">
      <h3>🧩 Source Code</h3>
@@ -610,7 +610,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
     <div class="builder-panel">
      <h3>🌐 Live Preview</h3>
      <iframe class="builder-frame" id="projectFrame" title="Generated website preview" sandbox="allow-scripts"></iframe>
-     <div class="builder-status" id="projectStatus">Describe a project and tap Generate Starter Code.</div>
+     <div class="builder-status" id="projectStatus">Describe a project and tap Generate with AI.</div>
     </div>
    </div>
   </div>
