@@ -25,6 +25,8 @@ test("main VYBORA workspace inline scripts parse", async () => {
   const { html, checked } = await checkInlineScripts("../index.html");
   assert.ok(checked >= 5, "expected to validate the inline application scripts");
   assert.match(html, /name="viewport"/i);
+  assert.match(html, /@media\\s*\\(max-width:\\s*900px\\)/i);
+  assert.match(html, /@media\\s*\\(max-width:\\s*520px\\)/i);
   for (const section of ["photo", "product", "poster", "tryon", "voice", "builder", "caption"]) {
     assert.ok(html.includes('id="' + section + '"') || html.includes("id='" + section + "'"), "missing section " + section);
   }
