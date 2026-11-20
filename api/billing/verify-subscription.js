@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   const { razorpay_subscription_id: subscriptionId, razorpay_payment_id: paymentId, razorpay_signature: signature } = req.body || {};
   if (![subscriptionId, paymentId, signature].every(v => typeof v === "string" && v.length < 300)) return send(res, 400, { error: "Missing payment verification details." });
   const secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!secret || !String(process.env.RAZORPAY_KEY_ID || "").startsWith("rzp_test_")) return send(res, 503, { error: "Razorpay Test Mode is not configured." });
+  if (!secret || !String(process.env.RAZORPAY_KEY_ID || "").startsWith("rzp_test_") || !process.env.RAZORPAY_WEBHOOK_SECRET) return send(res, 503, { error: "Razorpay Test Mode and webhook verification are not fully configured." });
   try {
     const expected = crypto.createHmac("sha256", secret).update(paymentId + "|" + subscriptionId).digest();
     const supplied = Buffer.from(signature, "hex");
