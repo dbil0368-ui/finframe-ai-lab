@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: transcript, speechMetadata: { style } }] }],
+        contents: [{ role: "user", parts: [{ text: "Read the following script aloud. Apply this delivery direction naturally, but do not speak the direction itself.\n\nDelivery: " + style + "\n\nScript:\n" + transcript }] }],
         generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } }
       }),
       signal: AbortSignal.timeout(55000)
@@ -81,8 +81,17 @@ export default async function handler(req, res) {
     }
     const audioPart = (data?.candidates?.[0]?.content?.parts || []).find(part => part?.inlineData?.data && /^audio\//i.test(part.inlineData.mimeType || ""));
     if (!audioPart) return send(res, 502, { error: "Gemini returned no audio. Please try another script." });
+    const rawAudio = Buffer.from(audioPart.inlineData.data, "base64");
+    const sampleRate = Number((String(audioPart.inlineData.mimeType).match(/rate=(\\d+)/i) || [])[1]) || 24000;
+    const wav = Buffer.alloc(44 + rawAudio.length);
+    wav.write("RIFF", 0); wav.writeUInt32LE(36 + rawAudio.length, 4); wav.write("WAVE", 8);
+    wav.write("fmt ", 12); wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20);
+    wav.writeUInt16LE(1, 22); wav.writeUInt32LE(sampleRate, 24);
+    wav.writeUInt32LE(sampleRate * 2, 28); wav.writeUInt16LE(2, 32);
+    wav.writeUInt16LE(16, 34); wav.write("data", 36); wav.writeUInt32LE(rawAudio.length, 40);
+    rawAudio.copy(wav, 44);
     return send(res, 200, {
-      audio: "data:" + audioPart.inlineData.mimeType + ";base64," + audioPart.inlineData.data,
+      audio: "data:audio/wav;base64," + wav.toString("base64"),
       model: TTS_MODEL,
       quota: { plan: planKey, used: quota.used, limit: quota.daily_limit || dailyLimit, remaining: quota.remaining }
     });
