@@ -53,7 +53,7 @@ export default async function handler(req, res) {
         contents: [{ role: "user", parts: [{ text: "Read the following script aloud. Apply this delivery direction naturally, but do not speak the direction itself.\n\nDelivery: " + style + "\n\nScript:\n" + transcript }] }],
         generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } }
       }),
-      signal: AbortSignal.timeout(55000)
+      signal: AbortSignal.timeout(40000)
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
