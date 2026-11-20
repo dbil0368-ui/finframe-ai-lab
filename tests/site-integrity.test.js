@@ -42,3 +42,10 @@ test("Trend Hub inline scripts parse and mobile breakpoints exist", async () => 
   assert.match(html, /@media\s*\(max-width:\s*850px\)/i);
   assert.match(html, /id=["']billing["']/i);
 });
+
+test("all remaining VYBORA HTML pages have parseable inline scripts", async () => {
+  for (const path of ["../shop-manager.html", "../electrical-a2z.html", "../premium.html", "../privacy.html", "../terms.html"]) {
+    const { checked } = await checkInlineScripts(path);
+    assert.ok(checked >= 1, path + " should contain a validated inline script");
+  }
+});
