@@ -2294,7 +2294,9 @@ function resetPreferences(){
  window.vyFindChatUser=async function(){
   const input=el('vyChatSearch'),host=el('vyChatMatches'),term=(input&&input.value||'').trim();if(!host||!term)return;if(!currentUser){host.textContent='Log in first.';return;}
   const r=await db.from('profiles').select('id,username,full_name,is_private').ilike('username','%'+term.replace(/[%_]/g,'')+'%').neq('id',currentUser.id).limit(10);
-  if(r.error){host.textContent=r.error.message;return;}host.innerHTML=r.data.length?r.data.map(p=>'<button class="secondary-btn" style="margin:3px" onclick="vyOpenChat(\\''+esc(p.id)+'\\',\\''+esc(p.username||p.full_name||'Creator')+'\\')">'+esc(p.username||p.full_name||'Creator')+'</button>').join(''):'No creators found.';
+   if(r.error){host.textContent=r.error.message;return;}
+   host.innerHTML=r.data.length?r.data.map(p=>'<button class="secondary-btn vy-chat-user" style="margin:3px" data-user-id="'+esc(p.id)+'" data-user-name="'+esc(p.username||p.full_name||'Creator')+'">'+esc(p.username||p.full_name||'Creator')+'</button>').join(''):'No creators found.';
+   host.querySelectorAll('.vy-chat-user').forEach(button=>button.addEventListener('click',()=>window.vyOpenChat(button.dataset.userId,button.dataset.userName)));
  };
  window.vyOpenChat=async function(id,name){
   window.vyActiveChatUser=id;const h=el('vyChatHeader');if(h)h.textContent='Chat with '+name;await window.vyLoadChat();
