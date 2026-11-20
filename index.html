@@ -2711,6 +2711,24 @@ function resetPreferences(){
 })();
 </script>
 
+<script>
+/* Open the integrated Social workspace when linked from Trend Hub or the plans page. */
+(function(){
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') !== 'vybora') return;
+    const openSocial = () => {
+      if (typeof window.show === 'function') window.show('vybora');
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', openSocial, { once: true });
+    } else {
+      openSocial();
+    }
+  } catch (_) {}
+})();
+</script>
+
 
 </body>
 </html>
