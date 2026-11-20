@@ -78,7 +78,7 @@ export default async function handler(req, res) {
     }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 55000);
+    const timeout = setTimeout(() => controller.abort(), 40000);
     try {
       const upstream = await fetch(parsedProviderUrl, {
         method: "POST",
