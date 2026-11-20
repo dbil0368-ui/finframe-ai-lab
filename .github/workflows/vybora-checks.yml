@@ -1,7 +1,7 @@
 name: VYBORA checks
 on:
   pull_request:
-    branches: [feature/global-trend-radar]
+    branches: [feature/global-trend-radar, fix/vybora-launch-readiness]
   push:
     branches: [feature/global-trend-radar, fix/vybora-launch-readiness]
 permissions:
