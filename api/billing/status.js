@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   const razorpayPlanId = process.env.RAZORPAY_USD_PLAN_ID;
   const [subscriptionResponse, planResponse] = await Promise.all([
     fetch(SUPABASE_URL + "/rest/v1/billing_subscriptions?select=plan_key,status,current_start,current_end,charge_at,paid_count,total_count,updated_at&user_id=eq." + encodeURIComponent(user.id) + "&environment=eq." + billingEnvironment + "&limit=1", { headers }),
-    fetch(SUPABASE_URL + "/rest/v1/billing_plans?select=razorpay_plan_id,amount_paise,currency,active&plan_key=eq.pro_usd&limit=1", { headers })
+    fetch(SUPABASE_URL + "/rest/v1/billing_plans?select=amount_paise,currency,active&plan_key=eq.pro_usd&limit=1", { headers })
   ]);
 
   if (!subscriptionResponse.ok || !planResponse.ok) {
