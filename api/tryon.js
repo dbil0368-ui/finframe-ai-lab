@@ -13,7 +13,7 @@ function send(res, status, body) {
 }
 
 async function authenticate(req) {
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token || token.length > 8192) return null;
   const response = await fetch(SUPABASE_URL + "/auth/v1/user", {
     headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + token },
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
   if (!serviceKey) return send(res, 503, { error: "Virtual Try-On usage protection is not configured." });
 
   const contentType = String(req.headers["content-type"] || "");
-  if (!/^multipart\\/form-data\\s*;\\s*boundary=/i.test(contentType)) {
+  if (!/^multipart\/form-data\s*;\s*boundary=/i.test(contentType)) {
     return send(res, 400, { error: "Expected multipart form data with person and garment images." });
   }
   const lengthHeader = req.headers["content-length"];
