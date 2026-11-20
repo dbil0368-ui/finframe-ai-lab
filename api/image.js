@@ -78,8 +78,8 @@ export default async function handler(req, res) {
     if (!quota.allowed) return send(res, 429, { error: "Today's AI generation limit has been reached.", quota: { plan: planKey, used: quota.used, limit: quota.daily_limit, remaining: 0 } });
 
     const parts = [{ text: "Create or edit a polished, commercially useful visual for VYBORA. Follow the user's brief closely. Do not add watermarks, fake brand logos, unreadable text, or misleading claims. " + prompt }];
-    if (imageData) {
-      const match = imageData.match(/^data:(image\/(?:png|jpeg|webp));base64,([\s\S]+)$/i);
+    for (const reference of [imageData, ...referenceImages].filter(Boolean)) {
+      const match = reference.match(/^data:(image\/(?:png|jpeg|webp));base64,([\s\S]+)$/i);
       parts.push({ inlineData: { mimeType: match[1], data: match[2] } });
     }
     const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(IMAGE_MODEL) + ":generateContent", {
