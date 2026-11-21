@@ -1032,184 +1032,151 @@ body{background:radial-gradient(ellipse at 50% -15%,#261052 0%,#090615 42%,#0403
    <button class="tool-card" onclick="useTemplate('Creative Agency','A creative agency landing page with a hero banner, services, portfolio and contact section.')"><div class="tool-icon">🎨</div><strong>Creative Agency</strong><span>Showcase a design studio.</span></button>
   </div>
  </section>
- <section id="vybora">
-  <button id="vyHamburgerButton" type="button" class="vy-hamburger" aria-label="VYBORA menu" aria-expanded="false" onclick="window.toggleMobileMenu()">☰</button>
-  <div class="page-title"><h2>💜 VYBORA</h2><p>Watch. Create. Connect. — your short-video community.</p></div>
-  <div class="card" id="vyCloudAuth" style="max-width:980px;margin:0 auto 16px;padding:16px;border:1px solid var(--border);border-radius:16px">
-   <h3 style="margin-top:0">🔐 VYBORA Account</h3>
-   <p class="small" id="vyCloudStatus">Connect with an email account to publish Reels and connect with other creators.</p>
-   <div id="vyAuthForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px">
-    <input id="vyAuthName" type="text" placeholder="Your name (for sign up)" autocomplete="name">
-    <input id="vyAuthEmail" type="email" placeholder="Email address" autocomplete="email">
-    <input id="vyAuthPassword" type="password" placeholder="Password (min. 6 characters)" autocomplete="current-password">
-    <button class="primary-btn" type="button" onclick="vySignUp()">Create account</button>
-    <button class="secondary-btn" type="button" onclick="vySignIn()">Log in</button>
-    <button class="secondary-btn" type="button" onclick="vyResetPassword()">Forgot password?</button>
+ <section id="vybora" class="active">
+  <div class="vy-studio-shell">
+   <header class="vy-studio-top">
+    <button class="vy-studio-menu" type="button" aria-label="Open FinFrame menu" onclick="toggleMobileMenu()">☰</button>
+    <div class="vy-studio-brand"><span class="vy-brand-mark">▶</span><span><b>VYBORA</b><small>CREATIVE STUDIO</small></span></div>
+    <button class="vy-studio-pro" type="button" onclick="show('settings')">✦ PRO</button>
+    <button class="vy-studio-bell" type="button" onclick="window.location.href='/trend-hub.html'" aria-label="Open trends">♧</button>
+   </header>
+
+   <div class="vy-studio-hero">
+    <div class="vy-hero-copy">
+     <div class="vy-eyebrow">CREATE · IMAGINE · SHARE</div>
+     <h1>Turn your ideas into <em>magic.</em></h1>
+     <p>Make something amazing with FinFrame AI Lab.</p>
+     <button type="button" class="vy-hero-cta" onclick="openTool('builder')">Let’s Create <span>↗</span></button>
+    </div>
+    <div class="vy-hero-art" aria-hidden="true"><div class="vy-orbit vy-orbit-one"></div><div class="vy-orbit vy-orbit-two"></div><div class="vy-hero-symbol">✦</div><span class="vy-spark vy-spark-a">✧</span><span class="vy-spark vy-spark-b">✦</span><span class="vy-spark vy-spark-c">✧</span></div>
+    <div class="vy-hero-tag">✦ CREATIVE POWER</div>
    </div>
-   <div id="vyRecoveryForm" hidden style="display:grid;gap:8px;margin-top:10px">
-    <p class="small">Set a new password for your VYBORA account.</p>
-    <input id="vyNewPassword" type="password" placeholder="New password (min. 6 characters)" autocomplete="new-password">
-    <button class="primary-btn" type="button" onclick="vySaveNewPassword()">Save new password</button>
+
+   <div class="vy-studio-section-head"><h2>Explore Studio</h2><span>Choose your next creation</span></div>
+   <div class="vy-studio-feature-grid">
+    <button class="vy-feature-card vy-feature-image" onclick="openTool('product')"><span class="vy-feature-art">▧</span><span class="vy-feature-copy"><b>AI Image Studio</b><small>Create beautiful visuals</small></span><span class="vy-feature-arrow">↗</span></button>
+    <button class="vy-feature-card vy-feature-video" onclick="openTool('video')"><span class="vy-feature-art">▷</span><span class="vy-feature-copy"><b>Text to Video</b><small>Bring ideas to motion</small></span><span class="vy-feature-arrow">↗</span></button>
+    <button class="vy-feature-card vy-feature-design" onclick="openTool('poster')"><span class="vy-feature-art">✧</span><span class="vy-feature-copy"><b>Poster Designer</b><small>Design your own style</small></span><span class="vy-feature-arrow">↗</span></button>
+    <button class="vy-feature-card vy-feature-edit" onclick="openTool('photo')"><span class="vy-feature-art">◈</span><span class="vy-feature-copy"><b>Photo Enhancer</b><small>Give photos a fresh look</small></span><span class="vy-feature-arrow">↗</span></button>
    </div>
-   <div id="vyAuthSignedIn" hidden style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><strong id="vyAuthUser"></strong><button class="secondary-btn" type="button" onclick="vySignOut()">Log out</button></div>
+
+   <div class="vy-studio-mini-grid">
+    <button class="vy-mini-card" onclick="openTool('creative')"><span>♡</span><b>Creative Stories</b><small>Imagine more</small></button>
+    <button class="vy-mini-card" onclick="openTool('game')"><span>☆</span><b>Game Studio</b><small>Play & explore</small></button>
+    <button class="vy-mini-card" onclick="openTool('caption')"><span>✎</span><b>Caption Lab</b><small>Words that shine</small></button>
+   </div>
+
+   <div class="vy-studio-section-head vy-trending-head"><h2>🔥 Trending Now</h2><button type="button" onclick="window.location.href='/trend-hub.html'">See All ↗</button></div>
+   <div class="vy-trend-strip">
+    <button class="vy-trend-tile vy-trend-one" onclick="openTool('poster')"><span>✦</span><b>Neon Poster</b><small>Design trend</small></button>
+    <button class="vy-trend-tile vy-trend-two" onclick="openTool('product')"><span>◈</span><b>Product Art</b><small>Visual trend</small></button>
+    <button class="vy-trend-tile vy-trend-three" onclick="openTool('video')"><span>▷</span><b>Motion Magic</b><small>Video trend</small></button>
+    <button class="vy-trend-tile vy-trend-four" onclick="openTool('creative')"><span>✧</span><b>Dream Worlds</b><small>Creative trend</small></button>
+   </div>
+
+   <nav class="vy-studio-bottom" aria-label="VYBORA navigation">
+    <button class="active" onclick="document.getElementById('vyStudioHome').scrollIntoView({behavior:'smooth'})"><span>⌂</span><small>Home</small></button>
+    <button onclick="openTool('creative')"><span>⌕</span><small>Explore</small></button>
+    <button class="vy-bottom-create" onclick="openTool('builder')" aria-label="Create"><span>＋</span></button>
+    <button onclick="openTool('video')"><span>▣</span><small>My Creations</small></button>
+    <button onclick="show('settings')"><span>◯</span><small>Profile</small></button>
+   </nav>
   </div>
-  <div id="vyCloudFeed" style="max-width:980px;margin:0 auto"></div>
+  <div id="vyHomeAuthMount" hidden></div>
+  <div id="vyCompatibilityMount" hidden>
+   <div id="vyCloudAuth"></div><div id="vyCloudFeed"></div>
+   <div id="vyStoriesCloud"></div><div id="vyPagePanel"></div><div id="vyFeed"></div>
+   <input id="vySearchInput" type="text"><div id="vyProfileAvatar"></div><div id="vyProfileName"></div>
+   <div id="vyPostCount"></div><div id="vyFollowingCount"></div><div id="vyFollowerCount"></div><div id="vySavedCount"></div>
+   <input id="vyVideoFile" type="file"><textarea id="vyCaptionInput"></textarea><div id="vyUploadStatus"></div>
+   <div id="vyAuthForm"></div><div id="vyAuthSignedIn"></div><div id="vyAuthUser"></div><div id="vyRecoveryForm"></div><div id="vyNewPassword"></div><div id="vyCloudStatus"></div><div id="vyAuthName"></div><div id="vyAuthEmail"></div><div id="vyAuthPassword"></div>
+  </div>
   <style>
-   #vybora .vy-stories{display:flex;gap:14px;overflow-x:auto;padding:12px;margin:0 0 14px;background:var(--panel);border:1px solid var(--border);border-radius:16px}#vybora .vy-story{flex:0 0 64px;text-align:center;cursor:pointer}#vybora .vy-story span{width:54px;height:54px;margin:auto auto 5px;border-radius:50%;display:grid;place-items:center;font-size:25px;background:linear-gradient(135deg,#9b70ff,#ef6bcb);border:2px solid #d8a7ff}#vybora .vy-story.own span{background:var(--panel2);border:2px dashed var(--accent)}#vybora .vy-story small{display:block;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
-   #vybora .vy-main-nav{display:flex;justify-content:space-around;gap:6px;max-width:980px;margin:0 auto 18px;padding:8px;background:var(--panel);border:1px solid var(--border);border-radius:15px;position:sticky;top:8px;z-index:5}
-   #vybora .vy-main-nav button{flex:1;min-width:0;border:0;border-radius:10px;padding:11px 7px;background:transparent;color:var(--muted);font-weight:650;cursor:pointer}
-   #vybora .vy-main-nav button.active{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff}
-   #vybora .vy-main-nav button span{margin-left:4px}
-   #vybora .vy-page-panel{max-width:980px;margin:0 auto 18px;padding:20px;background:var(--panel);border:1px solid var(--border);border-radius:18px;min-height:220px}
-   #vybora .vy-page-panel h3{margin-top:0}
-   #vybora .vy-inbox-item{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--border)}
-   #vybora .vy-inbox-item:last-child{border-bottom:0}
-   #vybora .vy-explore-tags{display:flex;gap:9px;flex-wrap:wrap}
-   #vybora .vy-explore-tags button{border:1px solid var(--border);border-radius:999px;padding:10px 14px;background:var(--panel2);color:var(--text)}
-   @media(max-width:520px){#vybora .vy-main-nav{gap:2px;padding:5px}#vybora .vy-main-nav button{padding:10px 2px;font-size:12px}#vybora .vy-main-nav button span{display:block;margin:3px 0 0}}
-   #vybora .vy-wrap{max-width:980px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px}
-   #vybora .vy-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px}
-   #vybora .vy-head{display:flex;align-items:center;gap:10px;padding:13px;min-width:0}
-   #vybora .vy-avatar{width:40px;height:40px;flex:0 0 40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#9b70ff,#ef6bcb);font-weight:bold;color:white;overflow:hidden}#vybora .vy-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-   #vybora .vy-video{height:min(68vh,620px);min-height:390px;background:linear-gradient(145deg,#291b52,#9b3c89 55%,#f08b9b);display:flex;align-items:end;justify-content:center;position:relative;color:white;text-align:center;padding:24px;overflow:hidden}
-   #vybora .vy-video.alt{background:linear-gradient(145deg,#123b52,#187f83 55%,#a3c66b)}
-   #vybora .vy-video.third{background:linear-gradient(145deg,#422044,#a34f5b 55%,#edb16b)}
-   #vybora .vy-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-   #vybora .vy-overlay{position:relative;z-index:1;text-shadow:0 2px 12px #000}
-   #vybora .vy-actions{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
-   #vybora .vy-actions button,#vybora .vy-side button,#vybora .vy-tabs button{border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--panel2);color:var(--text)}
-   #vybora .vy-actions button[aria-pressed=true]{color:#ff6b9a;border-color:#ff6b9a}
-   #vybora .vy-caption{padding:0 13px 14px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
-   #vybora .vy-side{position:sticky;top:85px;align-self:start}
-   #vybora .vy-side .card{margin-bottom:14px}
-   #vybora input[type=text],#vybora textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);margin:7px 0}
-   #vybora .vy-upload{border:1px dashed #8e70db;border-radius:14px;padding:15px;margin-top:10px}
-   #vybora .vy-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
-   #vybora .vy-tabs button.active{background:linear-gradient(120deg,var(--accent),var(--accent2));color:white;border-color:transparent}
-   #vybora .vy-search{display:flex;gap:8px;margin-bottom:12px}
-   #vybora .vy-search input{min-width:0}
-   #vybora .vy-empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:14px}
-   #vybora .vy-comments{padding:0 13px 12px;display:grid;gap:5px}
-   #vybora .vy-comment{padding:7px 9px;border-radius:9px;background:var(--panel2);font-size:13px;overflow-wrap:anywhere}
-   #vybora .vy-profile-name{overflow-wrap:anywhere}
-   @media(max-width:760px){#vybora .vy-wrap{grid-template-columns:1fr}#vybora .vy-side{position:static;grid-row:1}#vybora .vy-video{height:66vh;min-height:420px}#vybora .vy-side .card{margin-bottom:10px}}
-  
-   /* VYBORA Instagram-inspired visual refresh */
-   body.vybora-mode #vybora{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;background:#000!important;color:#f5f5f5!important}
-   body.vybora-mode #vybora::before{content:"VYBORA";display:block;padding:15px 18px 14px 68px;color:#fff;font-size:21px;font-weight:850;letter-spacing:-.7px;border-bottom:1px solid #262626;background:#050505}
-   body.vybora-mode #vybora .vy-stories{background:#000!important;border:0!important;border-bottom:1px solid #262626!important;border-radius:0!important;padding:13px 12px 11px!important;margin:0!important;gap:13px!important}
-   body.vybora-mode #vybora .vy-story{flex-basis:68px!important;color:#f5f5f5!important}
-   body.vybora-mode #vybora .vy-story span{width:62px!important;height:62px!important;border:2px solid transparent!important;background:linear-gradient(#111,#111) padding-box,linear-gradient(135deg,#ffb347,#ed3e9d,#8a45ff) border-box!important;font-size:25px!important}
-   body.vybora-mode #vybora .vy-story.own span{background:linear-gradient(#111,#111) padding-box,linear-gradient(135deg,#555,#aaa) border-box!important}
-   body.vybora-mode #vybora .vy-story small{color:#f2f2f2!important;font-size:11px!important;margin-top:3px}
-   body.vybora-mode #vybora .vy-search{display:flex;gap:8px;padding:12px 14px!important;background:#000!important}
-   body.vybora-mode #vybora .vy-search input{background:#1b1b1b!important;border:0!important;border-radius:10px!important;color:#fff!important;padding:11px 13px!important}
-   body.vybora-mode #vybora .vy-search button{border-radius:10px!important}
-   body.vybora-mode #vybora .vy-tabs{display:flex;gap:7px;overflow-x:auto;padding:5px 13px 12px!important;background:#000!important}
-   body.vybora-mode #vybora .vy-tabs button{white-space:nowrap;border:1px solid #333!important;border-radius:20px!important;background:#171717!important;color:#eee!important;padding:8px 13px!important}
-   body.vybora-mode #vybora .vy-tabs button.active{background:#f5f5f5!important;color:#111!important;border-color:#f5f5f5!important}
-   body.vybora-mode #vybora .vy-card{background:#000!important;border:0!important;border-bottom:1px solid #262626!important;border-radius:0!important;margin:0 0 8px!important;padding:0 0 12px!important;box-shadow:none!important}
-   body.vybora-mode #vybora .vy-head{padding:11px 13px!important;gap:10px!important}
-   body.vybora-mode #vybora .vy-avatar{width:38px;height:38px;border-radius:50%;border:2px solid #e34d91!important;background:linear-gradient(135deg,#ff9b45,#d92e91,#7048e8)!important;color:#fff!important}
-   body.vybora-mode #vybora .vy-head strong{font-size:13px!important;color:#fff!important}
-   body.vybora-mode #vybora .vy-video{height:min(66svh,650px)!important;min-height:350px!important;border-radius:0!important;background:#171717!important}
-   body.vybora-mode #vybora .vy-actions{display:flex;gap:3px!important;padding:7px 9px 3px!important}
-   body.vybora-mode #vybora .vy-actions button{background:transparent!important;color:#f5f5f5!important;border:0!important;padding:8px 7px!important;font-size:13px!important}
-   body.vybora-mode #vybora .vy-caption{padding:5px 13px!important;color:#f4f4f4!important;font-size:13px!important;line-height:1.45}
-   body.vybora-mode #vybora .vy-comments{padding:0 13px!important}
-   body.vybora-mode #vybora .vy-page-panel{background:#000!important;border:0!important;border-radius:0!important;color:#fff!important}
-   body.vybora-mode #vybora .vy-page-panel button,body.vybora-mode #vybora .vy-page-panel input,body.vybora-mode #vybora .vy-page-panel textarea{border-radius:10px!important}
-   body.vybora-mode #vybora .vy-main-nav{background:rgba(0,0,0,.97)!important;border-top:1px solid #262626!important;border-radius:0!important;padding:7px 2px calc(7px + env(safe-area-inset-bottom))!important;backdrop-filter:blur(20px)!important}
-   body.vybora-mode #vybora .vy-main-nav button{color:#aaa!important;font-size:18px!important;font-weight:500!important;padding:6px 1px!important}
-   body.vybora-mode #vybora .vy-main-nav button span{font-size:9px!important;color:inherit!important}
-   body.vybora-mode #vybora .vy-main-nav button.active{color:#fff!important;background:transparent!important}
-   body.vybora-mode #vybora .vy-main-nav button.active span{font-weight:800!important}
-   body.vybora-mode #vybora .vy-empty{margin:14px;padding:22px;border:1px solid #292929;border-radius:14px;background:#111!important;color:#ddd}
-   @media(max-width:520px){
-    body.vybora-mode #vybora::before{padding-top:14px;padding-bottom:13px}
-    body.vybora-mode #vybora .vy-video{height:62svh!important;min-height:320px!important}
-    body.vybora-mode #vybora .vy-main-nav button{font-size:17px!important}
+   #vybora{background:#05030d;color:#fff;min-height:100vh;padding:0 0 90px}
+   #vybora .vy-studio-shell{max-width:1180px;margin:0 auto;padding:0 16px 30px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#1a0d38 0%,#080615 42%,#05030d 100%)}
+   #vybora .vy-studio-top{height:74px;display:flex;align-items:center;gap:15px;border-bottom:1px solid #30204c;position:relative}
+   #vybora .vy-studio-menu,#vybora .vy-studio-bell{width:42px;height:42px;border:1px solid #453066;border-radius:12px;background:#171128;color:white;font-size:22px}
+   #vybora .vy-studio-brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+   #vybora .vy-brand-mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:24px;color:white;background:linear-gradient(135deg,#00d9ff,#883cff 55%,#ff29c6);box-shadow:0 0 20px #9c39ff88}
+   #vybora .vy-studio-brand b{display:block;font-size:21px;letter-spacing:1px}
+   #vybora .vy-studio-brand small{display:block;color:#bba7dc;font-size:9px;letter-spacing:3px}
+   #vybora .vy-studio-pro{border:1px solid #ffcf58;border-radius:22px;padding:9px 15px;background:#241b22;color:#ffe38b;font-weight:800}
+   #vybora .vy-studio-hero{min-height:310px;position:relative;overflow:hidden;margin:17px 0 26px;padding:40px 40% 34px 28px;border:1px solid #6e3bc0;border-radius:24px;background:radial-gradient(circle at 80% 40%,#ec29d655,transparent 30%),radial-gradient(circle at 72% 85%,#008dff66,transparent 38%),linear-gradient(115deg,#090615,#1c0b38 58%,#08152d);box-shadow:0 0 32px #8d35ff44,inset 0 0 30px #5e23b633}
+   #vybora .vy-eyebrow{font-size:11px;letter-spacing:3px;color:#d8baff;font-weight:800}
+   #vybora .vy-studio-hero h1{font-size:clamp(34px,5vw,57px);line-height:1.04;letter-spacing:-1.7px;margin:17px 0 12px;max-width:540px}
+   #vybora .vy-studio-hero h1 em{font-style:normal;background:linear-gradient(90deg,#ff38d2,#9a66ff,#2edbff);background-clip:text;color:transparent}
+   #vybora .vy-studio-hero p{color:#c9bddf;font-size:15px}
+   #vybora .vy-hero-cta{margin-top:12px;padding:12px 23px;border:1px solid #ff74e7;border-radius:30px;background:linear-gradient(100deg,#a321ed,#f02cb7);color:white;font-weight:800;box-shadow:0 0 22px #ec29d977}
+   #vybora .vy-hero-cta span{margin-left:9px}
+   #vybora .vy-hero-art{position:absolute;right:4%;top:8%;width:37%;height:84%;display:grid;place-items:center}
+   #vybora .vy-orbit{position:absolute;border:1px solid #5edbff99;border-radius:50%;transform:rotate(-22deg);box-shadow:0 0 24px #5b5aff55}
+   #vybora .vy-orbit-one{width:230px;height:180px}
+   #vybora .vy-orbit-two{width:170px;height:245px;border-color:#f34bdf99;transform:rotate(48deg)}
+   #vybora .vy-hero-symbol{width:145px;height:145px;display:grid;place-items:center;border-radius:38px;font-size:92px;color:#ffe978;background:linear-gradient(145deg,#742bcb,#ed39bd);box-shadow:0 0 35px #e62cde99,0 0 85px #4c62ff55;text-shadow:0 0 22px #fff}
+   #vybora .vy-spark{position:absolute;color:#fff5a1;text-shadow:0 0 16px #ff3cdb;font-size:28px}
+   #vybora .vy-spark-a{top:8%;right:14%}#vybora .vy-spark-b{bottom:10%;left:10%}#vybora .vy-spark-c{top:48%;right:0}
+   #vybora .vy-hero-tag{position:absolute;bottom:13px;right:18px;color:#bba8e8;font-size:9px;letter-spacing:2px}
+   #vybora .vy-studio-section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 2px 13px}
+   #vybora .vy-studio-section-head h2{margin:0;font-size:22px}
+   #vybora .vy-studio-section-head>span{font-size:12px;color:#aa9cbe}
+   #vybora .vy-studio-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+   #vybora .vy-feature-card{position:relative;overflow:hidden;min-height:142px;display:flex;align-items:center;gap:16px;padding:20px;text-align:left;border:1px solid #4c4baf;border-radius:20px;color:#fff;background:linear-gradient(115deg,#0e1b40,#211044 65%,#36104d);box-shadow:inset 0 0 22px #7d45ff22,0 7px 18px #0007}
+   #vybora .vy-feature-card:after{content:"";position:absolute;right:-35px;top:-55px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,#e72bc655,transparent 70%)}
+   #vybora .vy-feature-video{background:linear-gradient(115deg,#06294b,#152b65 60%,#32115a);border-color:#238fff}
+   #vybora .vy-feature-design{background:linear-gradient(115deg,#251044,#491052 60%,#131c48);border-color:#d33cda}
+   #vybora .vy-feature-edit{background:linear-gradient(115deg,#082c3e,#133d65 60%,#32134b);border-color:#24caff}
+   #vybora .vy-feature-art{z-index:1;flex:0 0 64px;width:64px;height:64px;display:grid;place-items:center;border-radius:18px;font-size:39px;color:white;background:linear-gradient(145deg,#5425c9,#e52cba);box-shadow:0 0 22px #9b3cff88}
+   #vybora .vy-feature-copy{z-index:1;display:grid;gap:6px}
+   #vybora .vy-feature-copy b{font-size:17px}
+   #vybora .vy-feature-copy small{font-size:12px;color:#d1c7e8}
+   #vybora .vy-feature-arrow{z-index:1;margin-left:auto;align-self:flex-end;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#07061b;border:1px solid #8c5cff;font-size:20px}
+   #vybora .vy-studio-mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+   #vybora .vy-mini-card{display:grid;justify-items:start;gap:6px;padding:15px;border:1px solid #553c82;border-radius:17px;background:linear-gradient(130deg,#1b0c32,#0b1d3b);color:#fff;text-align:left}
+   #vybora .vy-mini-card>span{font-size:26px;color:#ff73e5;text-shadow:0 0 15px #ed35d8}
+   #vybora .vy-mini-card b{font-size:13px}#vybora .vy-mini-card small{font-size:11px;color:#b8aacd}
+   #vybora .vy-trending-head{margin-top:28px}
+   #vybora .vy-trending-head button{border:1px solid #9e43e8;border-radius:22px;background:#170c2b;color:#fff;padding:8px 14px}
+   #vybora .vy-trend-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+   #vybora .vy-trend-tile{min-height:150px;display:flex;flex-direction:column;justify-content:end;align-items:flex-start;gap:5px;padding:14px;border:1px solid #4d60c8;border-radius:17px;color:#fff;text-align:left;background:radial-gradient(circle at 70% 30%,#00bfff77,transparent 45%),linear-gradient(145deg,#09254a,#32104b);box-shadow:0 0 16px #5d38ff33}
+   #vybora .vy-trend-tile>span{font-size:34px;color:#ffe77d;text-shadow:0 0 16px #ec2bff}
+   #vybora .vy-trend-tile b{font-size:13px}#vybora .vy-trend-tile small{font-size:11px;color:#d1c6e5}
+   #vybora .vy-trend-two{background:radial-gradient(circle at 75% 25%,#ec36c977,transparent 45%),linear-gradient(145deg,#271044,#092f4a);border-color:#e33ac8}
+   #vybora .vy-trend-three{background:radial-gradient(circle at 75% 25%,#3d8dff99,transparent 45%),linear-gradient(145deg,#082e4a,#32104c);border-color:#28bfff}
+   #vybora .vy-trend-four{background:radial-gradient(circle at 75% 25%,#a84dff88,transparent 45%),linear-gradient(145deg,#251047,#101d42);border-color:#b84dff}
+   #vybora .vy-studio-bottom{position:sticky;bottom:0;z-index:8;display:flex;justify-content:space-around;align-items:center;gap:5px;margin:26px -16px -30px;padding:10px 8px calc(10px + env(safe-area-inset-bottom));border:1px solid #453078;border-radius:22px 22px 0 0;background:#080612ed;backdrop-filter:blur(18px);box-shadow:0 -8px 30px #6025a933}
+   #vybora .vy-studio-bottom button{min-width:0;flex:1;display:grid;justify-items:center;gap:3px;border:0;background:transparent;color:#c8bddc;padding:4px 2px}
+   #vybora .vy-studio-bottom button>span{font-size:25px;line-height:1}
+   #vybora .vy-studio-bottom button small{font-size:10px}
+   #vybora .vy-studio-bottom button.active{color:#ff75e5;text-shadow:0 0 13px #e82bff}
+   #vybora .vy-studio-bottom .vy-bottom-create{flex:0 0 58px;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#ffd95d,#ff8b21,#ed29b8);color:#fff;border:3px solid #a65cff;box-shadow:0 0 22px #e32cff99}
+   #vybora .vy-studio-bottom .vy-bottom-create>span{font-size:34px}
+   @media(max-width:650px){
+    #vybora{padding-bottom:75px}
+    #vybora .vy-studio-shell{padding:0 12px 20px}
+    #vybora .vy-studio-top{height:65px;gap:9px}
+    #vybora .vy-studio-brand b{font-size:18px}
+    #vybora .vy-studio-brand small{font-size:8px;letter-spacing:2px}
+    #vybora .vy-studio-pro{font-size:11px;padding:8px 10px}
+    #vybora .vy-studio-hero{min-height:340px;margin:12px -12px 20px;padding:25px 20px 180px;border-radius:0 0 21px 21px}
+    #vybora .vy-studio-hero h1{font-size:37px;max-width:340px;margin-top:13px}
+    #vybora .vy-studio-hero p{font-size:13px;max-width:260px}
+    #vybora .vy-hero-art{right:5%;top:auto;bottom:5px;width:65%;height:48%}
+    #vybora .vy-hero-symbol{width:100px;height:100px;font-size:65px;border-radius:28px}
+    #vybora .vy-orbit-one{width:160px;height:120px}#vybora .vy-orbit-two{width:120px;height:170px}
+    #vybora .vy-studio-feature-grid{grid-template-columns:1fr;gap:10px}
+    #vybora .vy-feature-card{min-height:116px;padding:14px}
+    #vybora .vy-feature-art{width:54px;height:54px;flex-basis:54px;font-size:31px}
+    #vybora .vy-feature-copy b{font-size:15px}
+    #vybora .vy-studio-mini-grid{gap:8px}
+    #vybora .vy-mini-card{padding:11px}
+    #vybora .vy-mini-card b{font-size:11px}
+    #vybora .vy-mini-card small{font-size:10px}
+    #vybora .vy-trend-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    #vybora .vy-trend-tile{min-height:125px}
+    #vybora .vy-studio-bottom{margin:22px -12px -20px;border-radius:18px 18px 0 0}
+    #vybora .vy-studio-bottom button small{font-size:9px}
    }
-
-/* Pin the FinFrame mobile menu button to the right edge */
-@media(max-width:900px){
- body:not(.vybora-mode) .topbar{display:flex!important;position:sticky!important;top:0!important;justify-content:flex-start!important;padding-left:12px!important;padding-right:12px!important}
- body:not(.vybora-mode) .topbar .top-title{order:0!important;margin-right:auto!important}
- body:not(.vybora-mode) .topbar .menu-toggle{display:inline-flex!important;position:absolute!important;left:auto!important;right:12px!important;top:50%!important;transform:translateY(-50%)!important;order:2!important;align-items:center!important;justify-content:center!important;flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;margin:0!important;padding:0!important;z-index:2147483003!important;pointer-events:auto!important;touch-action:manipulation!important}
-}
-
-
-@media(max-width:900px){body.vybora-mode .main-area .topbar .menu-toggle{font-size:0!important}body.vybora-mode .main-area .topbar .menu-toggle::before{content:"☰";font-size:25px!important;line-height:1}}
-/* Dedicated VYBORA hamburger stays visible while FinFrame navigation is hidden */
-body.vybora-mode #vybora .vy-hamburger{position:fixed;top:8px;right:8px;z-index:2147483005;display:flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border:1px solid #34303c;border-radius:12px;background:#17151d;color:#fff;font-size:25px;line-height:1;cursor:pointer;touch-action:manipulation}
-/* Instagram-style VYBORA hamburger menu */
-body.vybora-mode #vybora .vy-menu-popover{position:fixed;top:62px;right:12px;z-index:2147483004;width:min(250px,calc(100vw - 24px));padding:8px;border:1px solid #34303c;border-radius:14px;background:#17151d;box-shadow:0 12px 34px #0009}
-body.vybora-mode #vybora .vy-menu-popover[hidden]{display:none!important}
-body.vybora-mode #vybora .vy-menu-popover button{display:block;width:100%;padding:13px 12px;border:0;border-radius:9px;background:transparent;color:#fff;text-align:left;font-size:15px}
-body.vybora-mode #vybora .vy-menu-popover button:active{background:#302b3b}
-/* VYBORA light theme preference */
-body.vybora-mode.vy-light-mode{background:#f4f2f8!important;color:#201b2a!important}
-body.vybora-mode.vy-light-mode #vybora,
-body.vybora-mode.vy-light-mode #vybora .vy-wrap{background:#f4f2f8!important;color:#201b2a!important}
-body.vybora-mode.vy-light-mode #vybora .vy-card,
-body.vybora-mode.vy-light-mode #vybora .vy-settings-group,
-body.vybora-mode.vy-light-mode #vybora .vy-page-panel,
-body.vybora-mode.vy-light-mode #vybora .vy-stories{background:#fff!important;color:#201b2a!important;border-color:#ddd7e8!important}
-body.vybora-mode.vy-light-mode #vybora .vy-settings-group h4,
-body.vybora-mode.vy-light-mode #vybora .small,
-body.vybora-mode.vy-light-mode #vybora .vy-caption{color:#51485e!important}
-body.vybora-mode.vy-light-mode #vybora .vy-settings-row{border-color:#e7e1ed!important}
-body.vybora-mode.vy-light-mode #vybora .vy-settings-row button{background:#eee9f5!important;color:#241d30!important;border-color:#d8d0e2!important}
-/* VYBORA-specific settings page */
-body.vybora-mode #vybora .vy-settings-group{margin:14px 0;padding:14px;border:1px solid #302b3c;border-radius:14px;background:#111}
-body.vybora-mode #vybora .vy-settings-group h4{margin:0 0 8px;color:#f4eaff}
-body.vybora-mode #vybora .vy-settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #292432}
-body.vybora-mode #vybora .vy-settings-row:first-of-type{border-top:0}
-body.vybora-mode #vybora .vy-settings-row .small{max-width:420px}
-body.vybora-mode #vybora .vy-settings-row button{flex:0 0 auto}
-@media(max-width:520px){body.vybora-mode #vybora .vy-settings-row{align-items:flex-start}body.vybora-mode #vybora .vy-settings-row button{min-width:58px}}
-</style>
-  <nav class="vy-main-nav" aria-label="VYBORA main navigation">
-   <button class="active" data-vy-page="home" onclick="vyNavigate('home',this)">⌂ <span>Home</span></button>
-   <button data-vy-page="reels" onclick="vyNavigate('reels',this)">▶ <span>Reels</span></button>
-   <button data-vy-page="explore" onclick="vyNavigate('explore',this)">⌕ <span>Explore</span></button>
-   <button data-vy-page="create" onclick="vyNavigate('create',this)">＋ <span>Create</span></button>
-   <button data-vy-page="inbox" onclick="vyNavigate('inbox',this)">✉ <span>Inbox</span></button>
-   <button data-vy-page="notifications" onclick="vyNavigate('notifications',this)">♡ <span>Activity</span></button>
-   <button data-vy-page="profile" onclick="vyNavigate('profile',this)">◉ <span>Profile</span></button>
-  </nav>
-  <div id="vyPagePanel" class="vy-page-panel" hidden aria-live="polite"></div>
-  <div class="vy-wrap">
-   <div>
-    <div class="vy-stories" id="vyStoriesCloud" aria-label="Stories"><button class="vy-story own" type="button" onclick="vyAddStory()"><span>＋</span><small>Your story</small></button><span class="small">Loading stories…</span></div>
-    <div class="vy-search"><input id="vySearchInput" type="text" placeholder="🔎 Search captions or #hashtags" oninput="vyRenderFeed();if(window.vyReloadFeed)window.vyReloadFeed()"><button class="secondary-btn" onclick="document.getElementById('vySearchInput').value='';vyRenderFeed()">Clear</button></div>
-    <div class="vy-tabs" aria-label="Reels feed filters">
-     <button class="active" data-vy-filter="for-you" onclick="vySetFilter('for-you',this)">✨ For You</button>
-     <button data-vy-filter="following" onclick="vySetFilter('following',this)">👥 Following</button>
-     <button data-vy-filter="saved" onclick="vySetFilter('saved',this)">🔖 Saved</button>
-    </div>
-    <div id="vyFeed">
-     <article class="vy-card" data-vy-id="sample-1" data-vy-user="vybora.daily">
-      <div class="vy-head"><div class="vy-avatar">V</div><div><strong>vybora.daily</strong><div class="small">Suggested creator</div></div><button class="secondary-btn" style="margin-left:auto" onclick="vyFollow(this)" data-user="vybora.daily">＋ Follow</button></div>
-      <div class="vy-video"><div class="vy-overlay"><div style="font-size:46px">🌅</div><h2>Little moments, big memories</h2><p>VYBORA • Sample Reel</p></div></div>
-      <div class="vy-actions"><button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>128</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button></div>
-      <div class="vy-caption"><strong>vybora.daily</strong> A little inspiration for your day ✨ <span class="small">#VYBORA #DailyReels</span></div><div class="vy-comments" aria-live="polite"></div>
-     </article>
-     <article class="vy-card" data-vy-id="sample-2" data-vy-user="motion.maker">
-      <div class="vy-head"><div class="vy-avatar">M</div><div><strong>motion.maker</strong><div class="small">Trending creator</div></div><button class="secondary-btn" style="margin-left:auto" onclick="vyFollow(this)" data-user="motion.maker">＋ Follow</button></div>
-      <div class="vy-video alt"><div class="vy-overlay"><div style="font-size:46px">🌿</div><h2>Find your own rhythm</h2><p>VYBORA • Sample Reel</p></div></div>
-      <div class="vy-actions"><button onclick="vyLike(this)" aria-pressed="false">♡ <span>Like</span> <b>86</b></button><button onclick="vyComment(this)">💬 Comment</button><button onclick="vyShare(this)">↗ Share</button><button onclick="vySave(this)" aria-pressed="false">🔖 Save</button></div>
-      <div class="vy-caption"><strong>motion.maker</strong> Slow down and enjoy the view 🌱 <span class="small">#Nature #VYBORA</span></div><div class="vy-comments" aria-live="polite"></div>
-     </article>
-    </div>
-   </div>
-   <aside class="vy-side">
-    <div class="card"><h3>👤 Your VYBORA profile</h3><div class="vy-head" style="padding:8px 0"><div class="vy-avatar" id="vyProfileAvatar">Y</div><div><strong class="vy-profile-name" id="vyProfileName">your_profile</strong><div class="small">Creator profile</div></div></div><p class="small"><b id="vyPostCount">0</b> Reels · <b id="vyFollowingCount">0</b> Following · <b id="vyFollowerCount">0</b> Followers</p><button class="secondary-btn" onclick="vyEditProfile()">✏️ Edit profile</button></div>
-    <div class="card"><h3>＋ Create a Reel</h3><p class="small">Choose a video from your phone and add a caption.</p><div class="vy-upload"><input id="vyVideoFile" type="file" accept="image/*,video/*"><textarea id="vyCaptionInput" rows="3" maxlength="500" placeholder="Write a caption... Add #hashtags"></textarea><button class="primary-btn" onclick="vyUpload()">＋ Publish photo / video</button><p class="small" id="vyUploadStatus" aria-live="polite">Choose a photo or video to publish to VYBORA.</p></div></div>
-    <div class="card"><h3>🔖 Your activity</h3><p class="small" id="vySavedCount">0 saved Reels</p><button class="secondary-btn" onclick="vySetFilter('saved')">View saved Reels</button></div>
-    <div class="card"><h3>✨ Explore trends</h3><p class="small">Tap a tag to find matching Reels.</p><div class="actions"><button class="secondary-btn" onclick="vySearchTag('VYBORA')">#VYBORA</button><button class="secondary-btn" onclick="vySearchTag('Travel')">#Travel</button><button class="secondary-btn" onclick="vySearchTag('Music')">#Music</button><button class="secondary-btn" onclick="vySearchTag('Nature')">#Nature</button><button class="secondary-btn" onclick="vySearchTag('Creators')">#Creators</button></div></div>
-   </aside>
-  </div>
+  </style>
  </section>
  <section id="settings">
   <div class="page-title"><h2>⚙️ Settings & Backup</h2><p>Personalize FinFrame and keep a copy of your workspace data.</p></div>
