@@ -602,6 +602,21 @@ body.vybora-mode #vyCloudAuth.vy-home-auth-open{display:block!important;position
     <button onclick="buildProject()">✨ Generate Starter Code</button>
     <button class="secondary-btn" onclick="clearProject()">Clear</button>
    </div>
+   <div class="card" style="margin-top:14px;background:#101020">
+    <h3>☁️ Save your projects</h3>
+    <p class="builder-note">Guests can save projects on this device. Log in to save them to your account and open them on any device. All project saving is free.</p>
+    <div class="actions">
+     <button class="secondary-btn" onclick="saveFinFrameProject()">💾 Save Project</button>
+     <button class="secondary-btn" onclick="refreshFinFrameProjects()">↻ Refresh List</button>
+    </div>
+    <label for="finFrameProjectList">Your saved projects</label>
+    <select id="finFrameProjectList"><option value="">No saved projects loaded yet</option></select>
+    <div class="actions">
+     <button class="secondary-btn" onclick="loadFinFrameProject()">📂 Open Project</button>
+     <button class="secondary-btn" onclick="deleteFinFrameProject()">🗑 Delete</button>
+    </div>
+    <p class="builder-status" id="finFrameSaveStatus" role="status">Guest projects stay in this browser. Log in for secure cloud sync.</p>
+   </div>
    <p class="builder-note">This first version creates editable browser-based starter code from your description. It is not connected to a cloud AI model yet, so it cannot understand arbitrary prompts or rewrite code conversationally. Never put private API keys in this public website.</p>
    <div class="builder-workspace">
     <div class="builder-panel">
@@ -1378,13 +1393,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   mount.dataset.ready='1';
   mount.appendChild(panel);
   const heading=panel.querySelector('h3');
-  if(heading)heading.textContent='🔐 Sign in / Create your VYBORA account';
+  if(heading)heading.textContent='🔐 FinFrame account · Free';
   const status=document.getElementById('vyCloudStatus');
-  if(status)status.textContent='Sign in once here to use your VYBORA account across the creator workspace and social features.';
+  if(status)status.textContent='Log in to sync FinFrame projects across devices, use AI generation (5 free per day), and publish or interact on VYBORA. Regular creative tools stay free.';
   const trigger=document.createElement('button');
   trigger.type='button';
   trigger.className='vy-home-login-trigger';
-  trigger.textContent='Log in';
+  trigger.textContent='Log in / Sync';
   trigger.setAttribute('aria-expanded','false');
   trigger.setAttribute('aria-controls','vyCloudAuth');
   mount.appendChild(trigger);
@@ -1394,11 +1409,11 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
    panel.style.display=open?'block':'none';
    panel.classList.toggle('vy-home-auth-open',open);
    trigger.setAttribute('aria-expanded',open?'true':'false');
-   trigger.textContent=open?'Close':'Log in';
+   trigger.textContent=open?'Close':'Log in / Sync';
   });
   document.addEventListener('click',function(event){
    if(!mount.contains(event.target)&&!panel.contains(event.target)){
-    panel.style.display='none';panel.classList.remove('vy-home-auth-open');trigger.setAttribute('aria-expanded','false');trigger.textContent='Log in';
+    panel.style.display='none';panel.classList.remove('vy-home-auth-open');trigger.setAttribute('aria-expanded','false');trigger.textContent='Log in / Sync';
    }
   });
  }
@@ -1450,6 +1465,70 @@ function downloadProjectCode(){
  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
  $('projectStatus').textContent='HTML file download started.';
 }
+
+const FF_LOCAL_PROJECTS_KEY='finframeSavedProjectsV1';
+function readLocalFinFrameProjects(){try{return JSON.parse(localStorage.getItem(FF_LOCAL_PROJECTS_KEY)||'[]')}catch(e){return []}}
+async function finFrameCurrentUser(){const db=window.vyClient;if(!db)return null;const r=await db.auth.getUser();return r.data&&r.data.user||null}
+function finFrameProjectPayload(){return {name:($('projectName').value.trim()||'Untitled Project').slice(0,120),project_type:$('projectType').value,project_data:{idea:$('projectIdea').value,code:$('projectCode').value}}}
+async function refreshFinFrameProjects(){
+ const select=$('finFrameProjectList'),status=$('finFrameSaveStatus');if(!select)return;
+ select.innerHTML='';
+ try{
+  const user=await finFrameCurrentUser();
+  if(user){
+   const db=window.vyClient,r=await db.from('finframe_user_projects').select('id,name,project_type,updated_at').order('updated_at',{ascending:false}).limit(50);
+   if(r.error)throw r.error;
+   (r.data||[]).forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name+' · '+p.project_type+' · '+new Date(p.updated_at).toLocaleDateString();select.appendChild(o);});
+   if(status)status.textContent=(r.data||[]).length+' cloud project(s) saved to your account. Available across devices.';
+  }else{
+   readLocalFinFrameProjects().forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name+' · This device';select.appendChild(o);});
+   if(status)status.textContent='Guest mode: projects are saved only in this browser. Log in to sync them across devices.';
+  }
+  if(!select.options.length){const o=document.createElement('option');o.value='';o.textContent='No saved projects yet';select.appendChild(o);}
+ }catch(e){if(status)status.textContent='Could not load saved projects: '+(e.message||'Please try again.');}
+}
+async function saveFinFrameProject(){
+ const status=$('finFrameSaveStatus'),payload=finFrameProjectPayload();
+ if(!payload.project_data.code.trim()){if(status)status.textContent='Generate or paste project code before saving.';return;}
+ try{
+  const user=await finFrameCurrentUser();
+  if(user){
+   const db=window.vyClient,r=await db.from('finframe_user_projects').insert({user_id:user.id,...payload}).select('id').single();
+   if(r.error)throw r.error;
+   if(status)status.textContent='Project saved securely to your account. You can open it on another device after logging in.';
+  }else{
+   const projects=readLocalFinFrameProjects();projects.unshift({id:'local-'+Date.now(),...payload,updated_at:new Date().toISOString()});
+   localStorage.setItem(FF_LOCAL_PROJECTS_KEY,JSON.stringify(projects.slice(0,50)));
+   if(status)status.textContent='Project saved on this device. Log in to sync projects across devices.';
+  }
+  await refreshFinFrameProjects();
+ }catch(e){if(status)status.textContent='Save failed: '+(e.message||'Please try again.');}
+}
+async function loadFinFrameProject(){
+ const select=$('finFrameProjectList'),status=$('finFrameSaveStatus'),id=select&&select.value;if(!id)return;
+ try{
+  const user=await finFrameCurrentUser();let project;
+  if(user){
+   const r=await window.vyClient.from('finframe_user_projects').select('id,name,project_type,project_data').eq('id',id).single();
+   if(r.error)throw r.error;project=r.data;
+  }else{project=readLocalFinFrameProjects().find(p=>p.id===id);if(!project)throw new Error('This local project is no longer available.');}
+  $('projectName').value=project.name||'';$('projectType').value=project.project_type||'Website';
+  $('projectIdea').value=project.project_data&&project.project_data.idea||'';
+  $('projectCode').value=project.project_data&&project.project_data.code||'';
+  refreshProjectPreview();if(status)status.textContent='Project opened successfully.';
+ }catch(e){if(status)status.textContent='Could not open project: '+(e.message||'Please try again.');}
+}
+async function deleteFinFrameProject(){
+ const select=$('finFrameProjectList'),status=$('finFrameSaveStatus'),id=select&&select.value;if(!id)return;
+ if(!confirm('Delete this saved project? This cannot be undone.'))return;
+ try{
+  const user=await finFrameCurrentUser();
+  if(user){const r=await window.vyClient.from('finframe_user_projects').delete().eq('id',id);if(r.error)throw r.error;}
+  else{localStorage.setItem(FF_LOCAL_PROJECTS_KEY,JSON.stringify(readLocalFinFrameProjects().filter(p=>p.id!==id)));}
+  if(status)status.textContent='Project deleted.';await refreshFinFrameProjects();
+ }catch(e){if(status)status.textContent='Delete failed: '+(e.message||'Please try again.');}
+}
+
 function clearProject(){
  $('projectName').value='';
  $('projectIdea').value='';
