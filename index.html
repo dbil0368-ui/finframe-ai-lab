@@ -527,6 +527,123 @@ button,input,textarea,select{font-family:inherit}
 }
 
 </style>
+<style>
+
+/* FinFrame neon studio home refresh — reference-inspired, responsive */
+:root{
+ --bg:#05040d;--panel:#100d20;--panel2:#17122b;--text:#fbf8ff;
+ --muted:#b8acd0;--accent:#8b5cff;--accent2:#f02bbd;--border:#39265d;
+}
+body{background:radial-gradient(ellipse at 50% -15%,#261052 0%,#090615 42%,#04030a 100%);color:#fbf8ff}
+#home .home-wrap{max-width:1160px;margin:0 auto;padding:24px 4px 35px}
+#home .hero{
+ position:relative;isolation:isolate;overflow:hidden;text-align:left;
+ min-height:310px;margin:0 0 18px;padding:38px 34px 32px 42%;
+ display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+ border:1px solid #6c35b9;border-radius:25px;
+ background:radial-gradient(circle at 78% 35%,#ff38d633 0 9%,transparent 28%),
+ radial-gradient(circle at 72% 78%,#1b8dff55 0 5%,transparent 32%),
+ linear-gradient(115deg,#090515 0%,#16082d 48%,#090d2a 100%);
+ box-shadow:0 0 24px #8c35ff55,inset 0 0 32px #5424a933;
+}
+#home .hero:before{
+ content:"✦";position:absolute;z-index:-1;right:7%;top:-38px;
+ width:270px;height:270px;display:grid;place-items:center;
+ border-radius:50%;font-size:150px;color:#ffe66d;
+ text-shadow:0 0 12px #ff43df,0 0 38px #a52dff,0 0 80px #1d8fff;
+ background:radial-gradient(circle,#f82fc022 0 23%,#7c37ff18 24% 45%,transparent 68%);
+ border:1px solid #a94aff55;box-shadow:0 0 55px #b42cff44;
+}
+#home .hero:after{
+ content:"FINFRAME  •  CREATE  •  IMAGINE";
+ position:absolute;left:26px;top:20px;color:#e9cfff;
+ letter-spacing:3px;font-size:10px;font-weight:800;
+}
+#home .hero-logo{
+ width:64px;height:64px;border-radius:20px;margin:0 0 16px;
+ font-size:34px;box-shadow:0 0 28px #e02bff88,0 0 60px #693bff66;
+}
+#home .hero h1{max-width:620px;font-size:clamp(32px,5vw,58px);line-height:1.03;letter-spacing:-1.7px;margin:0 0 14px;text-shadow:0 0 22px #9c45ff55}
+#home .hero p{font-size:17px;color:#d3c7e8;line-height:1.6}
+#home .prompt-box{
+ max-width:none;margin:18px 0 16px;padding:18px;
+ border-radius:20px;border:1px solid #7142a5;
+ background:linear-gradient(135deg,#151027,#100d20 70%,#1b0e2c);
+ box-shadow:0 0 25px #8c38ff22,inset 0 0 22px #8e43ff12;
+}
+#home .prompt-box textarea{min-height:88px;font-size:16px}
+#home .primary-btn{
+ border-radius:13px;padding:13px 22px;
+ background:linear-gradient(110deg,#792cff,#ec26c3 58%,#ff4d9d);
+ box-shadow:0 0 18px #d32dff66;font-size:15px
+}
+#home .suggestions{justify-content:flex-start;margin:14px 0 27px}
+#home .suggestion{
+ color:#f5eaff;background:#151027;border:1px solid #55377c;
+ box-shadow:inset 0 0 16px #9a3cff12,0 0 12px #9a3cff12;
+ border-radius:999px;padding:11px 16px
+}
+#home .section-head{margin:28px 0 15px}
+#home .section-head h2{font-size:22px;text-shadow:0 0 15px #9e40ff55}
+#home .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#home .tool-card{
+ position:relative;isolation:isolate;overflow:hidden;min-height:158px;
+ padding:18px 18px 18px 88px;border-radius:19px;
+ border:1px solid #553b87;
+ background:linear-gradient(115deg,#11132c,#17102c 55%,#240d36);
+ box-shadow:inset 0 0 22px #6332bd22,0 7px 20px #0005;
+}
+#home .tool-card:before{
+ content:"";position:absolute;z-index:-1;right:-25px;top:-45px;width:160px;height:160px;
+ border-radius:50%;background:radial-gradient(circle,#f02bbd55,transparent 68%);
+ filter:blur(5px)
+}
+#home .tool-card:after{
+ content:"";position:absolute;z-index:-1;right:15px;bottom:-35px;width:95px;height:95px;
+ border:1px solid #26baff66;border-radius:25px;transform:rotate(35deg);
+ box-shadow:0 0 22px #1b9fff33
+}
+#home .tool-card:nth-child(4n+1){background:linear-gradient(115deg,#11102b,#24104a 60%,#101c45);border-color:#4b8bff}
+#home .tool-card:nth-child(4n+2){background:linear-gradient(115deg,#190e2b,#301047 60%,#101d42);border-color:#e33bd4}
+#home .tool-card:nth-child(4n+3){background:linear-gradient(115deg,#0b1830,#112b4b 60%,#241047);border-color:#24b9ff}
+#home .tool-card:nth-child(4n){background:linear-gradient(115deg,#1a0d2b,#321044 60%,#17143a);border-color:#bd4dff}
+#home .tool-card:hover{transform:translateY(-4px);border-color:#ff55df;box-shadow:0 0 24px #b32dff55}
+#home .tool-icon{
+ position:absolute;left:17px;top:50%;transform:translateY(-50%);
+ width:54px;height:54px;border-radius:17px;font-size:27px;
+ background:linear-gradient(145deg,#5d2dba,#e12db7);
+ border:1px solid #e78aff;box-shadow:0 0 18px #c43bff66
+}
+#home .tool-card strong{font-size:16px;margin:5px 0 8px}
+#home .tool-card span{font-size:13px;color:#d4c9e7}
+#home #recentList{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#home .recent-item{background:linear-gradient(135deg,#15102a,#0c1830);border:1px solid #3f4c86;border-radius:15px;box-shadow:0 0 16px #3b7dff22}
+#home .empty-recent{background:#100d20;border-color:#5b397f}
+#home .card[style*="margin-top"]{border:1px solid #533b79;background:linear-gradient(130deg,#151027,#0d1227)}
+#home .search{background:#100d20;border-color:#523579}
+@media(max-width:650px){
+ #home .home-wrap{padding:12px 0 28px}
+ #home .hero{min-height:300px;padding:76px 20px 25px;display:block;border-radius:0 0 22px 22px;margin:0 -13px 16px}
+ #home .hero:before{right:-42px;top:28px;width:170px;height:170px;font-size:94px;opacity:.75}
+ #home .hero:after{left:20px;top:22px;font-size:9px;letter-spacing:2px}
+ #home .hero-logo{width:54px;height:54px;font-size:28px;margin-bottom:14px}
+ #home .hero h1{font-size:36px;max-width:340px;line-height:1.08}
+ #home .hero p{font-size:14px;max-width:310px}
+ #home .prompt-box{padding:13px;margin:14px 0;border-radius:17px}
+ #home .prompt-box textarea{min-height:92px}
+ #home .prompt-bottom{align-items:flex-start}
+ #home .suggestions{gap:8px;margin:12px 0 24px}
+ #home .suggestion{font-size:12px;padding:10px 12px}
+ #home .tool-grid{grid-template-columns:1fr;gap:10px}
+ #home .tool-card{min-height:118px;padding:15px 15px 15px 78px;border-radius:16px}
+ #home .tool-icon{left:14px;width:49px;height:49px;font-size:24px}
+ #home .tool-card strong{font-size:15px}
+ #home .tool-card span{font-size:12px}
+ #home #recentList{grid-template-columns:1fr}
+ #home .section-head h2{font-size:19px}
+}
+
+</style>
 </head>
 <body>
 <div class="app">
