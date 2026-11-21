@@ -1528,6 +1528,8 @@ async function deleteFinFrameProject(){
   if(status)status.textContent='Project deleted.';await refreshFinFrameProjects();
  }catch(e){if(status)status.textContent='Delete failed: '+(e.message||'Please try again.');}
 }
+window.addEventListener('load',()=>refreshFinFrameProjects());
+if(window.vyClient)window.vyClient.auth.onAuthStateChange(()=>{refreshFinFrameProjects();});
 
 function clearProject(){
  $('projectName').value='';
