@@ -1989,15 +1989,16 @@ function resetPreferences(){
 </script>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2.119.2/dist/umd/supabase.js';this.onerror=function(){this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0' }"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
 <script>
 
 
 (function(){
  const URL='https://pxgoaygwtxrrqkftluut.supabase.co';
  const KEY='sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh';
+ function boot(){
  if(!window.supabase || !window.supabase.createClient){
-  const s=document.getElementById('vyCloudStatus'); if(s)s.textContent='The VYBORA connection library did not load. Refresh the page and try again.'; return;
+  const s=document.getElementById('vyCloudStatus'); if(s)s.textContent='Supabase library loaded without createClient. Check the browser console or network restrictions.'; return;
  }
  const db=window.supabase.createClient(URL,KEY);
  window.vyClient=db;
@@ -2306,6 +2307,33 @@ function resetPreferences(){
   if(event==='SIGNED_IN'&&session&&!recoveryMode){currentUser=session.user;profileFor(currentUser).then(signedIn);}
   if(event==='SIGNED_OUT'){currentUser=null;signedOut();}
  });
+ }
+ function loadLibrary(urls){
+  return new Promise((resolve,reject)=>{
+   const next=()=>{
+    if(window.supabase&&window.supabase.createClient){resolve();return;}
+    const url=urls.shift();
+    if(!url){reject(new Error('All Supabase CDN sources failed'));return;}
+    const script=document.createElement('script');script.src=url;
+    script.onload=()=>{if(window.supabase&&window.supabase.createClient)resolve();else next();};
+    script.onerror=next;document.head.appendChild(script);
+   };
+   next();
+  });
+ }
+ if(window.supabase&&window.supabase.createClient){boot();}
+ else{
+  loadLibrary([
+   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js',
+   'https://unpkg.com/@supabase/supabase-js@2.119.2/dist/umd/supabase.js',
+   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js',
+   'https://unpkg.com/@supabase/supabase-js@2.118.0/dist/umd/supabase.js'
+  ]).then(boot).catch(err=>{
+   const status=document.getElementById('vyCloudStatus');
+   if(status)status.textContent='Cannot load the Supabase login library from available CDNs. Check internet or content blockers and retry.';
+   console.error('FinFrame Supabase loader:',err);
+  });
+ }
 })();
 
 
