@@ -2703,38 +2703,54 @@ body.ff-auth-required .app{display:none!important}
 <script>
 (function(){
  if(window.__finFrameGlobalAuthGate)return;window.__finFrameGlobalAuthGate=true;
- const db=window.vyClient,gate=document.getElementById('ffAuthGate'),panel=document.getElementById('vyCloudAuth');
+ const gate=document.getElementById('ffAuthGate'),panel=document.getElementById('vyCloudAuth');
  const mount=document.getElementById('vyHomeAuthMount'),host=document.getElementById('ffAuthPanelHost');
  const topbar=document.querySelector('.topbar');
- if(!gate){document.body.classList.add('ff-auth-ready');return;}if(!db||!panel||!host){document.body.classList.add('ff-auth-ready','ff-auth-required');gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');if(host)host.textContent='Login service is unavailable. Refresh the page and try again.';return;}
- const originalParent=panel.parentNode,originalNext=panel.nextSibling;
- if(mount){mount.dataset.loginReady='1';mount.style.display='none';}
- function movePanel(toGate){
-  if(toGate){if(panel.parentNode!==host)host.appendChild(panel);panel.style.display='block';}
-  else if(panel.parentNode!==originalParent){originalParent.insertBefore(panel,originalNext&&originalNext.parentNode===originalParent?originalNext:null);panel.style.display='';panel.classList.remove('vy-home-auth-open');}
+ if(!gate){document.body.classList.add('ff-auth-ready');return;}
+ function showFailure(){
+  document.body.classList.add('ff-auth-ready','ff-auth-required');
+  gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');
+  if(host)host.textContent='Login service did not initialize. Check your connection or content blocker, then reload.';
  }
- function accountControl(user){
-  let box=document.getElementById('ffGlobalAccount');
-  if(!box&&topbar){box=document.createElement('div');box.id='ffGlobalAccount';topbar.appendChild(box);}
-  if(!box)return;
-  box.innerHTML=user?'<span class="ff-account-email"></span><button type="button" id="ffGlobalSignOut">Log out</button>':'';
-  const label=box.querySelector('.ff-account-email');if(label)label.textContent=user.email||'Signed in';
-  const out=document.getElementById('ffGlobalSignOut');
-  if(out)out.addEventListener('click',async function(){out.disabled=true;out.textContent='Logging out…';const r=await db.auth.signOut();if(r.error){out.disabled=false;out.textContent='Log out';alert(r.error.message);}});
- }
- function apply(user){
-  document.body.classList.add('ff-auth-ready');
-  if(user){
-   document.body.classList.remove('ff-auth-required');gate.classList.remove('ff-visible');gate.setAttribute('aria-hidden','true');
-   movePanel(false);accountControl(user);
-  }else{
-   document.body.classList.add('ff-auth-required');gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');
-   movePanel(true);accountControl(null);
+ if(!panel||!host){showFailure();return;}
+ function startAuth(db){
+  if(!db||!db.auth){showFailure();return;}
+  const originalParent=panel.parentNode,originalNext=panel.nextSibling;
+  if(mount){mount.dataset.loginReady='1';mount.style.display='none';}
+  function movePanel(toGate){
+   if(toGate){if(panel.parentNode!==host)host.appendChild(panel);panel.style.display='block';}
+   else if(panel.parentNode!==originalParent){originalParent.insertBefore(panel,originalNext&&originalNext.parentNode===originalParent?originalNext:null);panel.style.display='';panel.classList.remove('vy-home-auth-open');}
   }
+  function accountControl(user){
+   let box=document.getElementById('ffGlobalAccount');
+   if(!box&&topbar){box=document.createElement('div');box.id='ffGlobalAccount';topbar.appendChild(box);}
+   if(!box)return;
+   box.innerHTML=user?'<span class="ff-account-email"></span><button type="button" id="ffGlobalSignOut">Log out</button>':'';
+   const label=box.querySelector('.ff-account-email');if(label)label.textContent=user.email||'Signed in';
+   const out=document.getElementById('ffGlobalSignOut');
+   if(out)out.addEventListener('click',async function(){out.disabled=true;out.textContent='Logging out…';const r=await db.auth.signOut();if(r.error){out.disabled=false;out.textContent='Log out';alert(r.error.message);}});
+  }
+  function apply(user){
+   document.body.classList.add('ff-auth-ready');
+   if(user){
+    document.body.classList.remove('ff-auth-required');gate.classList.remove('ff-visible');gate.setAttribute('aria-hidden','true');
+    movePanel(false);accountControl(user);
+   }else{
+    document.body.classList.add('ff-auth-required');gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');
+    movePanel(true);accountControl(null);
+   }
+  }
+  db.auth.onAuthStateChange(function(_event,session){apply(session&&session.user||null);});
+  db.auth.getSession().then(function(result){apply(result.data&&result.data.session&&result.data.session.user||null);}).catch(function(){apply(null);});
  }
- db.auth.onAuthStateChange(function(_event,session){apply(session&&session.user||null);});
- db.auth.getSession().then(function(result){apply(result.data&&result.data.session&&result.data.session.user||null);}).catch(function(){apply(null);});
-})();
+ if(window.vyClient){startAuth(window.vyClient);return;}
+ let elapsed=0;
+ const waiter=setInterval(function(){
+  elapsed+=200;
+  if(window.vyClient){clearInterval(waiter);startAuth(window.vyClient);return;}
+  if(elapsed>=30000){clearInterval(waiter);showFailure();console.error('FinFrame auth gate: timed out waiting for window.vyClient. supabase=',!!window.supabase,'createClient=',!!(window.supabase&&window.supabase.createClient));}
+ },200);
+})();;
 </script>
 </body>
 </html>
