@@ -1,0 +1,42 @@
+name: Check inline JavaScript
+on:
+  push:
+    branches: [fix/all-buttons-script-parse]
+  pull_request:
+    branches: [main]
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Extract inline scripts and check syntax
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Scripts(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.items=[]; self.current=None
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower()=='script':
+                      self.current={'attrs':dict(attrs),'text':''}
+              def handle_data(self, data):
+                  if self.current is not None: self.current['text']+=data
+              def handle_endtag(self, tag):
+                  if tag.lower()=='script' and self.current is not None:
+                      self.items.append(self.current); self.current=None
+          p=Scripts(); p.feed(Path('index.html').read_text())
+          inline=[x['text'] for x in p.items if not x['attrs'].get('src') and x['text'].strip()]
+          Path('/tmp/inline-scripts').mkdir(exist_ok=True)
+          for i,script in enumerate(inline):
+              Path(f'/tmp/inline-scripts/{i}.js').write_text(script)
+          print(f'Extracted {len(inline)} inline scripts')
+          PY
+          for f in /tmp/inline-scripts/*.js; do echo "Checking $f"; node --check "$f"; done
