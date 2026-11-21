@@ -437,6 +437,11 @@ body.vybora-mode #vyCloudAuth{display:none!important}
   z-index:2147483003!important;pointer-events:auto!important;touch-action:manipulation!important;
  }
 }
+
+/* Small login control fixed to the upper-right corner on Home. */
+#vyHomeAuthMount{position:fixed;top:10px;right:14px;z-index:1999;width:auto;margin:0!important;padding:0!important}
+body.vybora-mode #vyCloudAuth.vy-home-auth-open{display:block!important;position:fixed!important;top:58px!important;right:14px!important;z-index:2147483000!important;width:min(380px,calc(100vw - 24px))!important;margin:0!important}\n.vy-home-login-trigger{border:1px solid #68558f;border-radius:9px;padding:7px 13px;background:linear-gradient(120deg,#9b70ff,#ef6bcb);color:#fff;font-size:12px;font-weight:700;box-shadow:0 3px 14px #0005}
+@media(max-width:650px){#vyHomeAuthMount{top:8px;right:10px}.vy-home-login-trigger{padding:6px 11px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -480,6 +485,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 
  <section id="home" class="active">
   <div class="home-wrap">
+   <div id="vyHomeAuthMount"></div>
    <div class="hero">
     <div class="hero-logo">✨</div>
     <h1>What can I create for you?</h1>
@@ -1359,6 +1365,46 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 <\/script>
+
+
+<script>
+/* Compact top-right VYBORA login toggle; reuse the existing account form. */
+(function(){
+ function mountVYBORAHomeAuth(){
+  const panel=document.getElementById('vyCloudAuth');
+  const mount=document.getElementById('vyHomeAuthMount');
+  if(!panel||!mount||mount.dataset.ready==='1')return;
+  mount.dataset.ready='1';
+  mount.appendChild(panel);
+  const heading=panel.querySelector('h3');
+  if(heading)heading.textContent='🔐 Sign in / Create your VYBORA account';
+  const status=document.getElementById('vyCloudStatus');
+  if(status)status.textContent='Sign in once here to use your VYBORA account across the creator workspace and social features.';
+  const trigger=document.createElement('button');
+  trigger.type='button';
+  trigger.className='vy-home-login-trigger';
+  trigger.textContent='Log in';
+  trigger.setAttribute('aria-expanded','false');
+  trigger.setAttribute('aria-controls','vyCloudAuth');
+  mount.appendChild(trigger);
+  Object.assign(panel.style,{display:'none',position:'fixed',top:'58px',right:'14px',width:'min(380px, calc(100vw - 24px))',maxWidth:'380px',maxHeight:'calc(100vh - 76px)',overflowY:'auto',zIndex:'2000',margin:'0',padding:'14px',borderRadius:'14px',boxShadow:'0 14px 45px #0009',background:'#151323'});
+  trigger.addEventListener('click',function(){
+   const open=panel.style.display==='none';
+   panel.style.display=open?'block':'none';
+   panel.classList.toggle('vy-home-auth-open',open);
+   trigger.setAttribute('aria-expanded',open?'true':'false');
+   trigger.textContent=open?'Close':'Log in';
+  });
+  document.addEventListener('click',function(event){
+   if(!mount.contains(event.target)&&!panel.contains(event.target)){
+    panel.style.display='none';panel.classList.remove('vy-home-auth-open');trigger.setAttribute('aria-expanded','false');trigger.textContent='Log in';
+   }
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountVYBORAHomeAuth,{once:true});
+ else mountVYBORAHomeAuth();
+})();
+</script>
 
 </body></html>`;
  }
