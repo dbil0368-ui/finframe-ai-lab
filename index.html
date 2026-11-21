@@ -1423,76 +1423,6 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 <\/script>
 
 
-<style>
-body:not(.ff-auth-ready) .app{visibility:hidden}
-body.ff-auth-required .app{display:none!important}
-#ffAuthGate{position:fixed;inset:0;z-index:2147483647;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#302052 0%,#090914 58%);color:#f5f4ff;font-family:Arial,sans-serif}
-#ffAuthGate.ff-visible{display:grid}
-#ffAuthGate .ff-auth-card{width:min(460px,100%);padding:26px 22px;border:1px solid #494067;border-radius:22px;background:#151526;box-shadow:0 25px 90px #0009}
-#ffAuthGate .ff-auth-brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;margin-bottom:22px}
-#ffAuthGate .ff-auth-logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#9b70ff,#ef6bcb);font-size:23px}
-#ffAuthGate h1{font-size:27px;margin:0 0 8px;color:#fff}
-#ffAuthGate .ff-auth-copy{color:#bcb7d2;font-size:14px;line-height:1.6;margin:0 0 16px}
-#ffAuthGate #vyCloudAuth{display:block!important;position:static!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
-#ffAuthGate #vyCloudAuth h3{display:none}
-#ffAuthGate #vyCloudStatus{font-size:12px;line-height:1.5;color:#c9c2df}
-#ffAuthGate #vyAuthForm{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
-#ffAuthGate #vyAuthForm input{min-height:47px}
-#ffAuthGate #vyAuthForm button{min-height:46px}
-#ffAuthGate #vyAuthName{display:block!important}
-#ffAuthGate #vyAuthSignedIn{display:none!important}
-#ffAuthGate #vyRecoveryForm[hidden]{display:none!important}
-#ffAuthGate .ff-auth-foot{font-size:11px;color:#9690ad;margin-top:16px;text-align:center}
-#ffGlobalAccount{display:flex;align-items:center;gap:8px;margin-left:auto}
-#ffGlobalAccount .ff-account-email{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:12px}
-#ffGlobalAccount button{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 11px}
-@media(max-width:520px){#ffAuthGate{padding:14px}#ffAuthGate .ff-auth-card{padding:22px 17px}#ffGlobalAccount .ff-account-email{display:none}}
-</style>
-<div id="ffAuthGate" role="dialog" aria-modal="true" aria-labelledby="ffAuthTitle">
- <div class="ff-auth-card">
-  <div class="ff-auth-brand"><span class="ff-auth-logo">✨</span><span>FinFrame AI Lab</span></div>
-  <h1 id="ffAuthTitle">Log in to continue</h1>
-  <p class="ff-auth-copy">Sign in or create your free account to open your creative workspace and all FinFrame tools.</p>
-  <div id="ffAuthPanelHost"></div>
-  <div class="ff-auth-foot">Your account keeps your workspace connected across sessions.</div>
- </div>
-</div>
-<script>
-(function(){
- if(window.__finFrameGlobalAuthGate)return;window.__finFrameGlobalAuthGate=true;
- const db=window.vyClient,gate=document.getElementById('ffAuthGate'),panel=document.getElementById('vyCloudAuth');
- const mount=document.getElementById('vyHomeAuthMount'),host=document.getElementById('ffAuthPanelHost');
- const topbar=document.querySelector('.topbar');
- if(!db||!gate||!panel||!host){document.body.classList.add('ff-auth-ready');return;}
- const originalParent=panel.parentNode,originalNext=panel.nextSibling;
- if(mount){mount.dataset.loginReady='1';mount.style.display='none';}
- function movePanel(toGate){
-  if(toGate){if(panel.parentNode!==host)host.appendChild(panel);panel.style.display='block';}
-  else if(panel.parentNode!==originalParent){originalParent.insertBefore(panel,originalNext&&originalNext.parentNode===originalParent?originalNext:null);panel.style.display='';panel.classList.remove('vy-home-auth-open');}
- }
- function accountControl(user){
-  let box=document.getElementById('ffGlobalAccount');
-  if(!box&&topbar){box=document.createElement('div');box.id='ffGlobalAccount';topbar.appendChild(box);}
-  if(!box)return;
-  box.innerHTML=user?'<span class="ff-account-email"></span><button type="button" id="ffGlobalSignOut">Log out</button>':'';
-  const label=box.querySelector('.ff-account-email');if(label)label.textContent=user.email||'Signed in';
-  const out=document.getElementById('ffGlobalSignOut');
-  if(out)out.addEventListener('click',async function(){out.disabled=true;out.textContent='Logging out…';const r=await db.auth.signOut();if(r.error){out.disabled=false;out.textContent='Log out';alert(r.error.message);}});
- }
- function apply(user){
-  document.body.classList.add('ff-auth-ready');
-  if(user){
-   document.body.classList.remove('ff-auth-required');gate.classList.remove('ff-visible');gate.setAttribute('aria-hidden','true');
-   movePanel(false);accountControl(user);
-  }else{
-   document.body.classList.add('ff-auth-required');gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');
-   movePanel(true);accountControl(null);
-  }
- }
- db.auth.onAuthStateChange(function(_event,session){apply(session&&session.user||null);});
- db.auth.getSession().then(function(result){apply(result.data&&result.data.session&&result.data.session.user||null);}).catch(function(){apply(null);});
-})();
-</script>
 
 </body></html>`;
  }
@@ -2707,5 +2637,76 @@ function resetPreferences(){
 })();
 </script>
 
+
+<style>
+body:not(.ff-auth-ready) .app{visibility:hidden}
+body.ff-auth-required .app{display:none!important}
+#ffAuthGate{position:fixed;inset:0;z-index:2147483647;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#302052 0%,#090914 58%);color:#f5f4ff;font-family:Arial,sans-serif}
+#ffAuthGate.ff-visible{display:grid}
+#ffAuthGate .ff-auth-card{width:min(460px,100%);padding:26px 22px;border:1px solid #494067;border-radius:22px;background:#151526;box-shadow:0 25px 90px #0009}
+#ffAuthGate .ff-auth-brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;margin-bottom:22px}
+#ffAuthGate .ff-auth-logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#9b70ff,#ef6bcb);font-size:23px}
+#ffAuthGate h1{font-size:27px;margin:0 0 8px;color:#fff}
+#ffAuthGate .ff-auth-copy{color:#bcb7d2;font-size:14px;line-height:1.6;margin:0 0 16px}
+#ffAuthGate #vyCloudAuth{display:block!important;position:static!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+#ffAuthGate #vyCloudAuth h3{display:none}
+#ffAuthGate #vyCloudStatus{font-size:12px;line-height:1.5;color:#c9c2df}
+#ffAuthGate #vyAuthForm{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+#ffAuthGate #vyAuthForm input{min-height:47px}
+#ffAuthGate #vyAuthForm button{min-height:46px}
+#ffAuthGate #vyAuthName{display:block!important}
+#ffAuthGate #vyAuthSignedIn{display:none!important}
+#ffAuthGate #vyRecoveryForm[hidden]{display:none!important}
+#ffAuthGate .ff-auth-foot{font-size:11px;color:#9690ad;margin-top:16px;text-align:center}
+#ffGlobalAccount{display:flex;align-items:center;gap:8px;margin-left:auto}
+#ffGlobalAccount .ff-account-email{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:12px}
+#ffGlobalAccount button{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 11px}
+@media(max-width:520px){#ffAuthGate{padding:14px}#ffAuthGate .ff-auth-card{padding:22px 17px}#ffGlobalAccount .ff-account-email{display:none}}
+</style>
+<div id="ffAuthGate" role="dialog" aria-modal="true" aria-labelledby="ffAuthTitle">
+ <div class="ff-auth-card">
+  <div class="ff-auth-brand"><span class="ff-auth-logo">✨</span><span>FinFrame AI Lab</span></div>
+  <h1 id="ffAuthTitle">Log in to continue</h1>
+  <p class="ff-auth-copy">Sign in or create your free account to open your creative workspace and all FinFrame tools.</p>
+  <div id="ffAuthPanelHost"></div>
+  <div class="ff-auth-foot">Your account keeps your workspace connected across sessions.</div>
+ </div>
+</div>
+<script>
+(function(){
+ if(window.__finFrameGlobalAuthGate)return;window.__finFrameGlobalAuthGate=true;
+ const db=window.vyClient,gate=document.getElementById('ffAuthGate'),panel=document.getElementById('vyCloudAuth');
+ const mount=document.getElementById('vyHomeAuthMount'),host=document.getElementById('ffAuthPanelHost');
+ const topbar=document.querySelector('.topbar');
+ if(!db||!gate||!panel||!host){document.body.classList.add('ff-auth-ready');return;}
+ const originalParent=panel.parentNode,originalNext=panel.nextSibling;
+ if(mount){mount.dataset.loginReady='1';mount.style.display='none';}
+ function movePanel(toGate){
+  if(toGate){if(panel.parentNode!==host)host.appendChild(panel);panel.style.display='block';}
+  else if(panel.parentNode!==originalParent){originalParent.insertBefore(panel,originalNext&&originalNext.parentNode===originalParent?originalNext:null);panel.style.display='';panel.classList.remove('vy-home-auth-open');}
+ }
+ function accountControl(user){
+  let box=document.getElementById('ffGlobalAccount');
+  if(!box&&topbar){box=document.createElement('div');box.id='ffGlobalAccount';topbar.appendChild(box);}
+  if(!box)return;
+  box.innerHTML=user?'<span class="ff-account-email"></span><button type="button" id="ffGlobalSignOut">Log out</button>':'';
+  const label=box.querySelector('.ff-account-email');if(label)label.textContent=user.email||'Signed in';
+  const out=document.getElementById('ffGlobalSignOut');
+  if(out)out.addEventListener('click',async function(){out.disabled=true;out.textContent='Logging out…';const r=await db.auth.signOut();if(r.error){out.disabled=false;out.textContent='Log out';alert(r.error.message);}});
+ }
+ function apply(user){
+  document.body.classList.add('ff-auth-ready');
+  if(user){
+   document.body.classList.remove('ff-auth-required');gate.classList.remove('ff-visible');gate.setAttribute('aria-hidden','true');
+   movePanel(false);accountControl(user);
+  }else{
+   document.body.classList.add('ff-auth-required');gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');
+   movePanel(true);accountControl(null);
+  }
+ }
+ db.auth.onAuthStateChange(function(_event,session){apply(session&&session.user||null);});
+ db.auth.getSession().then(function(result){apply(result.data&&result.data.session&&result.data.session.user||null);}).catch(function(){apply(null);});
+})();
+</script>
 </body>
 </html>
