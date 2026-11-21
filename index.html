@@ -2678,7 +2678,7 @@ body.ff-auth-required .app{display:none!important}
  const db=window.vyClient,gate=document.getElementById('ffAuthGate'),panel=document.getElementById('vyCloudAuth');
  const mount=document.getElementById('vyHomeAuthMount'),host=document.getElementById('ffAuthPanelHost');
  const topbar=document.querySelector('.topbar');
- if(!db||!gate||!panel||!host){document.body.classList.add('ff-auth-ready');return;}
+ if(!gate){document.body.classList.add('ff-auth-ready');return;}if(!db||!panel||!host){document.body.classList.add('ff-auth-ready','ff-auth-required');gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');if(host)host.textContent='Login service is unavailable. Refresh the page and try again.';return;}
  const originalParent=panel.parentNode,originalNext=panel.nextSibling;
  if(mount){mount.dataset.loginReady='1';mount.style.display='none';}
  function movePanel(toGate){
