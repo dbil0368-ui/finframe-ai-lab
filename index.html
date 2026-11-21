@@ -2329,9 +2329,12 @@ function resetPreferences(){
    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js',
    'https://unpkg.com/@supabase/supabase-js@2.118.0/dist/umd/supabase.js'
   ]).then(boot).catch(err=>{
+   const message='Login initialization failed: '+(err&&err.message?err.message:String(err));
    const status=document.getElementById('vyCloudStatus');
-   if(status)status.textContent='Cannot load the Supabase login library from available CDNs. Check internet or content blockers and retry.';
-   console.error('FinFrame Supabase loader:',err);
+   if(status)status.textContent=message;
+   const host=document.getElementById('ffAuthPanelHost');
+   if(host)host.textContent=message;
+   console.error('FinFrame Supabase loader/boot error:',err);
   });
  }
 })();
@@ -2707,10 +2710,10 @@ body.ff-auth-required .app{display:none!important}
  const mount=document.getElementById('vyHomeAuthMount'),host=document.getElementById('ffAuthPanelHost');
  const topbar=document.querySelector('.topbar');
  if(!gate){document.body.classList.add('ff-auth-ready');return;}
- function showFailure(){
+ function showFailure(message){
   document.body.classList.add('ff-auth-ready','ff-auth-required');
   gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');
-  if(host)host.textContent='Login service did not initialize. Check your connection or content blocker, then reload.';
+  if(host)host.textContent=message||'Login service did not initialize. Check your connection or content blocker, then reload.';
  }
  if(!panel||!host){showFailure();return;}
  // Keep the login gate visible while the Supabase client is loading.
@@ -2752,7 +2755,7 @@ body.ff-auth-required .app{display:none!important}
  const waiter=setInterval(function(){
   elapsed+=200;
   if(window.vyClient){clearInterval(waiter);startAuth(window.vyClient);return;}
-  if(elapsed>=30000){clearInterval(waiter);showFailure();console.error('FinFrame auth gate: timed out waiting for window.vyClient. supabase=',!!window.supabase,'createClient=',!!(window.supabase&&window.supabase.createClient));}
+  if(elapsed>=30000){clearInterval(waiter);const detail='Login initialization timed out after 30 seconds. Supabase library detected: '+!!window.supabase+'; createClient detected: '+!!(window.supabase&&window.supabase.createClient)+'.';showFailure(detail);console.error('FinFrame auth gate: timed out waiting for window.vyClient. supabase=',!!window.supabase,'createClient=',!!(window.supabase&&window.supabase.createClient));}
  },200);
 })();;
 </script>
