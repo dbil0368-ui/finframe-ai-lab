@@ -739,7 +739,8 @@ body.vybora-mode #vyCloudAuth.vy-home-auth-open{display:block!important;position
     <h3>✨ AI Virtual Try-On</h3>
     <p>Use the two uploads below, then generate an AI outfit preview. Your images are sent only when you press Generate; the AI provider and its privacy terms will apply once a backend is configured.</p>
     <button class="primary-btn" id="aiTryonButton" type="button" onclick="generateAiTryon()">✨ Generate AI Try-On</button>
-    <p id="aiTryonStatus" role="status" aria-live="polite">AI service is not connected yet. The secure backend setup is being prepared.</p>
+    <p id="aiTryonStatus" role="status" aria-live="polite">Log in to receive 5 free AI generations per day. STARTER members receive a higher daily allowance.</p>
+    <p id="aiTryonQuota" class="small" aria-live="polite">Free allowance: 5 AI generations per day · resets at midnight India time.</p>
     <div id="aiTryonResultWrap" class="hidden">
      <img id="aiTryonResult" alt="AI virtual try-on result" style="display:block;max-width:100%;max-height:650px;margin:12px auto;border-radius:12px">
      <a id="aiTryonDownload" class="secondary-btn" download="finframe-ai-tryon.png">⬇ Save AI result</a>
@@ -1734,11 +1735,21 @@ async function generateAiTryon(){
  if(!person.type.startsWith('image/')||!garment.type.startsWith('image/')){status.textContent='Please select image files only.';return;}
  if(person.size>10*1024*1024||garment.size>10*1024*1024){status.textContent='Each image must be 10 MB or smaller.';return;}
  const form=new FormData();form.append('person',person);form.append('garment',garment);
- button.disabled=true;button.textContent='Generating…';status.textContent='Sending images securely to the configured AI service…';wrap.classList.add('hidden');
+ button.disabled=true;button.textContent='Generating…';status.textContent='Checking your daily free AI quota…';wrap.classList.add('hidden');
  try{
-  const response=await fetch('./api/tryon',{method:'POST',body:form});
+  if(!window.vyClient||!window.vyClient.auth)throw new Error('Please log in to your VYBORA account before using AI generation.');
+  const sessionResult=await window.vyClient.auth.getSession();
+  const accessToken=sessionResult.data&&sessionResult.data.session&&sessionResult.data.session.access_token;
+  if(sessionResult.error||!accessToken)throw new Error('Please log in to your VYBORA account before using AI generation.');
+  const response=await fetch('./api/tryon',{method:'POST',body:form,headers:{Authorization:'Bearer '+accessToken}});
   const data=await response.json().catch(()=>({}));
+  if(response.status===429&&data.code==='DAILY_AI_LIMIT_REACHED'){
+   status.innerHTML='You have used all '+(data.dailyLimit||5)+' free AI generations today. <strong>STARTER monthly plan</strong> gives you more daily AI generations. No payment is taken automatically.';
+   const quota=$('aiTryonQuota');if(quota)quota.textContent='Daily free limit reached · resets at midnight India time.';
+   return;
+  }
   if(!response.ok)throw new Error(data.error||'AI service is not configured yet. Please connect a compatible provider on the secure backend.');
+  if(data.quota){const quota=$('aiTryonQuota');if(quota)quota.textContent=data.quota.remaining+' of '+data.quota.dailyLimit+' daily AI generations remaining.';}
   let image=data.imageUrl||data.image_url||data.imageBase64||data.image_base64||data.output;
   if(Array.isArray(image))image=image[0];
   if(typeof image==='string'&&!image.startsWith('data:')&&!/^https?:\/\//i.test(image)&&!image.startsWith('/'))image='data:image/png;base64,'+image;
