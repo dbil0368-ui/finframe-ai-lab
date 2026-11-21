@@ -459,6 +459,7 @@ body.vybora-mode #vyCloudAuth.vy-home-auth-open{display:block!important;position
  <button class="side-btn" data-page="poster" onclick="show('poster')">🖼️ &nbsp; Poster Maker</button>
  <button class="side-btn" data-page="creative" onclick="show('creative')">🎨 &nbsp; Creative Studio</button>
  <button class="side-btn" data-page="vybora" onclick="show('vybora')">💜 &nbsp; VYBORA Social</button>
+ <button class="side-btn" type="button" onclick="window.location.href='/trend-hub.html'">📈 &nbsp; VYBORA Trend Hub</button>
  <button class="side-btn" data-page="game" onclick="show('game')">🎮 &nbsp; Game Studio</button>
  <button class="side-btn" data-page="privacy" onclick="show('privacy')">🔐 &nbsp; Privacy & Security</button>
  <button class="side-btn" data-page="brandkit" onclick="show('brandkit')">🎨 &nbsp; Brand Kit</button>
@@ -604,7 +605,7 @@ body.vybora-mode #vyCloudAuth.vy-home-auth-open{display:block!important;position
    </div>
    <div class="card" style="margin-top:14px;background:#101020">
     <h3>☁️ Save your projects</h3>
-    <p class="builder-note">Guests can save projects on this device. Log in to save them to your account and open them on any device. All project saving is free.</p>
+    <p class="builder-note">Save projects on this device for free. Account sign-in is optional; cloud sync is not enabled in Guest Mode.</p>
     <div class="actions">
      <button class="secondary-btn" onclick="saveFinFrameProject()">💾 Save Project</button>
      <button class="secondary-btn" onclick="refreshFinFrameProjects()">↻ Refresh List</button>
@@ -1484,7 +1485,7 @@ async function refreshFinFrameProjects(){
    if(status)status.textContent=(r.data||[]).length+' cloud project(s) saved to your account. Available across devices.';
   }else{
    readLocalFinFrameProjects().forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name+' · This device';select.appendChild(o);});
-   if(status)status.textContent='Guest mode: projects are saved only in this browser. Log in to sync them across devices.';
+   if(status)status.textContent='Guest Mode: your projects are saved in this browser only.';
   }
   if(!select.options.length){const o=document.createElement('option');o.value='';o.textContent='No saved projects yet';select.appendChild(o);}
  }catch(e){if(status)status.textContent='Could not load saved projects: '+(e.message||'Please try again.');}
