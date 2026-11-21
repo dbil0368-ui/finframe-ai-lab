@@ -399,11 +399,12 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <div id="referralStats" class="grid" hidden style="grid-template-columns:repeat(3,minmax(0,1fr));margin:16px 0 0"><div class="stat"><small>Friends joined</small><div class="n" id="refJoined">0</div></div><div class="stat"><small>Paid referrals</small><div class="n" id="refPaid">0</div></div><div class="stat"><small>Pro days earned</small><div class="n" id="refDays">0</div></div></div>
     <p class="muted" id="referralRewardExpiry" style="font-size:12px;margin-bottom:0"></p>
    </div>
-   <div class="tools" style="margin-top:18px">
+   <div class="notice" style="border-color:#66e7d755;background:#66e7d711;color:#b9fff3">Razorpay TEST MODE · No real money is collected. Use only Razorpay test payment details. Available plans and prices are loaded from the billing configuration.</div>
+   <div class="tools" id="billingPlans" style="margin-top:18px" aria-live="polite">
     <article class="tool-card"><div class="tool-icon">✦</div><h3>Free</h3><p><strong style="font-size:28px;color:#fff">₹0</strong> / forever</p><p>Explore the creator workspace with 3 AI generations per day.</p><span class="tag">AVAILABLE</span></article>
-    <article class="tool-card"><div class="tool-icon">✧</div><h3>Premium</h3><p><strong style="font-size:28px;color:#fff">₹299</strong> / month</p><p>Planned expanded access for creators who need more room to build.</p><button class="ghost" type="button" disabled>Checkout coming soon</button></article>
+    <article class="tool-card"><div class="tool-icon">✧</div><h3>Paid plans</h3><p>Loading configured plans…</p></article>
    </div>
-   <div class="notice">Premium is planned at ₹299/month. Checkout is disabled and no payment is collected. Premium generation limits and subscription terms will be confirmed before launch.</div>
+   <p class="muted" id="checkoutStatus" role="status" aria-live="polite" style="font-size:13px;margin-top:12px">Sign in to load plans and start a Test Mode checkout.</p>
    <p class="muted" style="font-size:12px">By continuing, you agree to the <a href="/terms.html" style="color:var(--violet)">Terms of Use</a> and acknowledge the <a href="/privacy.html" style="color:var(--violet)">Privacy Notice</a>.</p>
   </section>
   
@@ -424,6 +425,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
  </div>
 </main>
 </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const supabaseClient=window.supabase.createClient("https://pxgoaygwtxrrqkftluut.supabase.co","sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh");
@@ -591,9 +593,64 @@ document.getElementById("copyTrendList").addEventListener("click",async()=>{
  setTimeout(()=>{button.textContent="Copy trend titles"},1800);
 });
 loadTrends();
+function formatPlanPrice(plan){
+ const amount=Number(plan.amount_paise||0)/100;
+ const currency=plan.currency||"INR";
+ try{return new Intl.NumberFormat("en-IN",{style:"currency",currency,maximumFractionDigits:0}).format(amount)}catch{return currency+" "+amount}
+}
+function renderBillingPlans(plans,checkoutAvailable){
+ const container=document.getElementById("billingPlans");
+ const paid=(Array.isArray(plans)?plans:[]).filter(plan=>["starter","pro"].includes(plan.plan_key));
+ const cards=paid.map(plan=>{
+  const title=plan.plan_key==="starter"?"Starter":"Pro";
+  const interval=plan.period==="yearly"?"year":plan.period==="weekly"?"week":"month";
+  const disabled=!checkoutAvailable;
+  return '<article class="tool-card"><div class="tool-icon">✧</div><h3>'+title+'</h3><p><strong style="font-size:28px;color:#fff">'+formatPlanPrice(plan)+'</strong> / '+interval+'</p><p>VYBORA '+title+' creator subscription · Razorpay Test Mode.</p><button class="primary billing-checkout" type="button" data-plan="'+title.toLowerCase()+'" '+(disabled?'disabled':'')+'>'+(disabled?'Test checkout unavailable':'Subscribe with Test Mode')+'</button></article>';
+ }).join("");
+ container.innerHTML='<article class="tool-card"><div class="tool-icon">✦</div><h3>Free</h3><p><strong style="font-size:28px;color:#fff">₹0</strong> / forever</p><p>Explore the creator workspace with 3 AI generations per day.</p><span class="tag">AVAILABLE</span></article>'+(cards||'<article class="tool-card"><h3>No paid plans available</h3><p>Paid plans are not active in the billing configuration yet.</p></article>');
+ container.querySelectorAll(".billing-checkout").forEach(button=>button.addEventListener("click",()=>startTestCheckout(button.dataset.plan,button)));
+}
+async function startTestCheckout(plan,button){
+ const status=document.getElementById("checkoutStatus");
+ if(!currentUser){status.textContent="Please sign in before starting checkout.";document.getElementById("authPanel").hidden=false;document.body.classList.add("login-open");document.getElementById("authEmail").focus({preventScroll:true});return}
+ if(typeof window.Razorpay!=="function"){status.textContent="Razorpay Checkout could not load. Refresh the page and try again.";return}
+ button.disabled=true;status.textContent="Creating your secure Razorpay Test Mode subscription…";
+ try{
+  const {data}=await supabaseClient.auth.getSession();
+  const token=data.session?.access_token;
+  if(!token)throw new Error("Your session expired. Sign in again.");
+  const response=await fetch("/api/billing/create-subscription",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({plan})});
+  const created=await response.json();
+  if(!response.ok)throw new Error(created.error||"Could not create the test subscription.");
+  const checkout=new Razorpay({
+   key:created.keyId,
+   subscription_id:created.subscriptionId,
+   name:"VYBORA",
+   description:"VYBORA "+(plan==="starter"?"Starter":"Pro")+" · Test Mode",
+   prefill:{email:created.customerEmail||currentUser.email||""},
+   notes:{plan,environment:"test"},
+   theme:{color:"#a58aff"},
+   handler:async payment=>{
+    status.textContent="Payment submitted. Verifying signature and subscription with the server…";
+    try{
+     const verifyResponse=await fetch("/api/billing/verify-subscription",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({razorpay_subscription_id:payment.razorpay_subscription_id,razorpay_payment_id:payment.razorpay_payment_id,razorpay_signature:payment.razorpay_signature})});
+     const verified=await verifyResponse.json();
+     if(!verifyResponse.ok)throw new Error(verified.error||"Payment verification failed.");
+     status.textContent=verified.message||"Test payment verified. Refreshing subscription status…";
+     await loadBillingStatus();
+    }catch(error){status.textContent=error.message+" Do not submit another payment; check the billing status first."}
+   },
+   modal:{ondismiss:()=>{status.textContent="Checkout closed. If you completed a payment, refresh billing status before trying again.";button.disabled=false;}}
+  });
+  checkout.on("payment.failed",event=>{status.textContent="Test payment failed: "+(event.error?.description||"Please review the test payment details.");button.disabled=false});
+  checkout.open();
+  status.textContent="Razorpay Test Mode checkout opened. No real payment will be collected.";
+ }catch(error){status.textContent=error.message;button.disabled=false}
+}
 async function loadBillingStatus(){
  const box=document.getElementById("billingStatus");
- if(!currentUser){box.textContent="Sign in to your VYBORA account to view billing or start a subscription.";return}
+ const checkoutStatus=document.getElementById("checkoutStatus");
+ if(!currentUser){box.textContent="Sign in to view your plan or start a Test Mode subscription.";renderBillingPlans([],false);checkoutStatus.textContent="Sign in to load configured plans and start checkout.";return}
  box.textContent="Loading your billing status…";
  try{
   const {data}=await supabaseClient.auth.getSession();
@@ -601,11 +658,15 @@ async function loadBillingStatus(){
   const result=await response.json();
   if(!response.ok)throw new Error(result.error||"Could not load billing status.");
   const sub=result.subscription;
-  if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet.";return}
-  const label={starter:"Starter",pro:"Pro"}[sub.plan_key]||sub.plan_key;
-  const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
-  box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
- }catch(error){box.textContent=error.message}
+  if(!sub){box.textContent="Current plan: Free Preview · No paid subscription yet."}
+  else{
+   const label={starter:"Starter",pro:"Pro"}[sub.plan_key]||sub.plan_key;
+   const state={active:"Active",authenticated:"Payment authorized · activation pending",created:"Checkout started · awaiting payment",pending:"Pending",halted:"Payment needs attention",cancelled:"Cancelled",completed:"Completed",expired:"Expired",failed:"Failed"}[sub.status]||sub.status;
+   box.textContent="Current plan: "+label+" · "+state+(sub.current_end?" · Current period ends "+new Date(sub.current_end).toLocaleDateString():"");
+  }
+  renderBillingPlans(result.plans,result.checkoutAvailable);
+  checkoutStatus.textContent=result.checkoutAvailable?"Test Mode is configured. Choose a plan to open Razorpay Checkout.":"Test checkout is disabled because the required Razorpay Test Mode or webhook configuration is incomplete.";
+ }catch(error){box.textContent=error.message;renderBillingPlans([],false);checkoutStatus.textContent="Could not load checkout configuration."}
 }
 const growthPrompts={
  hooks:{label:"Viral Hook Generator",format:"Short-form hook options",instruction:"Create 12 original, curiosity-building opening hooks for the topic. Mix question, surprising angle, relatable pain point, bold-but-honest statement and story-led hooks. Keep each hook short, natural and suitable for the first 3 seconds. Avoid clickbait and unsupported claims. Add a one-line note explaining the strongest 3."},
