@@ -2713,6 +2713,10 @@ body.ff-auth-required .app{display:none!important}
   if(host)host.textContent='Login service did not initialize. Check your connection or content blocker, then reload.';
  }
  if(!panel||!host){showFailure();return;}
+ // Keep the login gate visible while the Supabase client is loading.
+ document.body.classList.add('ff-auth-ready','ff-auth-required');
+ gate.classList.add('ff-visible');gate.setAttribute('aria-hidden','false');
+ host.textContent='Connecting to the login service…';
  function startAuth(db){
   if(!db||!db.auth){showFailure();return;}
   const originalParent=panel.parentNode,originalNext=panel.nextSibling;
