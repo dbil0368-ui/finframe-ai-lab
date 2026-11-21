@@ -480,6 +480,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 
  <section id="home" class="active">
   <div class="home-wrap">
+   <div id="vyHomeAuthMount"></div>
    <div class="hero">
     <div class="hero-logo">✨</div>
     <h1>What can I create for you?</h1>
@@ -1359,6 +1360,29 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 <\/script>
+
+
+<script>
+/* Keep the single VYBORA account panel on the first Home page for easy access. */
+(function(){
+ function mountVYBORAHomeAuth(){
+  const panel=document.getElementById('vyCloudAuth');
+  const mount=document.getElementById('vyHomeAuthMount');
+  if(!panel||!mount||panel.parentElement===mount)return;
+  mount.appendChild(panel);
+  panel.style.maxWidth='980px';
+  panel.style.margin='0 auto 20px';
+  panel.style.borderRadius='16px';
+  panel.style.padding='16px';
+  const heading=panel.querySelector('h3');
+  if(heading)heading.textContent='🔐 Sign in / Create your VYBORA account';
+  const status=document.getElementById('vyCloudStatus');
+  if(status)status.textContent='Sign in once here to use your VYBORA account across the creator workspace and social features.';
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountVYBORAHomeAuth,{once:true});
+ else mountVYBORAHomeAuth();
+})();
+</script>
 
 </body></html>`;
  }
