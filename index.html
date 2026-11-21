@@ -1033,151 +1033,130 @@ body{background:radial-gradient(ellipse at 50% -15%,#261052 0%,#090615 42%,#0403
   </div>
  </section>
  <section id="vybora" class="active">
-  <div class="vy-studio-shell">
-   <header class="vy-studio-top">
-    <button class="vy-studio-menu" type="button" aria-label="Open FinFrame menu" onclick="toggleMobileMenu()">☰</button>
-    <div class="vy-studio-brand"><span class="vy-brand-mark">▶</span><span><b>VYBORA</b><small>CREATIVE STUDIO</small></span></div>
-    <button class="vy-studio-pro" type="button" onclick="show('settings')">✦ PRO</button>
-    <button class="vy-studio-bell" type="button" onclick="window.location.href='/trend-hub.html'" aria-label="Open trends">♧</button>
-   </header>
-
-   <div class="vy-studio-hero">
-    <div class="vy-hero-copy">
-     <div class="vy-eyebrow">CREATE · IMAGINE · SHARE</div>
-     <h1>Turn your ideas into <em>magic.</em></h1>
-     <p>Make something amazing with FinFrame AI Lab.</p>
-     <button type="button" class="vy-hero-cta" onclick="openTool('builder')">Let’s Create <span>↗</span></button>
-    </div>
-    <div class="vy-hero-art" aria-hidden="true"><div class="vy-orbit vy-orbit-one"></div><div class="vy-orbit vy-orbit-two"></div><div class="vy-hero-symbol">✦</div><span class="vy-spark vy-spark-a">✧</span><span class="vy-spark vy-spark-b">✦</span><span class="vy-spark vy-spark-c">✧</span></div>
-    <div class="vy-hero-tag">✦ CREATIVE POWER</div>
-   </div>
-
-   <div class="vy-studio-section-head"><h2>Explore Studio</h2><span>Choose your next creation</span></div>
-   <div class="vy-studio-feature-grid">
-    <button class="vy-feature-card vy-feature-image" onclick="openTool('product')"><span class="vy-feature-art">▧</span><span class="vy-feature-copy"><b>AI Image Studio</b><small>Create beautiful visuals</small></span><span class="vy-feature-arrow">↗</span></button>
-    <button class="vy-feature-card vy-feature-video" onclick="openTool('video')"><span class="vy-feature-art">▷</span><span class="vy-feature-copy"><b>Text to Video</b><small>Bring ideas to motion</small></span><span class="vy-feature-arrow">↗</span></button>
-    <button class="vy-feature-card vy-feature-design" onclick="openTool('poster')"><span class="vy-feature-art">✧</span><span class="vy-feature-copy"><b>Poster Designer</b><small>Design your own style</small></span><span class="vy-feature-arrow">↗</span></button>
-    <button class="vy-feature-card vy-feature-edit" onclick="openTool('photo')"><span class="vy-feature-art">◈</span><span class="vy-feature-copy"><b>Photo Enhancer</b><small>Give photos a fresh look</small></span><span class="vy-feature-arrow">↗</span></button>
-   </div>
-
-   <div class="vy-studio-mini-grid">
-    <button class="vy-mini-card" onclick="openTool('creative')"><span>♡</span><b>Creative Stories</b><small>Imagine more</small></button>
-    <button class="vy-mini-card" onclick="openTool('game')"><span>☆</span><b>Game Studio</b><small>Play & explore</small></button>
-    <button class="vy-mini-card" onclick="openTool('caption')"><span>✎</span><b>Caption Lab</b><small>Words that shine</small></button>
-   </div>
-
-   <div class="vy-studio-section-head vy-trending-head"><h2>🔥 Trending Now</h2><button type="button" onclick="window.location.href='/trend-hub.html'">See All ↗</button></div>
-   <div class="vy-trend-strip">
-    <button class="vy-trend-tile vy-trend-one" onclick="openTool('poster')"><span>✦</span><b>Neon Poster</b><small>Design trend</small></button>
-    <button class="vy-trend-tile vy-trend-two" onclick="openTool('product')"><span>◈</span><b>Product Art</b><small>Visual trend</small></button>
-    <button class="vy-trend-tile vy-trend-three" onclick="openTool('video')"><span>▷</span><b>Motion Magic</b><small>Video trend</small></button>
-    <button class="vy-trend-tile vy-trend-four" onclick="openTool('creative')"><span>✧</span><b>Dream Worlds</b><small>Creative trend</small></button>
-   </div>
-
-   <nav class="vy-studio-bottom" aria-label="VYBORA navigation">
-    <button class="active" onclick="document.getElementById('vyStudioHome').scrollIntoView({behavior:'smooth'})"><span>⌂</span><small>Home</small></button>
-    <button onclick="openTool('creative')"><span>⌕</span><small>Explore</small></button>
-    <button class="vy-bottom-create" onclick="openTool('builder')" aria-label="Create"><span>＋</span></button>
-    <button onclick="openTool('video')"><span>▣</span><small>My Creations</small></button>
-    <button onclick="show('settings')"><span>◯</span><small>Profile</small></button>
-   </nav>
+ <div class="nova-app">
+  <header class="nova-top">
+   <button class="nova-menu" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+   <div class="nova-brand"><span class="nova-logo">▷</span><span><b>VYBORA</b><small>AI STUDIO</small></span></div>
+   <button class="nova-pro" onclick="show('settings')">👑 PRO</button>
+   <button class="nova-bell" onclick="window.location.href='/trend-hub.html'" aria-label="Notifications and trends">♧</button>
+  </header>
+  <section class="nova-hero">
+   <div class="nova-hero-copy"><small>CREATE · IMAGINE · ENJOY</small><h1>Turn Your Ideas into <em>Stunning</em> Videos</h1><p>with AI</p><button onclick="openTool('video')">Let’s Create <b>▶</b></button></div>
+   <div class="nova-hero-art" aria-hidden="true"><div class="nova-glow-orb">✦</div><span>✧</span><i>✦</i></div>
+   <div class="nova-quality">👑<b>4K</b><small>ULTRA HD</small></div>
+  </section>
+  <div class="nova-feature-grid">
+   <button class="nova-feature f-image" onclick="openTool('product')"><span class="nova-art">▧</span><span><b>AI Image to Video</b><small>Animate Your Photos</small></span><i>➜</i></button>
+   <button class="nova-feature f-text" onclick="openTool('video')"><span class="nova-art">T</span><span><b>Text to Video</b><small>Turn Words into Magic</small></span><i>➜</i></button>
+   <button class="nova-feature f-generator" onclick="openTool('product')"><span class="nova-art">✧</span><span><b>AI Image Generator</b><small>Create Stunning Art</small></span><i>➜</i></button>
+   <button class="nova-feature f-editor" onclick="openTool('video')"><span class="nova-art">▣</span><span><b>AI Video Editor</b><small>Edit Like a Pro</small></span><i>➜</i></button>
   </div>
-  <div id="vyHomeAuthMount" hidden></div>
-  <div id="vyCompatibilityMount" hidden>
-   <div id="vyCloudAuth"></div><div id="vyCloudFeed"></div>
-   <div id="vyStoriesCloud"></div><div id="vyPagePanel"></div><div id="vyFeed"></div>
-   <input id="vySearchInput" type="text"><div id="vyProfileAvatar"></div><div id="vyProfileName"></div>
-   <div id="vyPostCount"></div><div id="vyFollowingCount"></div><div id="vyFollowerCount"></div><div id="vySavedCount"></div>
-   <input id="vyVideoFile" type="file"><textarea id="vyCaptionInput"></textarea><div id="vyUploadStatus"></div>
-   <div id="vyAuthForm"></div><div id="vyAuthSignedIn"></div><div id="vyAuthUser"></div><div id="vyRecoveryForm"></div><div id="vyNewPassword"></div><div id="vyCloudStatus"></div><div id="vyAuthName"></div><div id="vyAuthEmail"></div><div id="vyAuthPassword"></div>
+  <div class="nova-category-grid">
+   <button onclick="openTool('creative')"><span>♡</span><b>Story Video</b><small>Stories & More</small></button>
+   <button onclick="openTool('game')"><span>☆</span><b>Fantasy Video</b><small>Dream Beyond</small></button>
+   <button onclick="openTool('caption')"><span>✧</span><b>Anime Video</b><small>Bring Characters to Life</small></button>
   </div>
-  <style>
-   #vybora{background:#05030d;color:#fff;min-height:100vh;padding:0 0 90px}
-   #vybora .vy-studio-shell{max-width:1180px;margin:0 auto;padding:0 16px 30px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#1a0d38 0%,#080615 42%,#05030d 100%)}
-   #vybora .vy-studio-top{height:74px;display:flex;align-items:center;gap:15px;border-bottom:1px solid #30204c;position:relative}
-   #vybora .vy-studio-menu,#vybora .vy-studio-bell{width:42px;height:42px;border:1px solid #453066;border-radius:12px;background:#171128;color:white;font-size:22px}
-   #vybora .vy-studio-brand{display:flex;align-items:center;gap:10px;margin-right:auto}
-   #vybora .vy-brand-mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:24px;color:white;background:linear-gradient(135deg,#00d9ff,#883cff 55%,#ff29c6);box-shadow:0 0 20px #9c39ff88}
-   #vybora .vy-studio-brand b{display:block;font-size:21px;letter-spacing:1px}
-   #vybora .vy-studio-brand small{display:block;color:#bba7dc;font-size:9px;letter-spacing:3px}
-   #vybora .vy-studio-pro{border:1px solid #ffcf58;border-radius:22px;padding:9px 15px;background:#241b22;color:#ffe38b;font-weight:800}
-   #vybora .vy-studio-hero{min-height:310px;position:relative;overflow:hidden;margin:17px 0 26px;padding:40px 40% 34px 28px;border:1px solid #6e3bc0;border-radius:24px;background:radial-gradient(circle at 80% 40%,#ec29d655,transparent 30%),radial-gradient(circle at 72% 85%,#008dff66,transparent 38%),linear-gradient(115deg,#090615,#1c0b38 58%,#08152d);box-shadow:0 0 32px #8d35ff44,inset 0 0 30px #5e23b633}
-   #vybora .vy-eyebrow{font-size:11px;letter-spacing:3px;color:#d8baff;font-weight:800}
-   #vybora .vy-studio-hero h1{font-size:clamp(34px,5vw,57px);line-height:1.04;letter-spacing:-1.7px;margin:17px 0 12px;max-width:540px}
-   #vybora .vy-studio-hero h1 em{font-style:normal;background:linear-gradient(90deg,#ff38d2,#9a66ff,#2edbff);background-clip:text;color:transparent}
-   #vybora .vy-studio-hero p{color:#c9bddf;font-size:15px}
-   #vybora .vy-hero-cta{margin-top:12px;padding:12px 23px;border:1px solid #ff74e7;border-radius:30px;background:linear-gradient(100deg,#a321ed,#f02cb7);color:white;font-weight:800;box-shadow:0 0 22px #ec29d977}
-   #vybora .vy-hero-cta span{margin-left:9px}
-   #vybora .vy-hero-art{position:absolute;right:4%;top:8%;width:37%;height:84%;display:grid;place-items:center}
-   #vybora .vy-orbit{position:absolute;border:1px solid #5edbff99;border-radius:50%;transform:rotate(-22deg);box-shadow:0 0 24px #5b5aff55}
-   #vybora .vy-orbit-one{width:230px;height:180px}
-   #vybora .vy-orbit-two{width:170px;height:245px;border-color:#f34bdf99;transform:rotate(48deg)}
-   #vybora .vy-hero-symbol{width:145px;height:145px;display:grid;place-items:center;border-radius:38px;font-size:92px;color:#ffe978;background:linear-gradient(145deg,#742bcb,#ed39bd);box-shadow:0 0 35px #e62cde99,0 0 85px #4c62ff55;text-shadow:0 0 22px #fff}
-   #vybora .vy-spark{position:absolute;color:#fff5a1;text-shadow:0 0 16px #ff3cdb;font-size:28px}
-   #vybora .vy-spark-a{top:8%;right:14%}#vybora .vy-spark-b{bottom:10%;left:10%}#vybora .vy-spark-c{top:48%;right:0}
-   #vybora .vy-hero-tag{position:absolute;bottom:13px;right:18px;color:#bba8e8;font-size:9px;letter-spacing:2px}
-   #vybora .vy-studio-section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 2px 13px}
-   #vybora .vy-studio-section-head h2{margin:0;font-size:22px}
-   #vybora .vy-studio-section-head>span{font-size:12px;color:#aa9cbe}
-   #vybora .vy-studio-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-   #vybora .vy-feature-card{position:relative;overflow:hidden;min-height:142px;display:flex;align-items:center;gap:16px;padding:20px;text-align:left;border:1px solid #4c4baf;border-radius:20px;color:#fff;background:linear-gradient(115deg,#0e1b40,#211044 65%,#36104d);box-shadow:inset 0 0 22px #7d45ff22,0 7px 18px #0007}
-   #vybora .vy-feature-card:after{content:"";position:absolute;right:-35px;top:-55px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,#e72bc655,transparent 70%)}
-   #vybora .vy-feature-video{background:linear-gradient(115deg,#06294b,#152b65 60%,#32115a);border-color:#238fff}
-   #vybora .vy-feature-design{background:linear-gradient(115deg,#251044,#491052 60%,#131c48);border-color:#d33cda}
-   #vybora .vy-feature-edit{background:linear-gradient(115deg,#082c3e,#133d65 60%,#32134b);border-color:#24caff}
-   #vybora .vy-feature-art{z-index:1;flex:0 0 64px;width:64px;height:64px;display:grid;place-items:center;border-radius:18px;font-size:39px;color:white;background:linear-gradient(145deg,#5425c9,#e52cba);box-shadow:0 0 22px #9b3cff88}
-   #vybora .vy-feature-copy{z-index:1;display:grid;gap:6px}
-   #vybora .vy-feature-copy b{font-size:17px}
-   #vybora .vy-feature-copy small{font-size:12px;color:#d1c7e8}
-   #vybora .vy-feature-arrow{z-index:1;margin-left:auto;align-self:flex-end;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#07061b;border:1px solid #8c5cff;font-size:20px}
-   #vybora .vy-studio-mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
-   #vybora .vy-mini-card{display:grid;justify-items:start;gap:6px;padding:15px;border:1px solid #553c82;border-radius:17px;background:linear-gradient(130deg,#1b0c32,#0b1d3b);color:#fff;text-align:left}
-   #vybora .vy-mini-card>span{font-size:26px;color:#ff73e5;text-shadow:0 0 15px #ed35d8}
-   #vybora .vy-mini-card b{font-size:13px}#vybora .vy-mini-card small{font-size:11px;color:#b8aacd}
-   #vybora .vy-trending-head{margin-top:28px}
-   #vybora .vy-trending-head button{border:1px solid #9e43e8;border-radius:22px;background:#170c2b;color:#fff;padding:8px 14px}
-   #vybora .vy-trend-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
-   #vybora .vy-trend-tile{min-height:150px;display:flex;flex-direction:column;justify-content:end;align-items:flex-start;gap:5px;padding:14px;border:1px solid #4d60c8;border-radius:17px;color:#fff;text-align:left;background:radial-gradient(circle at 70% 30%,#00bfff77,transparent 45%),linear-gradient(145deg,#09254a,#32104b);box-shadow:0 0 16px #5d38ff33}
-   #vybora .vy-trend-tile>span{font-size:34px;color:#ffe77d;text-shadow:0 0 16px #ec2bff}
-   #vybora .vy-trend-tile b{font-size:13px}#vybora .vy-trend-tile small{font-size:11px;color:#d1c6e5}
-   #vybora .vy-trend-two{background:radial-gradient(circle at 75% 25%,#ec36c977,transparent 45%),linear-gradient(145deg,#271044,#092f4a);border-color:#e33ac8}
-   #vybora .vy-trend-three{background:radial-gradient(circle at 75% 25%,#3d8dff99,transparent 45%),linear-gradient(145deg,#082e4a,#32104c);border-color:#28bfff}
-   #vybora .vy-trend-four{background:radial-gradient(circle at 75% 25%,#a84dff88,transparent 45%),linear-gradient(145deg,#251047,#101d42);border-color:#b84dff}
-   #vybora .vy-studio-bottom{position:sticky;bottom:0;z-index:8;display:flex;justify-content:space-around;align-items:center;gap:5px;margin:26px -16px -30px;padding:10px 8px calc(10px + env(safe-area-inset-bottom));border:1px solid #453078;border-radius:22px 22px 0 0;background:#080612ed;backdrop-filter:blur(18px);box-shadow:0 -8px 30px #6025a933}
-   #vybora .vy-studio-bottom button{min-width:0;flex:1;display:grid;justify-items:center;gap:3px;border:0;background:transparent;color:#c8bddc;padding:4px 2px}
-   #vybora .vy-studio-bottom button>span{font-size:25px;line-height:1}
-   #vybora .vy-studio-bottom button small{font-size:10px}
-   #vybora .vy-studio-bottom button.active{color:#ff75e5;text-shadow:0 0 13px #e82bff}
-   #vybora .vy-studio-bottom .vy-bottom-create{flex:0 0 58px;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#ffd95d,#ff8b21,#ed29b8);color:#fff;border:3px solid #a65cff;box-shadow:0 0 22px #e32cff99}
-   #vybora .vy-studio-bottom .vy-bottom-create>span{font-size:34px}
-   @media(max-width:650px){
-    #vybora{padding-bottom:75px}
-    #vybora .vy-studio-shell{padding:0 12px 20px}
-    #vybora .vy-studio-top{height:65px;gap:9px}
-    #vybora .vy-studio-brand b{font-size:18px}
-    #vybora .vy-studio-brand small{font-size:8px;letter-spacing:2px}
-    #vybora .vy-studio-pro{font-size:11px;padding:8px 10px}
-    #vybora .vy-studio-hero{min-height:340px;margin:12px -12px 20px;padding:25px 20px 180px;border-radius:0 0 21px 21px}
-    #vybora .vy-studio-hero h1{font-size:37px;max-width:340px;margin-top:13px}
-    #vybora .vy-studio-hero p{font-size:13px;max-width:260px}
-    #vybora .vy-hero-art{right:5%;top:auto;bottom:5px;width:65%;height:48%}
-    #vybora .vy-hero-symbol{width:100px;height:100px;font-size:65px;border-radius:28px}
-    #vybora .vy-orbit-one{width:160px;height:120px}#vybora .vy-orbit-two{width:120px;height:170px}
-    #vybora .vy-studio-feature-grid{grid-template-columns:1fr;gap:10px}
-    #vybora .vy-feature-card{min-height:116px;padding:14px}
-    #vybora .vy-feature-art{width:54px;height:54px;flex-basis:54px;font-size:31px}
-    #vybora .vy-feature-copy b{font-size:15px}
-    #vybora .vy-studio-mini-grid{gap:8px}
-    #vybora .vy-mini-card{padding:11px}
-    #vybora .vy-mini-card b{font-size:11px}
-    #vybora .vy-mini-card small{font-size:10px}
-    #vybora .vy-trend-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-    #vybora .vy-trend-tile{min-height:125px}
-    #vybora .vy-studio-bottom{margin:22px -12px -20px;border-radius:18px 18px 0 0}
-    #vybora .vy-studio-bottom button small{font-size:9px}
-   }
-  </style>
- </section>
+  <div class="nova-trend-head"><h2>🔥 Trending Now</h2><button onclick="window.location.href='/trend-hub.html'">See All ➜</button></div>
+  <div class="nova-trends">
+   <button onclick="openTool('poster')"><span>🌌</span><b>Neon Worlds</b><small>Visual trend</small></button>
+   <button onclick="openTool('product')"><span>🎨</span><b>Dream Art</b><small>Image trend</small></button>
+   <button onclick="openTool('video')"><span>🎬</span><b>Motion Magic</b><small>Video trend</small></button>
+   <button onclick="openTool('creative')"><span>🧚</span><b>Fantasy Tales</b><small>Story trend</small></button>
+   <button onclick="openTool('game')"><span>🎮</span><b>Game Worlds</b><small>Creator trend</small></button>
+  </div>
+  <nav class="nova-bottom" aria-label="VYBORA navigation">
+   <button class="selected" onclick="document.getElementById('vybora').scrollIntoView({behavior:'smooth'})"><span>⌂</span><small>Home</small></button>
+   <button onclick="openTool('creative')"><span>⌕</span><small>Explore</small></button>
+   <button class="nova-create" onclick="openTool('builder')" aria-label="Create">＋</button>
+   <button onclick="openTool('video')"><span>▣</span><small>My Creations</small></button>
+   <button onclick="show('settings')"><span>♙</span><small>Profile</small></button>
+  </nav>
+ </div>
+ <div id="vyHomeAuthMount" hidden></div>
+ <div id="vyCompatibilityMount" hidden>
+  <div id="vyCloudAuth"></div><div id="vyCloudFeed"></div><div id="vyStoriesCloud"></div><div id="vyPagePanel"></div><div id="vyFeed"></div>
+  <input id="vySearchInput" type="text"><div id="vyProfileAvatar"></div><div id="vyProfileName"></div>
+  <div id="vyPostCount"></div><div id="vyFollowingCount"></div><div id="vyFollowerCount"></div><div id="vySavedCount"></div>
+  <input id="vyVideoFile" type="file"><textarea id="vyCaptionInput"></textarea><div id="vyUploadStatus"></div>
+  <div id="vyAuthForm"></div><div id="vyAuthSignedIn"></div><div id="vyAuthUser"></div><div id="vyRecoveryForm"></div><div id="vyNewPassword"></div><div id="vyCloudStatus"></div><div id="vyAuthName"></div><div id="vyAuthEmail"></div><div id="vyAuthPassword"></div>
+ </div>
+ <style>
+ #vybora{background:#03020a;color:#fff;min-height:100vh;padding:0 0 88px}
+ #vybora .nova-app{max-width:1180px;margin:auto;padding:0 15px 20px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#210b42 0%,#080515 42%,#03020a 100%)}
+ #vybora .nova-top{height:76px;display:flex;align-items:center;gap:13px;border-bottom:1px solid #3b1d63}
+ #vybora .nova-top button{color:#fff;background:#130d25;border:1px solid #523078;border-radius:13px;padding:10px 13px}
+ #vybora .nova-menu{font-size:23px}.nova-brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+ #vybora .nova-logo{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;font-size:30px;color:white;background:linear-gradient(135deg,#00dfff,#742cff 55%,#ff20c8);box-shadow:0 0 22px #c32bff}
+ #vybora .nova-brand b{display:block;font-size:clamp(19px,3vw,29px);letter-spacing:2px;background:linear-gradient(90deg,#ff35d4,#a98aff,#48eaff);background-clip:text;color:transparent}
+ #vybora .nova-brand small{display:block;font-size:9px;letter-spacing:4px;color:#d7c7ff}
+ #vybora .nova-pro{border-color:#ffcf55!important;color:#ffe38a!important;border-radius:25px!important;font-weight:900}
+ #vybora .nova-bell{font-size:20px}
+ #vybora .nova-hero{position:relative;min-height:320px;margin:16px 0 17px;padding:38px 36% 35px 25px;overflow:hidden;border:1px solid #a33dff;border-radius:25px;background:radial-gradient(ellipse at 77% 50%,#f52bc766,transparent 33%),radial-gradient(ellipse at 82% 90%,#087dff99,transparent 42%),linear-gradient(115deg,#080415,#1b093b 58%,#07162e);box-shadow:0 0 30px #b82bff55,inset 0 0 30px #44208055}
+ #vybora .nova-hero-copy{position:relative;z-index:2}.nova-hero-copy>small{font-weight:900;letter-spacing:2px;color:#d9c3ff}
+ #vybora .nova-hero h1{font-size:clamp(34px,5vw,58px);line-height:1.02;margin:18px 0 3px;letter-spacing:-1.5px}
+ #vybora .nova-hero h1 em{font-style:italic;color:#ff38d1;text-shadow:0 0 20px #ed26ff}
+ #vybora .nova-hero p{font-size:25px;font-style:italic;margin:4px 0 15px;color:#f8d8ff}
+ #vybora .nova-hero-copy button{border:1px solid #ff79ed;border-radius:30px;padding:12px 24px;background:linear-gradient(90deg,#a80df4,#f322bf);color:#fff;font-weight:900;font-size:16px;box-shadow:0 0 24px #ec24d9}
+ #vybora .nova-hero-copy button b{margin-left:10px}
+ #vybora .nova-hero-art{position:absolute;right:7%;top:6%;width:36%;height:88%;display:grid;place-items:center}
+ #vybora .nova-glow-orb{width:min(220px,75%);aspect-ratio:1;border-radius:42% 58% 50% 50%;display:grid;place-items:center;font-size:110px;color:#ffe66b;background:radial-gradient(circle at 35% 30%,#ff9bfa,#9634ff 53%,#092e7d);border:2px solid #ff8bf7;box-shadow:0 0 35px #f32bdb,0 0 75px #155dff;text-shadow:0 0 25px white}
+ #vybora .nova-hero-art span,#vybora .nova-hero-art i{position:absolute;color:#fff17c;font-size:35px;text-shadow:0 0 17px #f0f}
+ #vybora .nova-hero-art span{top:5%;right:12%}#vybora .nova-hero-art i{bottom:7%;left:8%}
+ #vybora .nova-quality{position:absolute;right:15px;bottom:15px;display:grid;text-align:center;color:#ffdf68;font-size:15px}
+ #vybora .nova-quality b{font-size:35px;line-height:1.05}#vybora .nova-quality small{font-size:10px;color:#fff}
+ #vybora .nova-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ #vybora .nova-feature{position:relative;min-height:142px;display:flex;align-items:center;gap:14px;text-align:left;padding:17px;border:1px solid #24bfff;border-radius:22px;color:white;background:radial-gradient(circle at 90% 50%,#d528ff77,transparent 35%),linear-gradient(115deg,#08244c,#17104b 70%,#320e4c);box-shadow:0 0 17px #347cff66,inset 0 0 20px #9a30ff33;overflow:hidden}
+ #vybora .f-text{border-color:#268cff;background:linear-gradient(110deg,#052b51,#122b68 65%,#32105c)}
+ #vybora .f-generator{border-color:#e33cff;background:linear-gradient(110deg,#301047,#10204b 70%,#501052)}
+ #vybora .f-editor{border-color:#d342ff;background:linear-gradient(110deg,#211047,#073b61 65%,#42104d)}
+ #vybora .nova-art{flex:0 0 65px;width:65px;height:65px;display:grid;place-items:center;border-radius:17px;font-size:43px;font-weight:900;color:white;background:linear-gradient(145deg,#5a27db,#ed22c2);box-shadow:0 0 22px #d82cff}
+ #vybora .nova-feature>span:nth-child(2){display:grid;gap:7px;z-index:1}
+ #vybora .nova-feature b{font-size:18px}.nova-feature small{font-size:12px;color:#ded4f4}
+ #vybora .nova-feature i{font-style:normal;margin-left:auto;align-self:flex-end;flex:0 0 36px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#07071a;border:1px solid #a14cff;font-size:23px}
+ #vybora .nova-category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:13px}
+ #vybora .nova-category-grid button{min-height:118px;display:grid;grid-template-columns:42px 1fr;align-content:center;align-items:center;gap:5px 10px;text-align:left;padding:13px;border:1px solid #d53bdb;border-radius:19px;color:white;background:radial-gradient(circle at 85% 30%,#f52ac477,transparent 43%),linear-gradient(120deg,#290d39,#11183e)}
+ #vybora .nova-category-grid button:nth-child(2){border-color:#308dff;background:linear-gradient(120deg,#071d50,#26105b)}
+ #vybora .nova-category-grid button:nth-child(3){border-color:#a54dff;background:linear-gradient(120deg,#32104b,#101b45)}
+ #vybora .nova-category-grid span{grid-row:span 2;font-size:34px;color:#ff63e7;text-shadow:0 0 15px #f0f}
+ #vybora .nova-category-grid b{font-size:14px}.nova-category-grid small{font-size:11px;color:#e0d4f4}
+ #vybora .nova-trend-head{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 12px}
+ #vybora .nova-trend-head h2{font-size:23px;margin:0}
+ #vybora .nova-trend-head button{border:1px solid #c34bff;border-radius:22px;padding:8px 13px;background:#160c2b;color:white}
+ #vybora .nova-trends{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+ #vybora .nova-trends button{min-height:130px;display:flex;flex-direction:column;justify-content:end;align-items:flex-start;gap:5px;padding:12px;border:1px solid #328fff;border-radius:18px;color:white;text-align:left;background:radial-gradient(circle at 65% 28%,#ee32d888,transparent 48%),linear-gradient(145deg,#092c53,#24104a);box-shadow:0 0 14px #4c44ff55}
+ #vybora .nova-trends button:nth-child(even){border-color:#e342e8}
+ #vybora .nova-trends span{font-size:31px}.nova-trends b{font-size:12px}.nova-trends small{font-size:10px;color:#d6c9ed}
+ #vybora .nova-bottom{position:sticky;bottom:0;z-index:9;display:flex;align-items:center;justify-content:space-around;gap:4px;margin:24px -15px -20px;padding:9px 7px calc(9px + env(safe-area-inset-bottom));border:1px solid #652ca9;border-radius:24px 24px 0 0;background:#05030bed;backdrop-filter:blur(18px);box-shadow:0 -7px 30px #b32cff55}
+ #vybora .nova-bottom button{flex:1;min-width:0;display:grid;justify-items:center;gap:3px;padding:4px 1px;border:0;background:transparent;color:#d6c9f3}
+ #vybora .nova-bottom button span{font-size:25px;line-height:1}.nova-bottom small{font-size:10px}
+ #vybora .nova-bottom .selected{color:#ff62e7;text-shadow:0 0 14px #f0f}
+ #vybora .nova-bottom .nova-create{flex:0 0 58px;width:58px;height:58px;border-radius:50%;font-size:34px;color:#fff;background:linear-gradient(145deg,#ffd94e,#ff7626,#e72bc8);border:3px solid #a64cff;box-shadow:0 0 24px #ec2cff}
+ @media(max-width:650px){
+  #vybora{padding-bottom:72px}#vybora .nova-app{padding:0 10px 18px}
+  #vybora .nova-top{height:64px;gap:8px}#vybora .nova-logo{width:37px;height:37px}
+  #vybora .nova-pro{font-size:11px;padding:8px 9px!important}
+  #vybora .nova-hero{min-height:350px;margin:11px -10px 13px;padding:23px 18px 190px;border-radius:0 0 22px 22px}
+  #vybora .nova-hero h1{font-size:36px;max-width:290px;margin-top:13px}
+  #vybora .nova-hero p{font-size:20px}
+  #vybora .nova-hero-art{width:57%;height:52%;right:4%;top:auto;bottom:3%}
+  #vybora .nova-glow-orb{font-size:75px;width:130px}
+  #vybora .nova-quality{right:10px;bottom:12px}
+  #vybora .nova-feature-grid{grid-template-columns:1fr;gap:9px}
+  #vybora .nova-feature{min-height:118px;padding:13px}
+  #vybora .nova-art{width:55px;height:55px;flex-basis:55px;font-size:35px}
+  #vybora .nova-feature b{font-size:16px}
+  #vybora .nova-category-grid{gap:7px}
+  #vybora .nova-category-grid button{grid-template-columns:1fr;min-height:112px;padding:10px}
+  #vybora .nova-category-grid span{grid-row:auto;font-size:26px}
+  #vybora .nova-category-grid b{font-size:12px}
+  #vybora .nova-category-grid small{font-size:10px}
+  #vybora .nova-trends{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #vybora .nova-trends button{min-height:112px}
+  #vybora .nova-bottom{margin:20px -10px -18px}
+  #vybora .nova-bottom small{font-size:9px}
+ }
+ </style>
+</section>
  <section id="settings">
   <div class="page-title"><h2>⚙️ Settings & Backup</h2><p>Personalize FinFrame and keep a copy of your workspace data.</p></div>
   <div class="card"><h3>🎨 Appearance</h3><p>Switch between dark and light mode. Your choice is saved on this device.</p><div class="actions"><button onclick="setTheme('dark')">🌙 Dark Mode</button><button class="secondary-btn" onclick="setTheme('light')">☀️ Light Mode</button></div><p id="themeStatus" class="small" role="status">Choose the look you prefer.</p></div>
