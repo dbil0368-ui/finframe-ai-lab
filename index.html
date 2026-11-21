@@ -1529,7 +1529,6 @@ async function deleteFinFrameProject(){
  }catch(e){if(status)status.textContent='Delete failed: '+(e.message||'Please try again.');}
 }
 window.addEventListener('load',()=>refreshFinFrameProjects());
-if(window.vyClient)window.vyClient.auth.onAuthStateChange(()=>{refreshFinFrameProjects();});
 
 function clearProject(){
  $('projectName').value='';
@@ -2000,6 +1999,7 @@ function resetPreferences(){
  }
  const db=window.supabase.createClient(URL,KEY);
  window.vyClient=db;
+ db.auth.onAuthStateChange(()=>{refreshFinFrameProjects();});
  let currentUser=null, channel=null, recoveryMode=(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery');
  const el=id=>document.getElementById(id);
  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
