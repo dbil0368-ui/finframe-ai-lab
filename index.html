@@ -2606,5 +2606,34 @@ function resetPreferences(){
 </script>
 
 
+
+<style>
+#vyHomeAuthMount{position:fixed;top:12px;right:16px;z-index:2147483001}
+#vyHomeAuthMount .vy-home-login-trigger{border:1px solid #8063bd;border-radius:10px;padding:9px 14px;background:linear-gradient(120deg,#9b70ff,#ef6bcb);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 3px 14px #0005}
+#vyCloudAuth.vy-home-auth-open{display:block!important;position:fixed!important;top:58px!important;right:14px!important;z-index:2147483002!important;width:min(380px,calc(100vw - 24px))!important;max-height:calc(100vh - 76px)!important;overflow:auto!important}
+@media(max-width:650px){#vyHomeAuthMount{top:8px;right:10px}}
+</style>
+<script>
+(function(){
+ function setupHomeLogin(){
+  const mount=document.getElementById('vyHomeAuthMount'),panel=document.getElementById('vyCloudAuth');
+  if(!mount||!panel||mount.dataset.loginReady==='1')return;
+  mount.dataset.loginReady='1';
+  const button=document.createElement('button');button.type='button';button.className='vy-home-login-trigger';button.textContent='🔐 Log in / Sign up';
+  button.setAttribute('aria-controls','vyCloudAuth');button.setAttribute('aria-expanded','false');mount.appendChild(button);
+  const status=document.getElementById('vyCloudStatus');
+  if(status)status.textContent='Log in to sync your projects and use AI Virtual Try-On. Regular creative tools stay free.';
+  panel.style.display='none';
+  button.addEventListener('click',function(){
+   const open=!panel.classList.contains('vy-home-auth-open');
+   panel.style.display=open?'block':'none';panel.classList.toggle('vy-home-auth-open',open);
+   button.setAttribute('aria-expanded',open?'true':'false');button.textContent=open?'✕ Close login':'🔐 Log in / Sign up';
+  });
+  document.addEventListener('click',function(e){if(!mount.contains(e.target)&&!panel.contains(e.target)){panel.style.display='none';panel.classList.remove('vy-home-auth-open');button.setAttribute('aria-expanded','false');button.textContent='🔐 Log in / Sign up';}});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupHomeLogin,{once:true});else setupHomeLogin();
+})();
+</script>
+
 </body>
 </html>
