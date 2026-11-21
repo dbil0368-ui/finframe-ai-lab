@@ -2875,9 +2875,7 @@ function resetPreferences(){
    const instruction='Create a safe, original feature-film plan, not explicit content. Include logline, synopsis, main characters, beginning/middle/ending, scene-by-scene outline with approximate timings that add up to '+duration+' minutes, visual direction, animation notes, camera movement, dialogue samples, voice style, music and sound design. Keep romance non-explicit and age-appropriate. State clearly that this is a production plan, not a rendered video. Visual style: '+style+'. Requested resolution: '+quality+'. Additional notes: '+notes;
    const response=await fetch('./api/creator',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({topic:idea,format:'Feature film plan — '+duration+' minutes',audience:'General audience',language:language,mode:'screenplay',platform:'NOVA AI Studio',instruction:instruction})});
    const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'AI movie planning failed. Please try again.');
-   result.textContent='🎬 '+category+' · '+duration+' min · '+quality+'\
-\
-'+(data.brief||'No plan was returned.');
+   result.textContent='🎬 '+category+' · '+duration+' min · '+quality+String.fromCharCode(10,10)+(data.brief||'No plan was returned.');
   }catch(error){result.textContent='⚠️ '+(error.message||'Something went wrong.');}
   finally{button.disabled=false;button.textContent='✨ Generate AI Movie Plan';}
  });
