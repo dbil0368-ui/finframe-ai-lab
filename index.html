@@ -440,7 +440,7 @@ body.vybora-mode #vyCloudAuth{display:none!important}
 
 /* Small login control fixed to the upper-right corner on Home. */
 #vyHomeAuthMount{position:fixed;top:10px;right:14px;z-index:1999;width:auto;margin:0!important;padding:0!important}
-.vy-home-login-trigger{border:1px solid #68558f;border-radius:9px;padding:7px 13px;background:linear-gradient(120deg,#9b70ff,#ef6bcb);color:#fff;font-size:12px;font-weight:700;box-shadow:0 3px 14px #0005}
+body.vybora-mode #vyCloudAuth.vy-home-auth-open{display:block!important;position:fixed!important;top:58px!important;right:14px!important;z-index:2147483000!important;width:min(380px,calc(100vw - 24px))!important;margin:0!important}\n.vy-home-login-trigger{border:1px solid #68558f;border-radius:9px;padding:7px 13px;background:linear-gradient(120deg,#9b70ff,#ef6bcb);color:#fff;font-size:12px;font-weight:700;box-shadow:0 3px 14px #0005}
 @media(max-width:650px){#vyHomeAuthMount{top:8px;right:10px}.vy-home-login-trigger{padding:6px 11px;font-size:11px}}
 </style>
 </head>
@@ -1391,12 +1391,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   trigger.addEventListener('click',function(){
    const open=panel.style.display==='none';
    panel.style.display=open?'block':'none';
+   panel.classList.toggle('vy-home-auth-open',open);
    trigger.setAttribute('aria-expanded',open?'true':'false');
    trigger.textContent=open?'Close':'Log in';
   });
   document.addEventListener('click',function(event){
    if(!mount.contains(event.target)&&!panel.contains(event.target)){
-    panel.style.display='none';trigger.setAttribute('aria-expanded','false');trigger.textContent='Log in';
+    panel.style.display='none';panel.classList.remove('vy-home-auth-open');trigger.setAttribute('aria-expanded','false');trigger.textContent='Log in';
    }
   });
  }
