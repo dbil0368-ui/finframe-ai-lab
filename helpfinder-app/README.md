@@ -8,7 +8,8 @@ Standalone conversational AI web app in the `helpfinder-app` directory.
 - Browser-local conversation storage (not synced between devices)
 - Supabase email sign-in
 - Gemini responses with Google Search grounding and source links
-- Region and answer-language settings
+- Global country/region and free-text answer-language settings
+- Homepage entry points for relocation, jobs/study, travel, local services, translation, document guidance, digital/consumer help and everyday problem solving
 - Basic per-user request throttling (best effort per serverless instance)
 
 ## Deploy as a separate Vercel project
@@ -25,6 +26,10 @@ Do not put the Gemini API key in the HTML or commit it to GitHub. Add it only in
 ## Authentication
 
 The current frontend reuses an existing Supabase project's public publishable key for email authentication; it is not yet a separate Supabase project dedicated only to HelpFinder. The key is intended to be public; no Supabase secret/service-role key is used in the browser. For a fully isolated backend, create a dedicated Supabase project and replace the URL and publishable key in `index.html` and `api/helpfinder.js`.
+
+## Global product scope
+
+HelpFinder AI is intended for people in any country. The homepage categories are guided starting prompts, not separate verified databases or guaranteed service integrations. The assistant uses Gemini with Google Search grounding to research current questions; users should verify immigration, employment, education, travel, legal, financial and other high-impact requirements with official local sources. Country-specific availability and language quality can vary.
 
 ## Privacy and limits
 
