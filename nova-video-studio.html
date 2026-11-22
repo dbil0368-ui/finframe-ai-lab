@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090914"><title>NOVA Free Video Maker</title>
+<style>
+:root{color-scheme:dark;--bg:#090914;--panel:#151526;--line:#34334f;--muted:#aaa9c3;--accent:#9b70ff;--pink:#ef6bcb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f5f4ff;font:15px Arial,sans-serif}
+main{max-width:1080px;margin:auto;padding:22px 16px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+a,.btn{color:white;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#202039;cursor:pointer}
+h1{font-size:clamp(25px,4vw,36px);margin:8px 0}p,.muted{color:var(--muted);line-height:1.55}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+label{display:block;margin:12px 0 6px;color:#dedafa}input,textarea,select{width:100%;background:#0e0e1c;border:1px solid var(--line);border-radius:9px;color:white;padding:12px;font:inherit}
+textarea{min-height:100px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.primary{background:linear-gradient(120deg,var(--accent),var(--pink));border:0;font-weight:bold;padding:12px 17px}
+#preview{width:100%;display:block;background:#05050c;border-radius:12px;aspect-ratio:16/9}
+#status{min-height:22px;color:#d8c5ff;font-size:13px}.scene-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
+.scene{background:#101020;border:1px solid var(--line);padding:11px;border-radius:10px}.scene b{display:block;margin-bottom:5px}.scene small{color:var(--muted)}
+.note{font-size:12px}.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+@media(max-width:620px){.row{grid-template-columns:1fr}.panel{padding:14px}}
+</style></head>
+<body><main>
+<div class="top"><a href="./index.html">← Back to NOVA Studio</a><span class="muted">FREE • No API key • No credits</span></div>
+<h1>🎬 NOVA Free Video Maker</h1>
+<p>Create a simple animated storyboard video from your idea, preview it, and export a WebM video. Everything runs in your browser.</p>
+<section class="panel">
+<label for="idea">Your video idea</label><textarea id="idea" maxlength="500" placeholder="Example: A little robot explores a glowing forest and finds a friendly star..."></textarea>
+<div class="row"><div><label for="style">Visual theme</label><select id="style"><option value="dream">Dreamy fantasy</option><option value="space">Space adventure</option><option value="neon">Neon city</option><option value="nature">Nature story</option><option value="minimal">Minimal motion graphics</option></select></div>
+<div><label for="length">Video length</label><select id="length"><option value="15">15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div></div>
+<div class="controls"><button class="btn primary" id="make">✨ Create storyboard</button><button class="btn" id="play" disabled>▶ Preview animation</button><button class="btn primary" id="export" disabled>⬇ Export video</button></div>
+<p id="status" aria-live="polite">Enter an idea and create your storyboard.</p>
+</section>
+<section class="panel"><h2>Video preview</h2><canvas id="preview" width="1280" height="720"></canvas><p class="note">Export creates a silent WebM animation. It is not AI-generated footage; it uses original motion graphics and your scene text.</p></section>
+<section class="panel"><h2>Storyboard scenes</h2><div class="scene-list" id="scenes"><p class="muted">Your scenes will appear here.</p></div></section>
+</main>
+<script>
+(function(){
+const $=id=>document.getElementById(id),canvas=$('preview'),ctx=canvas.getContext('2d');
+let scenes=[],playing=false,raf=0,started=0,duration=15000;
+const palettes={dream:['#17113d','#9b70ff','#f6c8ff'],space:['#03091e','#3c8dff','#a9d9ff'],neon:['#170b2b','#ff4ecb','#66f5ff'],nature:['#092c2a','#53d69a','#d6f5a5'],minimal:['#171727','#a58bff','#f3f0ff']};
+function makeScenes(idea){
+const words=idea.trim().split(/\s+/).filter(Boolean),subject=words.slice(0,5).join(' ')||'A new adventure';
+const templates=[['The Beginning','A new idea comes to life'],['The Journey','The world begins to unfold'],['A Discovery','Something unexpected appears'],['The Big Moment','Everything comes together'],['The Ending','A bright new beginning']];
+return templates.map((t,i)=>({title:t[0],text:i===0?subject:t[1],index:i}));
+}
+function draw(time=0){
+const style=$('style').value,p=palettes[style],w=canvas.width,h=canvas.height;
+const t=(time%duration)/duration,idx=Math.min(scenes.length-1,Math.floor(t*scenes.length)),scene=scenes[idx]||{title:'NOVA',text:'Your story begins here',index:0};
+const local=(t*scenes.length)%1;
+const grad=ctx.createLinearGradient(0,0,w,h);grad.addColorStop(0,p[0]);grad.addColorStop(1,'#080813');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+for(let i=0;i<34;i++){const x=(i*173+Math.sin(time/1300+i)*35)%w,y=(i*97+Math.cos(time/1600+i)*25)%h;ctx.globalAlpha=.15+(i%5)*.09;ctx.fillStyle=p[2];ctx.beginPath();ctx.arc(x,y,2+(i%3),0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
+const cx=w/2,cy=h*.42,move=Math.sin(local*Math.PI*2)*30;
+ctx.shadowColor=p[1];ctx.shadowBlur=35;ctx.fillStyle=p[1];ctx.beginPath();ctx.arc(cx+move,cy,74+Math.sin(time/300)*5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+ctx.fillStyle=p[0];ctx.beginPath();ctx.arc(cx+move-22,cy-12,12,0,Math.PI*2);ctx.arc(cx+move+22,cy-12,12,0,Math.PI*2);ctx.fill();
+ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='bold 52px Arial';ctx.fillText(scene.title,cx,h*.68);
+ctx.fillStyle='#e5defa';ctx.font='28px Arial';const text=scene.text.length>75?scene.text.slice(0,72)+'…':scene.text;ctx.fillText(text,cx,h*.76);
+ctx.fillStyle='#bdb4d8';ctx.font='18px Arial';ctx.fillText('NOVA • SCENE '+(idx+1)+' / '+scenes.length,cx,h*.91);
+ctx.fillStyle='#ffffff33';ctx.fillRect(0,h-8,w,8);ctx.fillStyle=p[2];ctx.fillRect(0,h-8,w*t,8);
+}
+function stop(){playing=false;cancelAnimationFrame(raf)}
+function animate(now){if(!playing)return;const elapsed=now-started;if(elapsed>=duration){stop();draw(duration-1);$('status').textContent='Preview finished.';return}draw(elapsed);raf=requestAnimationFrame(animate)}
+$('make').addEventListener('click',()=>{const idea=$('idea').value.trim();if(!idea){$('status').textContent='Please enter a video idea first.';return}stop();scenes=makeScenes(idea);duration=Number($('length').value)*1000;$('scenes').innerHTML=scenes.map((s,i)=>'<div class="scene"><b>Scene '+(i+1)+': '+s.title+'</b><small>'+s.text.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</small></div>').join('');$('play').disabled=false;$('export').disabled=false;draw(0);$('status').textContent='Storyboard ready. Preview it or export your video.'});
+$('play').addEventListener('click',()=>{if(!scenes.length)return;stop();playing=true;started=performance.now();$('status').textContent='Playing preview…';raf=requestAnimationFrame(animate)});
+$('export').addEventListener('click',async()=>{if(!scenes.length)return;if(!canvas.captureStream||!window.MediaRecorder){$('status').textContent='Video export is not supported in this browser. Try a recent Chrome or Edge browser.';return}
+stop();const stream=canvas.captureStream(30);let mime='video/webm;codecs=vp9';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';let recorder;try{recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:4500000})}catch(e){$('status').textContent='Could not start video export in this browser.';return}
+const chunks=[];recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};recorder.onerror=()=>{$('status').textContent='Export failed. Please try again.'};recorder.onstop=()=>{const blob=new Blob(chunks,{type:'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='nova-storyboard-video.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);stream.getTracks().forEach(track=>track.stop());$('status').textContent='Your WebM video has been exported.'};
+$('status').textContent='Rendering video… please keep this tab open.';recorder.start();const start=performance.now();function frame(now){const elapsed=now-start;draw(Math.min(elapsed,duration-1));if(elapsed<duration)requestAnimationFrame(frame);else recorder.stop()}requestAnimationFrame(frame);
+});
+draw(0);
+})();
+</script></body></html>
