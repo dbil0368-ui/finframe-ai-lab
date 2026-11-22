@@ -55,7 +55,8 @@ export default async function handler(req, res) {
     const instruction = typeof body.instruction === "string" ? body.instruction.slice(0, 4000) : "";
     const platform = typeof body.platform === "string" ? body.platform.slice(0, 60) : "Multiple platforms";
     const isNovaMovie = platform === "NOVA AI Studio" && mode === "screenplay";
-    const maxOutputTokens = isNovaMovie ? 6000 : 850;
+    const isAdCopy = mode === "ad-copy";
+    const maxOutputTokens = isNovaMovie ? 6000 : isAdCopy ? 2400 : 850;
     const prompt = [
       "You are VYBORA Creator Studio, an ethical creator strategist. Create practical, original creator assets. Be specific, fresh, safe, and concise.",
       "Do not invent facts, statistics, quotes, or current events. If the topic needs verification, clearly mark claims to verify.",
