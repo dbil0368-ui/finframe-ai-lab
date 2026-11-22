@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     return send(res, 405, { error: "Use POST to search for a solution." });
   }
 
-  const token = String(req.headers.authorization || "").replace(/^Bearer\\s+/i, "");
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return send(res, 401, { error: "Sign in to use HelpFinder AI." });
 
   try {
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
       "For medical, legal, financial, or safety-sensitive questions, provide general information only, prioritize official sources, avoid personalized high-stakes instructions, and recommend an appropriate qualified adult/professional where relevant. For emergencies, tell the user to contact local emergency services.",
       "Never ask for passwords, one-time codes, payment card details, recovery codes, or other secrets. Do not encourage sharing private personal information.",
       "Keep the answer structured with short headings and numbered steps. Do not fabricate citations or write raw URLs in the answer; actual source links are provided separately by the application."
-    ].join("\\n");
+    ].join("\n");
 
     let lastError;
     for (const model of MODELS) {
@@ -87,7 +87,7 @@ export default async function handler(req, res) {
         }
 
         const candidate = data?.candidates?.[0];
-        const answer = (candidate?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\\n").trim();
+        const answer = (candidate?.content?.parts || []).map(part => typeof part.text === "string" ? part.text : "").join("\n").trim();
         if (!answer) return send(res, 502, { error: "The research service returned no answer. Please try again." });
 
         const metadata = candidate?.groundingMetadata || candidate?.grounding_metadata || {};
@@ -97,7 +97,7 @@ export default async function handler(req, res) {
         for (const chunk of chunks) {
           const web = chunk?.web || chunk?.webPage || chunk?.web_page;
           const uri = typeof web?.uri === "string" ? web.uri : "";
-          if (!uri || !/^https?:\\/\\//i.test(uri) || seen.has(uri)) continue;
+          if (!uri || !/^https?:\/\//i.test(uri) || seen.has(uri)) continue;
           seen.add(uri);
           sources.push({
             title: String(web.title || web.domain || "Web source").slice(0, 180),
