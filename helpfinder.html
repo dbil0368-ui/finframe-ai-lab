@@ -46,12 +46,12 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;pa
 </section>
 <div class="notice" id="notice" role="status">HelpFinder is an AI research helper, not a substitute for professional medical, legal, financial, or emergency assistance. Always verify important steps with the official provider.</div>
 <section class="results" id="results" aria-live="polite">
- <div class="panel result-card"><div class="result-head"><h2>Your researched answer</h2><span class="status" id="groundedStatus">Checking sources</span></div><div class="answer" id="answer"></div><div id="sourceWrap"><h3 style="font-size:13px;margin:12px 0">Sources used</h3><div class="sources" id="sources"></div></div><div id="queryWrap" hidden><h3 style="font-size:13px;margin:18px 0 9px">Searches used</h3><div class="query-list" id="queries"></div></div></div>
+ <div class="panel result-card"><div class="result-head"><h2>Your researched answer</h2><span class="status" id="groundedStatus">Checking sources</span></div><div class="answer" id="answer"></div><div id="sourceWrap"><h3 style="font-size:13px;margin:12px 0">Sources used</h3><div class="sources" id="sources"></div></div><div id="queryWrap" hidden><h3 style="font-size:13px;margin:18px 0 9px">Searches used</h3><div class="query-list" id="queries"></div></div><div id="searchWidgetWrap" hidden><h3 style="font-size:13px;margin:18px 0 9px">Google Search suggestions</h3><iframe id="searchWidget" title="Google Search suggestions" sandbox="allow-popups allow-popups-to-escape-sandbox" style="width:100%;height:170px;border:1px solid var(--line);border-radius:10px;background:white"></iframe></div></div>
 </section>
 <section class="features">
  <div class="panel feature"><strong>Source-backed answers</strong><span>See the pages used to research your question.</span></div>
  <div class="panel feature"><strong>Practical steps</strong><span>Clear actions, starting with free or low-cost options.</span></div>
- <div class="panel feature"><strong>Privacy-aware</strong><span>Your question is not saved as a public post or shared profile.</span></div>
+ <div class="panel feature"><strong>Privacy-aware</strong><span>Your question is sent to Gemini and Google Search for research, but is not shown publicly in HelpFinder.</span></div>
 </section>
 </main>
 <footer>HelpFinder AI · Early access preview · Always check important information with official sources.</footer>
@@ -106,7 +106,7 @@ async function solve(){
   (data.sources||[]).forEach(addSource);
   $("groundedStatus").textContent=data.grounded?"Web sources attached":"No source links returned";
   $("groundedStatus").style.background=data.grounded?"#e9f7f1":"#fff4df";$("groundedStatus").style.color=data.grounded?"#13795b":"#8a5b00";
-  if(Array.isArray(data.searchQueries)&&data.searchQueries.length){data.searchQueries.forEach(query=>{const pill=document.createElement("span");pill.className="query-pill";pill.textContent=query;$("queries").append(pill);});$("queryWrap").hidden=false;}
+  if(Array.isArray(data.searchQueries)&&data.searchQueries.length){data.searchQueries.forEach(query=>{const pill=document.createElement("span");pill.className="query-pill";pill.textContent=query;$("queries").append(pill);});$("queryWrap").hidden=false;}\n  if(data.searchWidgetHtml){$("searchWidget").srcdoc=data.searchWidgetHtml;$("searchWidgetWrap").hidden=false;}
   if(!data.grounded)setNotice("This answer did not return verifiable source links. Treat it as unverified and check an official source before acting.",true);
   else setNotice("Research complete. Open the source links to verify the steps before acting.");
   if(data.quota)$("quota").textContent="Daily searches: "+data.quota.used+" / "+data.quota.limit+" · "+data.quota.remaining+" remaining";
