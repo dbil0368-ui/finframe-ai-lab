@@ -5,24 +5,134 @@
 </style></head><body><main>
 <div class="top"><a href="./index.html">← Back to NOVA Studio</a><a href="./nova-video-studio.html">Open short video maker</a></div>
 <h1>🎬 NOVA 2-Hour Feature Film Builder</h1><p>Plan a full 120-minute film as a structured screenplay and scene-by-scene production plan. Runs in your browser; no API key or paid credits required.</p>
-<section class="panel"><h2>Film setup</h2><label for="title">Movie title</label><input id="title" maxlength="90" placeholder="e.g. The Last Star"><label for="idea">Story idea / premise</label><textarea id="idea" maxlength="1500" placeholder="Describe the hero, their goal, the world, and the main challenge..."></textarea><div class="row"><div><label for="genre">Genre</label><select id="genre"><option>Fantasy adventure</option><option>Science fiction</option><option>Mystery</option><option>Comedy adventure</option><option>Nature documentary</option><option>Family drama</option><option>Action adventure</option></select></div><div><label for="ending">Ending style</label><select id="ending"><option>Hopeful</option><option>Surprising</option><option>Emotional</option><option>Open-ended</option><option>Triumphant</option></select></div></div><div class="controls"><button class="btn primary" id="build">✨ Build 120-minute film plan</button><button class="btn" id="download" disabled>⬇ Export screenplay (.txt)</button></div><p id="status" aria-live="polite">Add a story idea to build your feature-film plan.</p></section>
+<section class="panel"><h2>Film setup</h2><label for="title">Movie title</label><input id="title" maxlength="90" value="The Last Horizon" placeholder="e.g. The Last Star"><label for="idea">Story idea / premise</label><textarea id="idea" maxlength="1500" placeholder="Describe the hero, their goal, the world, and the main challenge..."></textarea><div class="row"><div><label for="genre">Genre</label><select id="genre"><option>Science fiction</option><option>Science fiction romance</option><option>Mystery adventure</option><option>Fantasy adventure</option><option>Comedy adventure</option><option>Family drama</option><option>Action adventure</option></select></div><div><label for="ending">Ending style</label><select id="ending"><option>Hopeful</option><option>Surprising</option><option>Emotional</option><option>Open-ended</option><option>Triumphant</option></select></div></div><div class="controls"><button class="btn primary" id="build">✨ Build 120-minute film plan</button><button class="btn" id="download" disabled>⬇ Export screenplay (.txt)</button></div><p id="status" aria-live="polite">Add a story idea to build your feature-film plan.</p></section>
 <section class="panel"><h2>120-minute structure</h2><div class="stats"><div class="stat"><b id="minutes">120</b><span class="muted">Total minutes</span></div><div class="stat"><b id="sceneCount">120</b><span class="muted">Planned scenes</span></div><div class="stat"><b>3</b><span class="muted">Story acts</span></div></div><div class="bar" style="margin:14px 0"><span id="progress"></span></div><div class="acts"><div class="act"><b>ACT I · 0–30 min</b><p>Introduce the world, hero, goal and inciting event.</p></div><div class="act"><b>ACT II · 30–90 min</b><p>Escalating challenges, discoveries, setbacks and turning point.</p></div><div class="act"><b>ACT III · 90–120 min</b><p>Final confrontation, resolution and closing image.</p></div></div></section>
 <section class="panel"><div class="top"><h2>Scene-by-scene plan</h2><label style="margin:0;max-width:180px">Show scenes <select id="filter"><option value="all">All 120</option><option value="1">Act I</option><option value="2">Act II</option><option value="3">Act III</option></select></label></div><div class="scene-grid" id="scenes"><p class="muted">Your 120 scenes will appear here.</p></div></section>
-<section class="panel"><h2>Important note</h2><p class="note">This free tool creates a 120-minute film outline and screenplay text file. It does not generate two hours of finished cinematic footage or soundtrack. The short-video maker can export a brief animated storyboard sample; producing a full two-hour film requires creating and editing many separate shots and audio tracks. Keep this tab open while building or exporting the screenplay.</p></section>
+<section class="panel"><h2>Important note</h2><p class="note">This tool creates a 120-scene story-driven screenplay plan with scene descriptions and sample dialogue. It does not generate two hours of finished cinematic footage or soundtrack. The short-video maker can export a brief animated storyboard sample; producing a full two-hour film requires creating and editing many separate shots and audio tracks. Keep this tab open while building or exporting the screenplay.</p></section>
 </main><script>
 (function(){
 const $=id=>document.getElementById(id);let scenes=[];
-const beats=[
-['Opening image','Show the world and establish the visual tone.'],['Meet the hero','Introduce the main character and a defining choice.'],['Everyday world','Show relationships, routines and what may be lost.'],['The unusual event','A new problem disrupts the ordinary world.'],['First response','The hero reacts and tries a familiar solution.'],['A new clue','Reveal information that changes the goal.'],['Decision point','The hero chooses to enter the central adventure.'],['First obstacle','A meaningful challenge tests the plan.'],['New ally or rival','Introduce a character who changes the journey.'],['Act turning point','Raise the stakes and launch the next phase.'],['Rising challenge','Complicate the goal with a fresh obstacle.'],['Explore the new world','Reveal rules, locations and possibilities.'],['Small victory','Give the hero progress, with a cost.'],['Hidden complication','Expose a weakness in the original plan.'],['Relationship beat','Develop trust, conflict or understanding.'],['Midpoint discovery','Reveal a truth that reframes the mission.'],['Consequences','Show how the discovery affects everyone.'],['Pressure builds','Make the challenge harder and more urgent.'],['A plan goes wrong','Force the hero to adapt.'],['Lowest point','The goal seems out of reach; reassess priorities.'],['New understanding','The hero recognizes what must change.'],['Final preparation','Gather support and commit to the final plan.'],['Act turning point','Begin the decisive final movement.'],['Final approach','Bring the main characters toward the climax.'],['The confrontation','The central conflict reaches its peak.'],['Critical choice','The hero makes the defining decision.'],['Climax','Resolve the main conflict through action and choice.'],['Immediate aftermath','Show the direct consequences.'],['Resolution','Complete important character and story arcs.'],['Closing image','End with a memorable image that echoes the opening.']
+const story=[
+["A blue signal","A strange blue pulse appears above Earth. Aria notices its rhythm matches a repeating pattern in an old star map."],
+["The impossible message","Aria decodes three words hidden in the signal: FIND THE HORIZON. Mission control orders a full investigation."],
+["Meet the crew","Pilot Rian, engineer Leena and commander Dev prepare the research ship Asteria. Aria joins as the signal specialist."],
+["A promise at launch","As Earth shrinks behind them, Rian tells Aria that every mystery has an answer. She replies that some answers change everything."],
+["First signal echo","The ship receives a second pulse from beyond the Moon. Its source moves when the ship changes direction."],
+["A quiet observation","Rian and Aria watch Earth through the observation window. Their easy conversation reveals a growing friendship."],
+["Course correction","The signal suddenly shifts. Rian steers through a field of drifting ice while Aria recalculates the route."],
+["The silent beacon","They find an abandoned probe carrying the same symbol as the signal. Its memory contains a warning with missing data."],
+["A choice to continue","Mission control advises returning. Aria argues the warning may be the only clue to preventing a coming solar storm."],
+["Beyond the mapped route","Commander Dev approves a cautious detour. The Asteria crosses into an unexplored region of space."],
+["The glass moon","A small moon of translucent mineral reflects the signal. The crew detects a structure beneath its surface."],
+["Landing team","Aria, Rian and Leena descend in a survey craft. Rian checks Aria's suit seals before they step outside."],
+["A pattern underground","Inside the structure, Aria finds symbols arranged like a map of Earth's continents."],
+["The first chamber","A dormant console activates when Aria places her hand near it. A hologram shows a star system and a countdown."],
+["Trust under pressure","A tremor blocks the exit. Rian follows Aria's instructions and they guide Leena to safety together."],
+["The guardian recording","A recorded explorer explains that the blue signal is an automated warning system, not an invitation."],
+["A hidden destination","The hologram reveals a planet called Nysa, where a device can redirect the energy of the approaching solar storm."],
+["Disagreement","Dev worries the device could be dangerous. Aria believes the warning was sent so someone could reach it in time."],
+["A repaired transmitter","Leena restores the probe's damaged data. The missing section shows the storm reaching Earth in twelve days."],
+["Rian's confidence","Rian admits he is afraid of failing the crew. Aria says courage is choosing the next step despite uncertainty."],
+["A difficult burn","The ship's engine sputters during a course change. Rian performs a careful manual correction while Leena stabilizes power."],
+["The drifting garden","The crew discovers a field of floating seed-like lights. They are fragments of an ancient navigation network."],
+["A map in starlight","Aria links the fragments into a route. It points through a dangerous gravity corridor."],
+["A small celebration","The crew shares a meal after the successful calculation. Rian saves the last piece of fruit for Aria."],
+["The corridor","The Asteria enters the gravity corridor. Instruments spin wildly and the ship is pulled off course."],
+["Separated signals","Aria loses contact with the bridge while mapping the corridor from the science module."],
+["Rian's decision","Rian leaves the safe pilot station only after securing the ship on autopilot, then reaches Aria by the emergency passage."],
+["A narrow escape","Together they restore the science module's power and transmit their location to Leena."],
+["The cost of delay","The detour costs precious time. The solar storm countdown is now visible on every display."],
+["Arrival at Nysa","A blue planet fills the forward window. At its pole, a vast ring-shaped structure glows beneath the clouds."],
+["The lost civilization","The crew finds a landing platform and an archive describing the builders' attempt to protect distant worlds."],
+["The archive speaks","A calm artificial intelligence named ORA explains that the planetary device needs three power keys."],
+["Key one: memory","Aria solves a star puzzle in the archive hall. The first key appears as a crystal of light."],
+["Key two: balance","Rian and Leena align two rotating towers without damaging the ancient mechanism."],
+["Key three: trust","The final chamber responds only when the crew synchronizes their actions. They succeed by listening to each other."],
+["A troubling truth","ORA reveals the device can protect Earth, but its activation will permanently erase the archive."],
+["Aria's dilemma","Aria wants to preserve the builders' history. Dev reminds her that living people need their future too."],
+["A message from home","Mission control sends a video of the approaching storm. The crew sees the first effects in Earth's atmosphere."],
+["The observatory","Rian and Aria take a quiet moment beneath Nysa's transparent dome. Rian admits his feelings; Aria says she feels the same."],
+["A promise","They promise to return home together, while agreeing that the mission and the whole crew come first."],
+["The device awakens","The three keys activate the planetary ring. A route of light connects Nysa to Earth's sunward side."],
+["The hidden safeguard","ORA discovers an unknown lock in the system. The builders designed it to prevent careless activation."],
+["A new clue","Aria notices the lock matches the warning symbol from the abandoned probe."],
+["The missing equation","Leena finds the equation in the probe's final memory, but one variable is missing."],
+["Rian's insight","Rian realizes the variable is the ship's own navigation beacon. The Asteria must fly close to the ring."],
+["A risky approach","The crew guides the ship through the ring's outer field. Every movement must be timed precisely."],
+["The ring rejects them","A defensive pulse pushes the Asteria away. The ship loses part of its sensor array."],
+["Repair in orbit","Leena leads a careful repair while Aria recalculates the activation sequence."],
+["A disagreement returns","Dev wants to abort. Aria presents evidence that the storm will reach Earth before another mission can arrive."],
+["Crew vote","The crew chooses to continue together. Dev gives Rian permission to attempt the approach."],
+["The archive's farewell","ORA shares the builders' final recorded message: knowledge matters most when it protects life."],
+["The first activation attempt","The ring begins to glow, then shuts down. The missing variable is not a number but a synchronized signal."],
+["A shared rhythm","Aria uses the original blue pulse as a timing code. Rian matches the ship's beacon to it."],
+["The storm changes course","The ring redirects a small stream of energy, but the main solar storm remains on its path."],
+["The real purpose","ORA reveals the ring must be activated from a control station on Nysa's surface, not from orbit."],
+["A descent through clouds","The landing craft descends through luminous clouds toward the polar control station."],
+["The frozen staircase","The team crosses an icy bridge above a deep ravine. They secure one another with safety lines."],
+["A room of mirrors","Mirrors project possible outcomes of the activation. Aria sees Earth safe in one vision, but the path is unclear."],
+["The archive's condition","The control room requires a human operator to stay until the sequence is complete."],
+["Dev's plan","Dev volunteers, but Aria finds a way to distribute the controls across three stations."],
+["A better solution","The crew tests the distributed sequence. It works for a few seconds before the system overheats."],
+["A moment of doubt","Aria worries that her decision has put everyone at risk. Rian reminds her they are solving it as a team."],
+["The storm arrives early","Earth's solar observatories report the storm has accelerated. The crew has hours, not days."],
+["The final equation","Leena completes the missing calculation using the probe's last data packet."],
+["Return to the ring","The team travels back to the ring with the equation and the three keys."],
+["A damaged landing craft","A landing strut fails during takeoff. Rian makes a controlled emergency landing near the ring."],
+["No easy route","The crew must carry the keys across the outer platform while the ring's energy field flickers."],
+["Aria's discovery","Aria realizes the three keys represent memory, balance and trust—the principles needed to operate the system."],
+["A plan for everyone","She assigns one key to each crew member and keeps the timing sequence herself."],
+["Rian's confession, again","Rian says he is glad he met Aria, whatever happens. She answers that their story is not finished."],
+["The control platform","The crew reaches the platform as the sky above Nysa fills with blue light."],
+["First key engaged","Leena places the memory key. The archive begins transferring its final records."],
+["Second key engaged","Dev aligns the balance key. The ring steadies and points toward Earth's sun."],
+["Third key engaged","Rian places the trust key. The platform opens to reveal the central control."],
+["The countdown","Aria starts the sequence. The display warns that any interruption will reset the alignment."],
+["A power surge","A surge knocks out the platform lights. The crew switches to manual indicators."],
+["Rian holds the signal","Rian keeps the navigation beacon steady while Leena restores the power channel."],
+["Aria's calculation","Aria adjusts the timing by seconds, using the pulse pattern she first decoded on Earth."],
+["The system answers","The ring responds with a deep wave of light. A path begins forming toward the Sun."],
+["The final obstacle","A section of the ring remains dark. The archive says one relay must be reset outside the control room."],
+["Dev takes the relay","Dev reaches the relay station and restores its connection, allowing the sequence to continue."],
+["The price of knowledge","ORA begins shutting down as the archive transfers its last records to the Asteria."],
+["A farewell to ORA","Aria thanks ORA for trusting them. ORA replies that the future now belongs to the living."],
+["The ring fully awakens","The planetary ring sends a controlled energy wave toward the Sun, redirecting the storm away from Earth."],
+["Confirmation from home","Mission control confirms the storm's path is changing. Earth is no longer in the direct danger zone."],
+["A second signal","A new pulse appears from deep space, suggesting other warning stations may exist."],
+["The way home","The Asteria prepares to leave Nysa. The crew carries the archive's final record safely aboard."],
+["A quiet observation","Aria and Rian watch Nysa recede. They speak about the promise they made and the home waiting for them."],
+["A navigation fault","The ship's damaged sensor array cannot lock onto the return route."],
+["Leena's workaround","Leena uses the archived star map to build a temporary navigation grid."],
+["A course through starlight","Rian guides the Asteria through the mapped corridor while Aria monitors the signal."],
+["A final test","A field of drifting fragments blocks the route. The crew coordinates small corrections to pass safely."],
+["Earth in view","The blue curve of Earth appears ahead. The crew celebrates, tired but relieved."],
+["A warm welcome","Mission control welcomes the Asteria and confirms the solar storm has passed without catastrophic impact."],
+["Landing preparations","The crew checks every system for re-entry. Rian asks Aria if she is ready to go home."],
+["The last descent","The ship enters the atmosphere, glowing against the morning sky."],
+["Safe touchdown","The Asteria lands safely. The crew steps out to applause from the recovery team."],
+["A promise kept","Aria and Rian meet beneath the open sky. They hold hands, grateful to be home together."],
+["The world's response","Scientists announce that the Nysa ring protected Earth and share the first verified images of the discovery."],
+["The archive preserved","Leena presents the recovered records to a global research team, ensuring the builders' knowledge survives."],
+["A new beginning","Dev announces a peaceful international mission to study the other warning stations."],
+["Rian's small surprise","Rian gives Aria a small star map marking the route they travelled. She adds Earth's location beside it."],
+["A quiet day on Earth","The crew visits an observatory and watches the night sky without alarms or countdowns."],
+["The next horizon","Aria receives a new harmless signal from another distant beacon. This time, the crew can answer."],
+["Closing image","Aria and Rian stand together beneath the stars as the camera rises toward the vast horizon. Their journey is over, but discovery continues."]
+];
+const dialogue=[
+["ARIA: “That signal is trying to tell us something.”","RIAN: “Then let's listen carefully.”"],
+["RIAN: “You don't have to solve everything alone.”","ARIA: “I know. I'm learning to trust the crew.”"],
+["ARIA: “We made it because we worked together.”","RIAN: “And because you never gave up.”"],
+["RIAN: “I want to come home with you.”","ARIA: “Then let's make sure all of us get home.”"]
 ];
 function build(){
 const idea=$('idea').value.trim();if(!idea){$('status').textContent='Please enter your story idea first.';return}
 const title=$('title').value.trim()||'Untitled Feature Film',genre=$('genre').value,ending=$('ending').value;
-scenes=[];for(let i=0;i<120;i++){const act=i<30?1:i<90?2:3;const beat=beats[(i%30)];let detail=beat[1];if(i===0)detail='Establish the setting for: '+idea;if(i===29)detail='The hero commits to the central journey: '+idea;if(i===59)detail='Midpoint revelation reshapes the story: '+idea;if(i===89)detail='A decisive setback leads into the final act.';if(i===119)detail='Close the story with a '+ending.toLowerCase()+' ending.';scenes.push({n:i+1,act,start:i,end:i+1,name:beat[0],detail:detail,genre:genre})}
-$('minutes').textContent='120';$('sceneCount').textContent='120';$('progress').style.width='100%';$('download').disabled=false;render();$('status').textContent='120-minute plan created: 120 one-minute scene cards across 3 acts.';
+scenes=story.map((item,i)=>({n:i+1,act:i<30?1:i<90?2:3,start:i,end:i+1,name:item[0],detail:item[1],dialogue:dialogue[i%dialogue.length]}));
+$('minutes').textContent='120';$('sceneCount').textContent='120';$('progress').style.width='100%';$('download').disabled=false;render();$('status').textContent='Complete story-driven plan created: 120 distinct scenes with character moments and dialogue.';
 }
-function render(){const f=$('filter').value;const list=scenes.filter(s=>f==='all'||String(s.act)===f);$('scenes').innerHTML=list.map(s=>'<article class="scene"><b>Scene '+s.n+' · '+s.start+'–'+s.end+' min</b><small>Act '+s.act+' · '+s.name+'<br>'+s.detail+'</small></article>').join('')}
-function screenplay(){const title=$('title').value.trim()||'Untitled Feature Film';const lines=[title.toUpperCase(),'120-MINUTE FEATURE FILM PLAN','Genre: '+$('genre').value,'Ending: '+$('ending').value,'','STORY PREMISE',$('idea').value.trim(),'','ACT I — SETUP (0–30 MIN)','ACT II — CONFRONTATION (30–90 MIN)','ACT III — RESOLUTION (90–120 MIN)',''];scenes.forEach(s=>lines.push('SCENE '+String(s.n).padStart(3,'0')+' | MINUTE '+s.start+'–'+s.end+' | ACT '+s.act,s.name.toUpperCase(),s.detail,'',''));return lines.join('\n')}
-$('build').addEventListener('click',build);$('filter').addEventListener('change',render);$('download').addEventListener('click',()=>{const blob=new Blob([screenplay()],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='nova-120-minute-feature-film.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);$('status').textContent='Screenplay text file exported.'});
+function render(){const f=$('filter').value;const list=scenes.filter(s=>f==='all'||String(s.act)===f);$('scenes').innerHTML=list.map(s=>'<article class="scene"><b>Scene '+s.n+' · '+s.start+'–'+s.end+' min</b><small>Act '+s.act+' · '+s.name+'<br>'+s.detail+'<br><br><strong>'+s.dialogue.join('<br>')+'</strong></small></article>').join('')}
+function screenplay(){const title=$('title').value.trim()||'Untitled Feature Film';const lines=[title.toUpperCase(),'120-MINUTE STORY-DRIVEN FEATURE SCREENPLAY PLAN','Genre: '+$('genre').value,'Ending: '+$('ending').value,'','STORY PREMISE',$('idea').value.trim(),'','ACT I — SETUP (0–30 MIN)','ACT II — CONFRONTATION (30–90 MIN)','ACT III — RESOLUTION (90–120 MIN)',''];scenes.forEach(s=>lines.push('SCENE '+String(s.n).padStart(3,'0')+' | MINUTE '+s.start+'–'+s.end+' | ACT '+s.act,s.name.toUpperCase(),s.detail,...s.dialogue,'',''));return lines.join('\n')}
+$('build').addEventListener('click',build);$('filter').addEventListener('change',render);$('download').addEventListener('click',()=>{const blob=new Blob([screenplay()],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='nova-120-minute-feature-film.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);$('status').textContent='Story-driven screenplay exported.'});
 })();
 </script></body></html>
