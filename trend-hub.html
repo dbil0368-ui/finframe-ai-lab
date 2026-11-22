@@ -262,6 +262,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
  <div class="brand"><div class="brand-name"><div class="mark">✦</div><div>VYBORA<small>TREND & CREATOR LAB</small></div></div><button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button></div>
  <nav class="nav" id="mainNav" aria-label="Main navigation">
   <button data-view="billing">₹ &nbsp; Plans & Billing</button>
+  <button data-view="ads">📣 &nbsp; AI Ads Studio</button>
   <button type="button" id="menuCreatorLogin">♙ &nbsp; Creator Login / My Account</button>
   <div class="menu-settings">
    <div class="menu-settings-title">Make VYBORA yours · Appearance</div>
@@ -277,6 +278,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
 <nav class="bottom-nav" id="bottomNav" aria-label="Workspace navigation">
  <button type="button" data-view="trends"><span class="bottom-nav-icon">↗</span><span class="bottom-nav-label">Trend Radar</span></button>
  <button type="button" data-view="studio"><span class="bottom-nav-icon">✧</span><span class="bottom-nav-label">Creator Studio</span></button>
+ <button type="button" data-view="ads"><span class="bottom-nav-icon">📣</span><span class="bottom-nav-label">AI Ads</span></button>
  <button type="button" data-view="planner"><span class="bottom-nav-icon">▦</span><span class="bottom-nav-label">Content Planner</span></button>
  <button type="button" data-view="creatorKit"><span class="bottom-nav-icon">✦</span><span class="bottom-nav-label">Creator Kit</span></button>
  <a class="bottom-social-link" href="/" target="_blank" rel="noopener noreferrer" aria-label="Open VYBORA Social"><span class="bottom-nav-icon">♡</span><span class="bottom-nav-label">VYBORA Social</span></a>
@@ -297,6 +299,7 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
    <div class="tools">
     <article class="tool-card"><div class="tool-icon">🔥</div><h3>Trend Radar</h3><p>Explore recent search trends by country, then turn a topic into an original content idea.</p><button class="ghost" data-go="trends">Open Trend Radar →</button></article>
     <article class="tool-card"><div class="tool-icon">✍️</div><h3>Creator Studio</h3><p>Shape a topic into a hook, short-form video outline and caption draft.</p><button class="ghost" data-go="studio">Open Studio →</button></article>
+    <article class="tool-card"><div class="tool-icon">📣</div><h3>AI Ads Studio</h3><p>Create campaign-ready ad copy, headlines and calls-to-action for international audiences.</p><button class="ghost" data-go="ads">Create an ad →</button></article>
     <article class="tool-card"><div class="tool-icon">🗓️</div><h3>Content Planner</h3><p>Save ideas to your account, set publishing dates and track your content calendar.</p><button class="ghost" data-go="planner">Open Planner →</button></article>
     <article class="tool-card"><div class="tool-icon">🎨</div><h3>Creator Kit</h3><p>Save your niche, platforms, language and creator voice as a reusable personal brand profile.</p><button class="ghost" data-go="creatorKit">Set up Creator Kit →</button></article>
     <article class="tool-card"><div class="tool-icon">🧭</div><h3>Our direction</h3><p>Independent creator intelligence—not an Instagram clone. Original identity, tools and workflow.</p><span class="tag">BUILDING IN PUBLIC</span></article>
@@ -321,6 +324,27 @@ body[data-vybora-theme="rose"]{--violet:#d58ac1;--cyan:#f0a8c8;--pink:#ff9bc8}
     <article class="tool-card"><div class="tool-icon">#️⃣</div><h3>Caption & Hashtag AI</h3><p>Create platform-friendly captions, calls to action and relevant hashtags.</p><button class="primary growth-generate" type="button" data-growth-mode="caption">Create caption ✦</button><div class="result growth-result" id="growthCaption" aria-live="polite"></div></article>
    </div>
    <div class="notice">Creator Studio uses a secure, server-side Google Gemini API connection. Your topic is sent securely for brief generation. API credentials are kept server-side and are never stored in this page.</div>
+  </section>
+  <section class="view" id="ads">
+   <div class="eyebrow">Campaign copy for global creators</div><h1 class="heading">AI Ads Studio</h1>
+   <p class="sub">Create original ad concepts, headlines, primary text and calls-to-action for your chosen market. Review every claim before publishing.</p>
+   <div class="panel" style="max-width:860px;margin-top:22px">
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 14px">
+     <div><label for="adProduct"><b>Product or service</b></label><input class="field" id="adProduct" placeholder="e.g. reusable insulated water bottle"></div>
+     <div><label for="adCountry"><b>Target country</b></label><select class="field" id="adCountry"><option>United States</option><option>United Kingdom</option><option>Canada</option><option>Australia</option><option>Germany</option><option>France</option><option>India</option><option>Singapore</option><option>Japan</option><option>Global / English-speaking</option></select></div>
+     <div><label for="adPlatform"><b>Ad platform</b></label><select class="field" id="adPlatform"><option>Facebook & Instagram</option><option>TikTok</option><option>YouTube</option><option>Google Search</option><option>LinkedIn</option><option>Multiple platforms</option></select></div>
+     <div><label for="adGoal"><b>Campaign goal</b></label><select class="field" id="adGoal"><option>Website visits</option><option>Product awareness</option><option>Leads / enquiries</option><option>App installs</option><option>Online sales</option><option>Event registrations</option></select></div>
+     <div><label for="adAudience"><b>Target audience</b></label><input class="field" id="adAudience" placeholder="e.g. busy students and commuters"></div>
+     <div><label for="adTone"><b>Ad tone</b></label><select class="field" id="adTone"><option>Clear and trustworthy</option><option>Friendly and upbeat</option><option>Premium and polished</option><option>Bold and energetic</option><option>Warm and story-led</option></select></div>
+     <div><label for="adLanguage"><b>Ad language</b></label><select class="field" id="adLanguage"><option>English</option><option>Spanish</option><option>French</option><option>German</option><option>Hindi</option><option>বাংলা</option><option>Japanese</option></select></div>
+     <div><label for="adOffer"><b>Offer or key details (optional)</b></label><input class="field" id="adOffer" placeholder="e.g. free shipping over $40"></div>
+    </div>
+    <label for="adBenefits"><b>What makes it useful? (features / benefits)</b></label>
+    <textarea class="field" id="adBenefits" style="margin:8px 0 14px" placeholder="Add only details you can verify. Avoid unsupported promises or claims."></textarea>
+    <button class="primary" id="generateAd" type="button">Generate 3 ad concepts ✦</button>
+    <div class="result" id="adResult" aria-live="polite"></div>
+   </div>
+   <div class="notice">AI Ads Studio creates draft advertising text only. It does not create images, buy ad placements, or publish campaigns. Check platform policies, local advertising rules, prices, offers and product claims before using an ad.</div>
   </section>
   <section class="view" id="planner">
    <div class="eyebrow">Make ideas happen</div><h1 class="heading">Content Planner</h1><p class="sub">Save ideas, set publishing dates and keep your content schedule in one place.</p>
@@ -524,7 +548,7 @@ document.querySelectorAll(".growth-generate").forEach(button=>button.addEventLis
  finally{button.disabled=false;button.textContent=original}
 }));
 
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button,.bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",planner:"Content Planner",creatorKit:"Creator Kit",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));document.querySelectorAll(".nav button,.bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));document.getElementById("crumb").textContent=({overview:"Overview",trends:"Trend Radar",studio:"Creator Studio",ads:"AI Ads Studio",planner:"Content Planner",creatorKit:"Creator Kit",billing:"Plans & Billing"})[id];window.scrollTo({top:0,behavior:"smooth"})}
 const requestedView=new URLSearchParams(window.location.search).get("view");if(requestedView==="billing")show("billing");
 
 const mobileMenuToggle=document.getElementById("mobileMenuToggle");
@@ -552,6 +576,37 @@ document.querySelectorAll("#mainNav [data-view]").forEach(button=>button.addEven
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
 document.querySelectorAll("#trendFilters button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#trendFilters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderTrends(b.dataset.filter)}));
+
+document.getElementById("generateAd").addEventListener("click",async()=>{
+ const product=document.getElementById("adProduct").value.trim();
+ const country=document.getElementById("adCountry").value;
+ const platform=document.getElementById("adPlatform").value;
+ const goal=document.getElementById("adGoal").value;
+ const audience=document.getElementById("adAudience").value.trim()||"Relevant consumers in "+country;
+ const tone=document.getElementById("adTone").value;
+ const language=document.getElementById("adLanguage").value;
+ const offer=document.getElementById("adOffer").value.trim();
+ const benefits=document.getElementById("adBenefits").value.trim();
+ const box=document.getElementById("adResult"),button=document.getElementById("generateAd");
+ if(!product){box.classList.add("show");box.textContent="Enter a product or service first.";document.getElementById("adProduct").focus();return}
+ if(!benefits&&!offer){box.classList.add("show");box.textContent="Add at least one real feature, benefit or offer so the ad can be specific and accurate.";document.getElementById("adBenefits").focus();return}
+ button.disabled=true;button.textContent="Creating ad concepts…";box.classList.add("show");box.textContent="VYBORA AI is drafting your campaign…";
+ try{
+  const {data:sessionData}=await supabaseClient.auth.getSession();
+  const accessToken=sessionData.session?.access_token;
+  if(!accessToken)throw new Error("Please sign in to use AI Ads Studio.");
+  const instruction="Create exactly 3 distinct, original advertising concepts for the product/service. For EACH concept include: concept angle, 5-9 word headline, primary ad text, short description, one clear CTA, and a short visual direction for a human designer. Tailor copy to the selected country, platform, campaign goal, audience and tone. Product/service: "+product+". Verified features/benefits supplied by user: "+(benefits||"Not supplied")+". Offer supplied by user: "+(offer||"No offer supplied")+". Target country: "+country+". Campaign goal: "+goal+". Tone: "+tone+". Do not invent discounts, prices, reviews, certifications, guarantees, performance statistics, scarcity, health/financial outcomes or product capabilities. If a claim cannot be supported by supplied details, omit it or label it [VERIFY BEFORE USE]. Do not promise ad approval or campaign results. Keep the concepts meaningfully different and ready for review.";
+  const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic:product,format:"3 "+platform+" ad concepts",audience,language,mode:"ad-copy",instruction,platform})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"AI ad generation failed.");
+  const output=String(data.brief||"");
+  box.innerHTML='<b>VYBORA AI Ads · '+escapeText(country)+' · '+escapeText(platform)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.7">'+escapeText(output)+'</div><div class="growth-actions"><button class="ghost" type="button" data-ad-copy>Copy all 3 concepts</button><button class="ghost" type="button" data-ad-save>Save to Planner</button></div><p class="muted" style="font-size:11px">AI draft only · Verify claims and platform requirements before publishing.</p>';
+  box.querySelector("[data-ad-copy]").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(output);box.querySelector("[data-ad-copy]").textContent="Copied ✓"}catch(e){box.querySelector("[data-ad-copy]").textContent="Copy unavailable"}});
+  box.querySelector("[data-ad-save]").addEventListener("click",async()=>{await saveIdea(product,"AI Ad · "+platform,output);show("planner")});
+ }catch(error){box.textContent=error.message}
+ finally{button.disabled=false;button.textContent="Generate 3 ad concepts ✦"}
+});
+
 document.getElementById("generate").addEventListener("click",async()=>{const topic=document.getElementById("topic").value.trim();const format=document.getElementById("format").value;const audience=document.getElementById("audience").value.trim()||"curious viewers";const box=document.getElementById("brief");const btn=document.getElementById("generate");if(!topic){box.classList.add("show");box.textContent="Please enter a topic first.";return}btn.disabled=true;btn.textContent="Creating your brief…";box.classList.add("show");box.textContent="VYBORA AI is shaping your idea…";try{const {data:sessionData}=await supabaseClient.auth.getSession();const accessToken=sessionData.session?.access_token;if(!accessToken)throw new Error("Please sign in to use AI generation.");const response=await fetch("/api/creator",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json",Authorization:"Bearer "+accessToken},body:JSON.stringify({topic,format,audience,language:"English"})});const data=await response.json();if(!response.ok)throw new Error(data.error||"AI generation failed.");const brief=String(data.brief||"");box.innerHTML='<b>VYBORA AI Creative Brief · '+escapeText(format)+'</b><div class="idea" style="white-space:pre-wrap;line-height:1.65">'+escapeText(brief)+'</div><button class="ghost" id="saveBrief" style="margin-top:12px">Save this idea to Planner</button>';document.getElementById("saveBrief").addEventListener("click",async()=>{await saveIdea(topic,format,brief);show("planner")})}catch(error){box.innerHTML='<b>Creator Studio</b><div class="idea">'+escapeText(error.message)+'</div><p class="muted">Your idea is safe. Please check the Gemini API Preview configuration and try again.</p>'}finally{btn.disabled=false;btn.textContent="Generate with VYBORA AI ✦"}});
 function escapeText(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function getPlans(){try{return JSON.parse(localStorage.getItem("vybora_creator_plans")||"[]")}catch(e){return []}}
