@@ -52,8 +52,10 @@ export default async function handler(req, res) {
     if (!topic) return send(res, 400, { error: "Please enter a topic." });
 
     const mode = typeof body.mode === "string" ? body.mode.slice(0, 30) : "brief";
-    const instruction = typeof body.instruction === "string" ? body.instruction.slice(0, 1200) : "";
+    const instruction = typeof body.instruction === "string" ? body.instruction.slice(0, 4000) : "";
     const platform = typeof body.platform === "string" ? body.platform.slice(0, 60) : "Multiple platforms";
+    const isNovaMovie = platform === "NOVA AI Studio" && mode === "screenplay";
+    const maxOutputTokens = isNovaMovie ? 6000 : 850;
     const prompt = [
       "You are VYBORA Creator Studio, an ethical creator strategist. Create practical, original creator assets. Be specific, fresh, safe, and concise.",
       "Do not invent facts, statistics, quotes, or current events. If the topic needs verification, clearly mark claims to verify.",
@@ -70,7 +72,7 @@ export default async function handler(req, res) {
           const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
             method: "POST",
             headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-            body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 850 } }),
+            body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens } }),
             signal: AbortSignal.timeout(75000)
           });
           const data = await response.json().catch(() => ({}));
