@@ -72,7 +72,7 @@ export default async function handler(req, res) {
           headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
           body: JSON.stringify({
             contents: [{ role: "user", parts: [{ text: prompt }] }],
-            tools: [{ google_search: {} }],
+            tools: [{ googleSearch: {} }],
             generationConfig: { temperature: 1, maxOutputTokens: 1800 }
           }),
           signal: AbortSignal.timeout(75000)
@@ -106,6 +106,7 @@ export default async function handler(req, res) {
           });
         }
         const queries = metadata.webSearchQueries || metadata.web_search_queries || [];
+        const searchWidgetHtml = metadata.searchEntryPoint?.renderedContent || metadata.search_entry_point?.rendered_content || "";
         const usageResponse = await fetch(SUPABASE_URL + "/rest/v1/rpc/consume_vybora_ai_generation", {
           method: "POST",
           headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
@@ -125,6 +126,7 @@ export default async function handler(req, res) {
           answer,
           sources,
           searchQueries: Array.isArray(queries) ? queries.slice(0, 6) : [],
+          searchWidgetHtml: typeof searchWidgetHtml === "string" ? searchWidgetHtml.slice(0, 30000) : "",
           grounded: sources.length > 0,
           quota: { plan: planKey, used: usage.used, limit: dailyLimit, remaining: usage.remaining }
         });
