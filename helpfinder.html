@@ -106,7 +106,8 @@ async function solve(){
   (data.sources||[]).forEach(addSource);
   $("groundedStatus").textContent=data.grounded?"Web sources attached":"No source links returned";
   $("groundedStatus").style.background=data.grounded?"#e9f7f1":"#fff4df";$("groundedStatus").style.color=data.grounded?"#13795b":"#8a5b00";
-  if(Array.isArray(data.searchQueries)&&data.searchQueries.length){data.searchQueries.forEach(query=>{const pill=document.createElement("span");pill.className="query-pill";pill.textContent=query;$("queries").append(pill);});$("queryWrap").hidden=false;}\n  if(data.searchWidgetHtml){$("searchWidget").srcdoc=data.searchWidgetHtml;$("searchWidgetWrap").hidden=false;}
+  if(Array.isArray(data.searchQueries)&&data.searchQueries.length){data.searchQueries.forEach(query=>{const pill=document.createElement("span");pill.className="query-pill";pill.textContent=query;$("queries").append(pill);});$("queryWrap").hidden=false;}
+  if(data.searchWidgetHtml){$("searchWidget").srcdoc=data.searchWidgetHtml;$("searchWidgetWrap").hidden=false;}
   if(!data.grounded)setNotice("This answer did not return verifiable source links. Treat it as unverified and check an official source before acting.",true);
   else setNotice("Research complete. Open the source links to verify the steps before acting.");
   if(data.quota)$("quota").textContent="Daily searches: "+data.quota.used+" / "+data.quota.limit+" · "+data.quota.remaining+" remaining";
