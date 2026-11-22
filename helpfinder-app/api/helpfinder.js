@@ -1,4 +1,4 @@
-const MODELS = (process.env.GEMINI_MODEL || "gemini-3.5-flash-lite,gemini-3.1-flash-lite")
+const MODELS = (process.env.GEMINI_MODEL || "gemini-2.5-flash,gemini-2.5-flash-lite")
   .split(",").map(value => value.trim()).filter(Boolean);
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
@@ -30,22 +30,25 @@ export default async function handler(req, res) {
 
     const body = req.body || {};
     const question = typeof body.question === "string" ? body.question.trim().slice(0, 1200) : "";
+    const history = Array.isArray(body.history) ? body.history.slice(-10).map(item => ({ role: item?.role === "assistant" ? "model" : "user", text: typeof item?.content === "string" ? item.content.slice(0, 3000) : "" })).filter(item => item.text) : [];
     const region = typeof body.region === "string" ? body.region.slice(0, 60) : "Global";
     const language = typeof body.language === "string" ? body.language.slice(0, 40) : "English";
     if (question.length < 8) return send(res, 400, { error: "Please describe the problem in a little more detail." });
 
-    const prompt = [
-      "You are HelpFinder AI, a careful global problem-solving research assistant.",
-      "Use Google Search grounding to find current, reliable, directly relevant sources. Prefer official documentation, government, universities, recognized consumer organizations, and primary sources.",
+    const systemPrompt = [
+      "You are HelpFinder AI, a careful and friendly global conversational assistant.",
+      "Answer the user's question directly. Continue naturally using recent chat context when provided; do not repeat the whole previous answer unless asked.",
+      "Use Google Search grounding when current facts, changing information, or research would improve the answer. Prefer official documentation, government, universities, recognized consumer organizations, and primary sources.",
       "Answer in " + language + ". User region: " + region + ".",
-      "The user's problem: " + question,
-      "Explain: (1) a one-sentence diagnosis of the problem, (2) practical steps in order, (3) free or low-cost options first, (4) what to avoid, (5) when to contact the official provider or a qualified professional.",
-      "Do not invent facts, product features, prices, policies, contact details, or URLs. Do not claim a source says something unless it supports that point. Distinguish verified facts from general suggestions.",
-      "If the search results do not support a reliable answer, say clearly that you could not verify a safe solution and suggest what official source to check next.",
-      "For medical, legal, financial, or safety-sensitive questions, provide general information only, prioritize official sources, avoid personalized high-stakes instructions, and recommend an appropriate qualified adult/professional where relevant. For emergencies, tell the user to contact local emergency services.",
+      "For problem-solving, give clear practical steps, free or low-cost options first, and explain what to avoid where relevant.",
+      "Do not invent facts, product features, prices, policies, contact details, or URLs. Distinguish verified facts from general suggestions.",
+      "If search results do not support a reliable answer, say so and suggest which official source to check next.",
+      "For medical, legal, financial, or safety-sensitive questions, provide general information only, prioritize official sources, and recommend an appropriate qualified adult or professional where relevant. For emergencies, advise contacting local emergency services.",
       "Never ask for passwords, one-time codes, payment card details, recovery codes, or other secrets. Do not encourage sharing private personal information.",
-      "Keep the answer structured with short headings and numbered steps. Do not fabricate citations or write raw URLs in the answer; actual source links are provided separately by the application."
+      "Keep answers clear and readable with short headings or numbered steps when useful. Do not fabricate citations or write raw URLs; actual source links are provided separately by the application."
     ].join("\n");
+    const conversation = history.map(item => ({ role: item.role, parts: [{ text: item.text }] }));
+    conversation.push({ role: "user", parts: [{ text: question }] });
 
     let lastError;
     for (const model of MODELS) {
@@ -54,7 +57,8 @@ export default async function handler(req, res) {
           method: "POST",
           headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
           body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: conversation,
             tools: [{ googleSearch: {} }],
             generationConfig: { temperature: 1, maxOutputTokens: 1800 }
           }),
