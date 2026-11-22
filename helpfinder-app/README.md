@@ -24,7 +24,7 @@ Do not put the Gemini API key in the HTML or commit it to GitHub. Add it only in
 
 ## Authentication
 
-The current frontend uses the existing HelpFinder Supabase project's public publishable key for email authentication. The key is intended to be public; no Supabase secret/service-role key is used in the browser. For a fully isolated backend, create a dedicated Supabase project and replace the URL and publishable key in `index.html` and `api/helpfinder.js`.
+The current frontend reuses an existing Supabase project's public publishable key for email authentication; it is not yet a separate Supabase project dedicated only to HelpFinder. The key is intended to be public; no Supabase secret/service-role key is used in the browser. For a fully isolated backend, create a dedicated Supabase project and replace the URL and publishable key in `index.html` and `api/helpfinder.js`.
 
 ## Privacy and limits
 
