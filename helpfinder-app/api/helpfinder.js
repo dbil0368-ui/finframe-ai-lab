@@ -2,6 +2,8 @@ const MODELS = (process.env.GEMINI_MODEL || "gemini-2.5-flash,gemini-2.5-flash-l
   .split(",").map(value => value.trim()).filter(Boolean);
 const SUPABASE_URL = "https://pxgoaygwtxrrqkftluut.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rmuwOPAIqOWlOC6S-Gpnrg_pNfAxHNh";
+// Best-effort per-instance throttling; durable global quotas require a shared database counter.
+const rateBuckets = globalThis.__helpfinderRateBuckets || (globalThis.__helpfinderRateBuckets = new Map());
 
 function send(res, status, body) {
   res.setHeader("Cache-Control", "no-store");
@@ -24,6 +26,14 @@ export default async function handler(req, res) {
     });
     if (!authResponse.ok) return send(res, 401, { error: "Your session expired. Please sign in again." });
     const user = await authResponse.json();
+    const now = Date.now();
+    const bucket = (rateBuckets.get(user.id) || []).filter(time => now - time < 60_000);
+    if (bucket.length >= 10) return send(res, 429, { error: "Too many requests in a short time. Please wait a minute and try again." });
+    bucket.push(now);
+    rateBuckets.set(user.id, bucket);
+    if (rateBuckets.size > 500) {
+      for (const [key, times] of rateBuckets) if (!times.length || now - times[times.length - 1] > 10 * 60_000) rateBuckets.delete(key);
+    }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return send(res, 503, { error: "Web search AI is not configured. Add GEMINI_API_KEY to this standalone HelpFinder Vercel project." });
